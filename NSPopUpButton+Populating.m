@@ -1,0 +1,38 @@
+
+@implementation NSPopUpButton (Populating)
+
+- (void)populateTitles:(NSArray*)titles
+				target:(id)target
+				action:(SEL)action {
+	[self removeAllItems] ;
+	
+	NSMenu* menu = [self menu] ;
+	[self setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]] ;
+	NSMenuItem* menuItem ;
+	int i = 0 ;
+	NSEnumerator * e = [titles objectEnumerator] ;
+	NSString* title ;
+	while ((title = [e nextObject])) {
+		menuItem = [menu insertItemWithTitle:title
+									  action:action
+							   keyEquivalent:@""
+									 atIndex:i ] ;
+		[menuItem setTarget:target] ;
+		[menuItem setTag:i++] ;
+	}
+}
+
+// Because this category is also used in Bookdog,
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+
+- (void)tagItemsAsPositioned {
+	int i=0 ;
+	for(NSMenuItem* item in [self itemArray]) {
+		[item setTag:i++] ;
+	}
+}
+
+#endif
+
+#
+@end
