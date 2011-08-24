@@ -12,6 +12,7 @@ NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
 NSString* const SSYUnderlyingExceptionErrorKey = @"Underlying Exception" ;
 NSString* const SSYTimestampErrorKey = @"Timestamp" ;
 NSString* const SSYRecoveryAttempterUrlErrorKey = @"RecoveryAttempterUrl" ;
+NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 NSString* const SSYRecoveryAttempterIsAppDelegateErrorKey = @"RecoveryAttempterIsAppDelegate" ;
 NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailButton" ;
@@ -158,9 +159,47 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 									  forKey:NSLocalizedDescriptionKey] ;
 }
 
-- (NSError*)errorByAddingLocalizedFailureReason:(NSString*)newText {
-	return [self errorByAddingUserInfoObject:newText
-									  forKey:NSLocalizedFailureReasonErrorKey] ;
+- (NSError*)errorByAddingLocalizedFailureReason:(NSString*)failureReason {
+	NSError* answer ;
+	if (failureReason != nil) {
+		NSDictionary* userInfo = [self userInfo] ;
+		if (userInfo) {
+			userInfo = [userInfo dictionaryBySettingValue:failureReason
+												   forKey:NSLocalizedFailureReasonErrorKey] ;
+		}
+		else {
+			userInfo = [NSDictionary dictionaryWithObject:failureReason
+												   forKey:NSLocalizedFailureReasonErrorKey] ;
+		}
+		
+		answer = [NSError errorWithDomain:[self domain]
+									 code:[self code]
+								 userInfo:userInfo] ;		
+	}
+	else {
+		answer = self ;
+	}
+	
+	return answer ;
+}
+
+- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)newFailureReason {
+	NSError* answer ;
+	if (newFailureReason) {
+		NSString* oldFailureReason = [self localizedFailureReason] ;
+		if (oldFailureReason) {
+			newFailureReason = [NSString stringWithFormat:
+								@"%@  %@",
+								oldFailureReason,
+								newFailureReason] ;
+		}
+		answer = [self errorByAddingLocalizedFailureReason:newFailureReason] ;
+	}
+	else {
+		answer = self ;
+	}
+	
+	return answer ;
 }
 
 - (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction {
@@ -579,7 +618,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	NSMutableArray* codes = [NSMutableArray array] ;
 	NSError* error = self ;
 	while (error) {
-		[codes addObject:[NSNumber numberWithInt:[error code]]] ;
+		[codes addObject:[NSNumber numberWithInteger:[error code]]] ;
 		error = [error underlyingError] ;
 	}
 	return codes ;
@@ -592,7 +631,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 		NSString* errorDomain = [error domain] ;
 		if (errorDomain) {
 			if (!domain || [domain isEqualToString:errorDomain]) {
-				[codes addObject:[NSNumber numberWithInt:[error code]]] ;
+				[codes addObject:[NSNumber numberWithInteger:[error code]]] ;
 			}
 		}
 		error = [error underlyingError] ;
@@ -626,7 +665,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 
 - (BOOL)involvesCode:(NSInteger)code
 			  domain:(NSString*)domain {
-	return [self involvesOneOfCodesInSet:[NSSet setWithObject:[NSNumber numberWithInt:code]]
+	return [self involvesOneOfCodesInSet:[NSSet setWithObject:[NSNumber numberWithInteger:code]]
 								  domain:domain] ;
 }
 
@@ -638,6 +677,18 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 - (BOOL)involvesMyDomainAndCode:(NSInteger)code {
 	return [self involvesCode:code
 					   domain:[NSError myDomain]] ;
+}
+
+- (BOOL)isNotFileNotFoundError {
+	if ([self code] != NSFileReadNoSuchFileError) {
+		return YES ;
+	}
+	if (![[self domain] isEqualToString:NSCocoaErrorDomain]) {
+		return YES ;
+	}
+	
+	// Error is NSFileReadNoSuchFileError in NSCocoaErrorDomain.
+	return NO ;
 }
 
 - (BOOL)isRecoverable {

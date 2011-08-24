@@ -1,6 +1,5 @@
 #import "NSPersistentDocument+Pathify.h"
 #import "NSDocumentController+DisambiguateForUTI.h"
-#import "NSDocument+SyncModDate.h"
 
 NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotification" ;
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;
@@ -147,14 +146,34 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		}
 	}
 	else {
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 		ok = [fileManager copyPath:oldPath
 							toPath:newPath
 						   handler:nil] ;
+#else
+		ok = [fileManager copyItemAtPath:oldPath
+							toPath:newPath
+							 error:&error_] ;
+#endif
 		if (!ok) {
 			errorCode = 157165 ;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
 										 code:errorCode
 									 userInfo:nil] ;
+#else
+			NSDictionary* userInfo ;
+			if (error_) {
+				userInfo = [NSDictionary dictionaryWithObject:error_
+													   forKey:NSUnderlyingErrorKey] ;
+			}
+			else {
+				userInfo = nil ;
+			}
+			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
+										 code:errorCode
+									 userInfo:userInfo] ;
+#endif
 			
 			goto end ;
 		}

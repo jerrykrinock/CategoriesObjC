@@ -1,22 +1,35 @@
 #import <Cocoa/Cocoa.h>
 
 /*!
- @brief    Name of notification which is posted after a document is attempted
+ @brief    Name of notification which you may post after a document is saved or
+ atttempted to be saved.
+ 
+ @details  This constant is not used by this category; it's just provided for
+ your use – you should post and observe.
+ 
+ If you have adopted asyncrhonous saving in Mac OS X 10.7 or later, and you
+ post the notification in writeSafelyToURL::::, remember that it will be posted
+ on a non-main thread.  To post it on a main thread, create the notification
+ and then do something like this:
+ * [[NSNotificationCenter defaultCenter] performSelectorOnMainThread:@selector(postNotification:)
+ *                                                        withObject:notification
+ *                                                     waitUntilDone:NO] ;
 */
 extern NSString* const SSYDocumentDidSaveNotification ;
 
 
 
 /*!
- @brief    One of the keys in the userInfo of an SSYDocumentDidSaveNotification,
- whose value is an NSNumber BOOL indicating whether or not the save operation
- succeeded
+ @brief    One of the keys which you may set into the userInfo of an
+ SSYDocumentDidSaveNotification, whose value is an NSNumber BOOL
+ indicating whether or not the save operation succeeded.
 */
 extern NSString* const SSYDocumentDidSucceed ;
 
 /*!
- @brief    One of the keys in the userInfo of an SSYDocumentDidSaveNotification,
- whose value is an NSNumber indicating the type of save operation.
+ @brief    One of the keys which you may set into the userInfo of an
+ SSYDocumentDidSaveNotification, whose value is an NSNumber indicating
+ the type of save operation.
  
  @details  The possible values are the values in the enumeration NSSaveOperationType.
  */

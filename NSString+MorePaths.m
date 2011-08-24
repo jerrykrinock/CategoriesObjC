@@ -59,8 +59,13 @@
 	NSArray* directoryContents ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 		directoryContents = [fileManager directoryContentsAtPath:self] ;
-	}
+#else
+		directoryContents = [fileManager contentsOfDirectoryAtPath:self
+															 error:NULL] ;
+#endif
+}
 	else {
 		directoryContents = nil ;
 	}
@@ -72,8 +77,13 @@
 	NSArray* directoryContentsAsFullPaths ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 		NSArray* filenames = [fileManager directoryContentsAtPath:self] ;
-		NSMutableArray* a = [[NSMutableArray alloc] init] ;
+#else
+		NSArray* filenames = [fileManager contentsOfDirectoryAtPath:self
+															  error:NULL] ;
+#endif
+NSMutableArray* a = [[NSMutableArray alloc] init] ;
 		NSEnumerator* e = [filenames objectEnumerator] ;
 		NSString* filename ;
 		while ((filename = [e nextObject])) {
@@ -100,8 +110,8 @@
 	
 	NSString* homePath = nil ;
 	NSArray* comps = [self pathComponents] ;
-	int nComps = [comps count] ;
-	int homeIndex = NSNotFound - 1 ;
+	NSUInteger nComps = [comps count] ;
+	NSUInteger homeIndex = NSNotFound - 1 ;
 	
 	// The shortest valid number of comps is 3.  Examples:
 	//   Case 1: {"/", "Users", "jk"}
@@ -115,7 +125,7 @@
 		goto end ;
 	}
 	
-	int usersIndex = [comps indexOfObject:@"Users"] ;
+	NSUInteger usersIndex = [comps indexOfObject:@"Users"] ;
 	// But if someone has named an external drive "Users", we'll be at "/Volumes/Users/Users/..."
 	if (usersIndex == 1) {
 		if ([[comps objectAtIndex:2] isEqualToString:@"Users"]) {
@@ -132,7 +142,7 @@
 		homeIndex = 2 ;
 	}
 			
-	int nHomeComps = homeIndex + 1 ;
+	NSUInteger nHomeComps = homeIndex + 1 ;
 	if (nComps >= nHomeComps) {
 		NSRange range = NSMakeRange(0, nHomeComps) ;
 		NSArray* homeComps = [comps subarrayWithRange:range] ;
@@ -209,7 +219,7 @@ end:
 
 - (NSArray*)pathAncestorsUpTo:(NSString*)tooHighAncestor {
 	NSArray* components = [self pathComponents] ;
-	int nAncestors = [components count] ;
+	NSUInteger nAncestors = [components count] ;
 	// In most cases we should have subtracted one or two, because
 	// the first "component" returned by -pathComponents will be the slash, @"/"
 	// (if self begins with a slash), and appending the last component will make self,
@@ -278,7 +288,7 @@ end:
 	// Example:            If target is: @"/Users/jk"
 	//       will return YES if self is: @"/Users/jk/Docs"
 	//       will return YES if self is: @"/Users/jk/Docs/MyDocs" 
-	int targetLength = [target length] ;
+	NSUInteger targetLength = [target length] ;
 	if ([self hasPrefix:target]) {
 		if ([self length] > targetLength) {
 			//   Example: s = /Users/jk/Docs 
@@ -304,8 +314,8 @@ end:
 
 - (NSString*)pathRelativeToFirstComponent {
 	//	Returns empty string if path separator "/" is not found
-	int loc = [self rangeOfString:@"/"].location + 1 ;
-	loc = MIN(loc, [self length]) ; 
+	NSUInteger loc = [self rangeOfString:@"/"].location + 1 ;
+	loc = MIN(loc, [self length]) ;
 	return [self substringFromIndex:loc] ;
 }
 
@@ -322,7 +332,12 @@ end:
 	
 	NSArray* paths = nil ;
 	if (exists && isDir) {
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 		NSArray *childLastNames = [fileManager directoryContentsAtPath:self] ;
+#else
+		NSArray *childLastNames = [fileManager contentsOfDirectoryAtPath:self
+																   error:NULL] ;
+#endif
 		NSMutableArray* bucket = [[NSMutableArray alloc] initWithCapacity:[childLastNames count]] ;
 		NSEnumerator* e = [childLastNames objectEnumerator] ;
 		NSString* childLastName ;
@@ -394,13 +409,22 @@ end:
 }
 
 - (NSString*)uniqueFilenameInDirectory:(NSString*)directory
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+							 maxLength:(NSUInteger)maxLength 
+#else
 							 maxLength:(int)maxLength 
+#endif
 							truncateOk:(BOOL)truncateOk {
 	// Get list of already-existing filenames
 	NSArray* existingFilenames ;
 	if (directory) {
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 		existingFilenames = [[NSFileManager defaultManager] directoryContentsAtPath:directory] ;
-	}
+#else
+		existingFilenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory
+																				error:NULL] ;
+#endif
+}
 	else {
 		existingFilenames = [NSArray array] ;
 	}
@@ -418,7 +442,7 @@ end:
 	
 	// Replace characters not allowed in a Mac or Unix filename with "-"
 	NSCharacterSet* disallowedSet = [[NSCharacterSet filenameLegalMacUnixCharacterSet] invertedSet] ;
-	int loc = 0 ;
+	NSUInteger loc = 0 ;
 	while (loc < [nameMutable length]) {
 		loc = [nameMutable rangeOfCharacterFromSet:disallowedSet].location ;
 		if (loc < NSNotFound) {
@@ -435,15 +459,15 @@ end:
 	BOOL lengthOK = NO ;
 	BOOL unique = NO ;
 	NSMutableArray* baseNamesAlreadyTried = [[NSMutableArray alloc] init] ;
-	int maxBaseNameLength = maxLength - 1 - [extension length] ;  // 1 for the dot "."
-	int endLength = ((maxBaseNameLength - 1)*2)/3 ;
-	int beginLength = maxBaseNameLength - endLength - 2 ;  // reserve 2 for the dashes
+	NSUInteger maxBaseNameLength = maxLength - 1 - [extension length] ;  // 1 for the dot "."
+	NSUInteger endLength = ((maxBaseNameLength - 1)*2)/3 ;
+	NSUInteger beginLength = maxBaseNameLength - endLength - 2 ;  // reserve 2 for the dashes
 	while (YES) {		
 		// Modify if needed for length requirement
-		int length = [name length] ;
+		NSUInteger length = [name length] ;
 		if (length > maxLength) {
 			if (truncateOk) {
-				int endLocation = [baseName length] - endLength ;
+				NSUInteger endLocation = [baseName length] - endLength ;
 				NSRange endRange = NSMakeRange(endLocation, endLength) ;
 				baseName = [NSMutableString stringWithFormat:@"%@--%@",  // 2 dashes are subtracted above
 							[baseName substringToIndex:beginLength],
@@ -465,8 +489,13 @@ end:
 		if ([existingFilenames indexOfObject:name] != NSNotFound) {
 			// Take it apart
 			NSString* decimalDigitSuffix = [baseName decimalDigitSuffix] ;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+			NSUInteger currentIndex = [decimalDigitSuffix integerValue] ;
+			NSUInteger suffixLength = [decimalDigitSuffix length] ;
+#else
 			int currentIndex = [decimalDigitSuffix intValue] ;
 			int suffixLength = [decimalDigitSuffix length] ;
+#endif
 			NSRange suffixRange = NSMakeRange([baseName length] - suffixLength, suffixLength) ;
 			[baseName deleteCharactersInRange:suffixRange] ;
 			unichar lastChar ;

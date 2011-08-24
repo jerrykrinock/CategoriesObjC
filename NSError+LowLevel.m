@@ -79,10 +79,11 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	}
 	NSString* explanation = @"This error was translated from error info of an attempted AppleScript execution.  Its code = the NSAppleScriptErrorNumber." ;
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-							  appName, @"From application",                              // won't be nil
-							  explanation, @"ReadMe",                                    // won't be nil
-							  localizedDescription, NSLocalizedDescriptionKey,           // won't be nil
-							  localizedFailureReason, NSLocalizedFailureReasonErrorKey,  // may be nil
+							  appName, @"From application",                                          // won't be nil
+							  explanation, @"ReadMe",                                                // won't be nil
+							  localizedDescription, NSLocalizedDescriptionKey,                       // won't be nil
+							  [[NSProcessInfo processInfo] processName], @"Process receiving error", // will be, for example, "BookMacster" or "BookMacster-Worker"
+							  localizedFailureReason, NSLocalizedFailureReasonErrorKey,              // may be nil
 							  nil] ;
 	return [NSError errorWithDomain:SSYAppleScriptErrorDomain  // Seems like Apple should provide a constant for this
 							   code:code

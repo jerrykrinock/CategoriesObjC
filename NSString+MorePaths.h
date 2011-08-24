@@ -222,7 +222,11 @@
  nil.
 */
 - (NSString*)uniqueFilenameInDirectory:(NSString*)path
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+							 maxLength:(NSUInteger)maxLength 
+#else
 							 maxLength:(int)maxLength 
+#endif
 							truncateOk:(BOOL)truncateOk ;
 
 /*!

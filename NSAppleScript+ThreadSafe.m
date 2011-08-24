@@ -4,7 +4,7 @@
 
 @implementation NSAppleScript (ThreadSafe)
 
-+ (BOOL)unsafeExecuteSource:(NSString*)source
++ (NSAppleEventDescriptor*)unsafeExecuteSource:(NSString*)source
 					error_p:(NSError**)error_p {
 	NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source] ;
 	NSDictionary* errorDictionary = nil ;
@@ -18,23 +18,32 @@
 	}
 	[script release] ;
 	
-	return (result != nil) ; 
+	return result ; 
 }
 
-+ (BOOL)threadSafelyExecuteSource:(NSString*)source
-						  error_p:(NSError**)error_p {
++ (NSAppleEventDescriptor*)threadSafelyExecuteSource:(NSString*)source
+											 error_p:(NSError**)error_p {
 	NSInvocation* invocation = [NSInvocation invocationWithTarget:self
 														 selector:@selector(unsafeExecuteSource:error_p:)
 												  retainArguments:YES
 												argumentAddresses:&source, &error_p] ;
 	[invocation invokeOnMainThreadWaitUntilDone:YES] ;
+#if 0
+#warning Using old code in -threadSafelyExecuteSource::
 	NSUInteger length = [[invocation methodSignature] methodReturnLength] ;
 	void* buffer = (void*)malloc(length) ;
 	[invocation getReturnValue:buffer] ;
 	BOOL ok = *(BOOL*)buffer ;
 	free(buffer) ;
-	
 	return ok ;
+#else
+	NSAppleEventDescriptor* result = nil ;	
+	[invocation getReturnValue:&result] ;
+	[result retain] ;
+	[result autorelease] ;
+	
+	return result ;
+#endif
 }
 
 @end

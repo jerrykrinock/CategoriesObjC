@@ -72,7 +72,6 @@
 			continue ;
 		}
 
-			
 		if ((i==(nItems-1)) && (nItems>1) && conjunction) {
 			[string appendString:@" "] ;
 			if (conjunction) {

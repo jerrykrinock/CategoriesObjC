@@ -51,7 +51,7 @@
 	}
 	
     NSMutableString* copy = [self mutableCopy];
-    unsigned int replacementLength = [replacement length];
+    NSUInteger replacementLength = [replacement length];
     
     while (foundRange.length > 0) {
        [copy replaceCharactersInRange:foundRange withString:replacement];
@@ -217,7 +217,7 @@
 
 - (NSNumber*)isValidEmail {
 	BOOL answer = YES ;
-	int length = [self length] ;
+	NSInteger length = [self length] ;
 	if ([self rangeOfString:@"@"].location > (length - 5)) {
 		answer = NO ;
 	}
@@ -234,20 +234,20 @@
 
 - (NSString*)stringByRemovingLastCharacters:(int)n 
 {
-	int l = [self length] ;
+	NSInteger l = [self length] ;
 	NSString* s = [[NSString alloc] initWithString:[self substringWithRange:NSMakeRange(0, l-n)]] ;
 	return [s autorelease] ;
 }
 
-- (int)occurencesOfSubstring:(NSString*)target
+- (NSInteger)occurencesOfSubstring:(NSString*)target
 					 inRange:(NSRange)range {
-	int n = 0 ;
-	int locStart = range.location ;
-	int lenWhole = range.length ;
-	int locFound ;
+	NSInteger n = 0 ;
+	NSInteger locStart = range.location ;
+	NSInteger lenWhole = range.length ;
+	NSInteger locFound ;
 	BOOL done = NO ;
 	while (!done) {
-		int lenAfter = lenWhole - locStart ;
+		NSInteger lenAfter = lenWhole - locStart ;
 		locFound = [self rangeOfString:target
 							   options:0
 								 range:NSMakeRange(locStart, lenAfter)].location ;
@@ -329,7 +329,7 @@ NSString* const const aNewline = @"\n" ;
 }
 
 - (NSString*)substringSafelyWithRange:(NSRange)range {
-	int maxLength = [self length] - range.location ;
+	NSInteger maxLength = [self length] - range.location ;
 	range.length = MIN(maxLength, range.length) ;
 	return [self substringWithRange:range] ;
 }
@@ -426,7 +426,7 @@ NSString* const const aNewline = @"\n" ;
 	while (!done && ![scanner isAtEnd]) {
 		BOOL okSoFar = YES ;
 		
-		int atLoc ;
+		NSInteger atLoc ;
 		if (okSoFar) {
 			BOOL scanned = [scanner scanUpToAndThenLeapOverString:@"@" intoString:NULL] ;
 			atLoc = [scanner scanLocation] ;
@@ -477,10 +477,10 @@ NSString* const const aNewline = @"\n" ;
 
 - (NSString*)reverseAsciiChars {
 	const char* fwdBytes = [self UTF8String] ;
-	int L = [self length] ;
-	int end = L - 1 ;
+	NSInteger L = [self length] ;
+	NSInteger end = L - 1 ;
 	char* revBytes = malloc(L) ;
-	int i ;
+	NSInteger i ;
 	for (i=end; i>=0; i--) {
 		revBytes[end-i] = fwdBytes[i] ;
 	}
@@ -504,12 +504,58 @@ NSString* const const aNewline = @"\n" ;
 	return [revSuffix reverseAsciiChars] ;
 }
 
+- (BOOL)isValidUrl {
+	// Idea stolen from http://www.cocoabuilder.com/archive/cocoa/1281-url-parsing-in-cocoa.html?q=string+is+valid+URL#1281
+	NSString* scheme = [[[NSURL URLWithString:self] absoluteURL] scheme] ;
+	return (scheme != nil) ;
+}
+
+- (NSString*)parseForUrlAndName_p:(NSString**)name_p {
+	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
+	NSString* firstPart = nil ;
+	[scanner scanUpToString:@"\t"
+				 intoString:&firstPart] ;
+	NSString* name = nil ;
+	NSString* url = nil ;
+	if ([scanner isAtEnd]) {
+		if ([firstPart isValidUrl]) {
+			url = firstPart ;
+		}
+		else {
+			name = firstPart ;
+		}
+	}
+	else {
+		name = firstPart ;
+		// Add +1 for the \t ...
+		url = [self substringFromIndex:([scanner scanLocation] + 1)] ;
+		if (![url isValidUrl]) {
+			url = nil ;
+		}
+	}
+	[scanner release] ;
+	
+	if (name_p) {
+		if ([name length] == 0) {
+			name = [[NSBundle mainBundle] localizedStringForKey:@"untitled"
+														  value:@"?"
+														  table:@"Localizable"] ;
+		}
+
+		*name_p = name ;
+	}
+	
+	return url ;
+}
+		
+
+
 @end
 
 
 @implementation NSMutableString (SSYExtraUtils)
 
-- (unsigned int)replaceOccurrencesOfString:(NSString *)target
+- (NSUInteger)replaceOccurrencesOfString:(NSString *)target
 								withString:(NSString *)replacement {
 	return [self replaceOccurrencesOfString:target
 								 withString:replacement

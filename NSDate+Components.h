@@ -3,13 +3,17 @@
 
 /*!
  @brief    A class for creating NSDate objects with arbitrary components,
- and for getting the components of NSDate objects.&nbsp; Here, by
+ and for getting the components of NSDate objects.  Here, by
  "components", we mean the year, month, hours, etc., in the sense of
  NSDateComponents.
  
  @details  It seems to me that you really need these for dealing with
  recurring dates, for example scheduling events to occur every day at
- a given time.&nbsp; I'm surprised that Apple doesn't provide this.
+ a given time.  I'm surprised that Apple doesn't provide this.
+ I'm sure there's a reason, but I've never been able to stay awake
+ long enough to read documents like Date and Time Programming Guide.
+ I understand that one could get probably get a PhD degree in dates,
+ but I just want something that works for 99% of the world.
 */
 @interface NSDate (Components)
 

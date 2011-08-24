@@ -2,7 +2,7 @@
 
 @implementation NSString (Truncate)
 
-- (NSAttributedString *)attributedStringWithTruncationStyle:(int)truncationStyle {
+- (NSAttributedString *)attributedStringWithTruncationStyle:(NSLineBreakMode)truncationStyle {
 	NSMutableString* text = [self mutableCopy];
 	NSAttributedString* s = [NSAttributedString alloc];
 	NSMutableParagraphStyle *ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -16,10 +16,10 @@
 	return [s autorelease];
 }
 
-- (NSString*)stringByTruncatingMiddleToLength:(int)limit 
+- (NSString*)stringByTruncatingMiddleToLength:(NSUInteger)limit
 								   wholeWords:(BOOL)wholeWords {
-	int length = [self length] ;
-	NSString* answer ;
+	NSUInteger length = [self length] ;
+    NSString* answer ;
 	if (length <= limit) {
 		answer = self ;
 	}
@@ -71,10 +71,10 @@
 		}
 		
 		if (!done) {
-			int endLength = limitNotIncludingEllipsis/3 ;
-			int beginLength = limit - endLength - 1 ;  // reserve 1 for the ellipsis
-			int endLocation = length - endLength ;
-			NSRange endRange = NSMakeRange(endLocation, endLength) ;
+			NSUInteger endLength = limitNotIncludingEllipsis/3 ;
+			NSUInteger beginLength = limit - endLength - 1 ;  // reserve 1 for the ellipsis
+			NSUInteger endLocation = length - endLength ;
+            NSRange endRange = NSMakeRange(endLocation, endLength) ;
 			answer = [NSString stringWithFormat:@"%@%C%@",
 					  [self substringToIndex:beginLength],
 					  0x2026,

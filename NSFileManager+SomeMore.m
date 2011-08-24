@@ -105,9 +105,14 @@ end:
 }
 
 - (NSDate*)modificationDateForPath:(NSString*)path {
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 	NSDictionary* fileAttributes = [self fileAttributesAtPath:path
 												 traverseLink:YES] ;
-	
+#else
+	NSDictionary* fileAttributes = [self attributesOfItemAtPath:path
+														  error:NULL] ;
+#endif
+
 	return [fileAttributes objectForKey:NSFileModificationDate] ;
 }	
 

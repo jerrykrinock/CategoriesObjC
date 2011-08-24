@@ -36,8 +36,13 @@
 - (NSArray*)mountedLocalVolumeNames {
 	NSString* path = @"/Volumes" ;
 	SSYSuperFileManager* fileManager = [SSYSuperFileManager defaultManager] ;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 	NSArray* volumes = [fileManager directoryContentsAtPath:path] ;
-	
+#else
+	NSArray* volumes = [fileManager contentsOfDirectoryAtPath:path
+														error:NULL] ;
+#endif
+
 	// Filter volumes to remove hidden volumes, and those which we cannot execute (execute=look inside)
 	NSMutableArray* filteredVolumes = [NSMutableArray array] ;
 	uid_t userID ;

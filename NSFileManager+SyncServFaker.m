@@ -98,8 +98,23 @@
 							 NSFullUserName(), @"LockFileUsername",
 							 nil] ;
 	NSString* lockPath = [self syncServicesLockPathForPath:path] ;
+	NSError* error = nil ;
+	/*
+	 If you are developing with the 10.5 SDK, MAC_OS_X_VERSION_MAX_ALLOWED = 1050, MAC_OS_X_VERSION_10_5 = 1050 and the following #if will be true.
+	 If you are developing with the 10.6 SDK, MAC_OS_X_VERSION_MAX_ALLOWED = 1060, MAC_OS_X_VERSION_10_5 = 1050 and the following #if will be false.
+	 */
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 	[self createDirectoryAtPath:lockPath
 					 attributes:nil] ;
+#else
+	[self createDirectoryAtPath:lockPath
+	withIntermediateDirectories:YES
+					 attributes:nil
+						  error:&error] ;
+#endif
+	if (error) {
+		NSLog(@"Internal Error 248-0938 %@", error) ;
+	}
 	NSString* detailsPath = [self syncServicesDetailsPathForPath:path] ;
 	NSData* data = [NSPropertyListSerialization dataFromPropertyList:lockDic
 															  format:NSPropertyListXMLFormat_v1_0
@@ -114,11 +129,31 @@
 - (void)relinquishSyncServicesLockPath:(NSString*)path {
 	NSString* removePath ;
 	removePath = [self syncServicesDetailsPathForPath:path] ;
+
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 	[self removeFileAtPath:removePath
 				   handler:nil] ;
+#else
+	NSError* error = nil ;
+	[self removeItemAtPath:removePath
+					 error:&error] ;
+	if (error) {
+		NSLog(@"Internal Error 345-9678 %@", error) ;
+	}
+	error = nil ;
+#endif
+
 	removePath = [self syncServicesLockPathForPath:path] ;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
 	[self removeFileAtPath:removePath
-				   handler:nil] ;
+				 handler:nil] ;
+#else
+	[self removeItemAtPath:removePath
+				   error:&error] ;
+	if (error) {
+		NSLog(@"Internal Error 194-8497 %@", error) ;
+	}
+#endif
 }
 
 

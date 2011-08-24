@@ -63,6 +63,15 @@ extern NSString* const SSYTimestampErrorKey ;
 extern NSString* const SSYRecoveryAttempterUrlErrorKey ;
 
 /*!
+ @brief    Key which you may use in error userInfo dictionaries as desired
+
+ @details  A suggested use is, for example, if you are making requests
+ from a server, and the server throttles you and gives you a suggested
+ time to retry your request.
+*/
+extern NSString* const SSYRetryDateErrorKey ;
+
+/*!
  @brief    Key to an NSNumber which indicates that the app presenting the
  receiver has an -[NSApp delegate] which conforms to the
  NSErrorRecoveryAttempting Protocol and should be able to recover for
@@ -112,12 +121,24 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 - (NSError*)errorByAddingLocalizedDescription:(NSString*)newText ;
 
 /*!
- @brief    Adds a string value for string key NSLocalizedFailureReasonErrorKey to userInfo 
- a copy of the receiver and returns the copy, unless the parameter is nil, then
+ @brief    Adds or overwrites a string value for string key NSLocalizedFailureReasonErrorKey
+ to userInfo a copy of the receiver and returns the copy, unless the parameter is nil, then
  returns the receiver.
+ @details  If you want to append a reason instead of overwriting, use
+ -errorByAppendingLocalizedFailureReason: instead.
  @param    newText  The string value to be added for key NSLocalizedFailureReasonErrorKey
  */
 - (NSError*)errorByAddingLocalizedFailureReason:(NSString*)newText ;
+
+/*!
+ @brief    Adds or appends a string value for string key NSLocalizedFailureReasonErrorKey
+ to userInfo a copy of the receiver and returns the copy, unless the parameter is nil, then
+ returns the receiver.
+ @details  If you want to overwrite any existing failure reason instead of appending, use
+ -errorByAddingLocalizedFailureReason: instead.
+ @param    newText  The string value to be added for key NSLocalizedFailureReasonErrorKey
+ */
+- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)newText ;
 
 /*!
  @brief    Adds a string value for string key SSYMethodNameErrorKey to userInfo 
@@ -483,6 +504,21 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  and has a given code.
  */
 - (BOOL)involvesMyDomainAndCode:(NSInteger)code ;
+
+/*!
+ @brief    Returns NO if the receiver's domain is NSCocoaErrorDomain and code
+ is NSFileReadNoSuchFileError, YES otherwise
+ 
+ @details  NSFileReadNoSuchFileError in NSCocoaErrorDomain is returned by
+ -[NSFileManager contentsOfDirectoryAtPath:error:] if the given path does
+ not exist.  Use this method to process only other errors, like this
+ • if ([error isNotFileNotFoundError]) {
+ •     // This is a serious error, do something about it
+ •     …
+ • }
+ 
+ */
+- (BOOL)isNotFileNotFoundError ;
 
 /*!
  @brief    Returns whether or not the receiver has either a recovery 

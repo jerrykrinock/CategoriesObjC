@@ -90,7 +90,7 @@
 
 - (NSString*)stringByRemovingLastCharacters:(int)n ;
 
-- (int)occurencesOfSubstring:(NSString*)target inRange:(NSRange)range ;
+- (NSInteger)occurencesOfSubstring:(NSString*)target inRange:(NSRange)range ;
 
 /*!
  @brief    Returns 1 plus the number of ASCII \n characters in a
@@ -166,12 +166,30 @@
 */
 - (NSString*)decimalDigitSuffix ;
 
+
+- (BOOL)isValidUrl ;
+
+/*!
+ @brief    Parses the receiver and tries to extract a valid URL string
+ and a valid name string.
+
+ @details  If the receiver contains a tab character, returns
+ the part before the tab in name_p and returns the part after the tab,
+ if it is a valid URL.  If the receiver does not contain a tab
+ character, returns nil in name_p and returns the receiver if it is
+ a valid URL.  If the required part is not a valid URL, returns nil.
+ @param    name_p  If you pass a non-nil pointer, upon return, points
+ to the parsed name or to localized "untitled" if no name was parsed.
+ You may pass NULL if you don't want the name.
+*/
+- (NSString*)parseForUrlAndName_p:(NSString**)name_p ;
+
 @end
 
 
 @interface NSMutableString (SSYExtraUtils)
 
-- (unsigned int)replaceOccurrencesOfString:(NSString *)target
+- (NSUInteger)replaceOccurrencesOfString:(NSString *)target
 								withString:(NSString *)replacement ;
 
 @end

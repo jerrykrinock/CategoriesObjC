@@ -23,7 +23,7 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 		[static_modifierCharacterSet retain] ; // Stick around until app quits
 	}
 	
-	int possibleFormatCharLocation ;
+	NSUInteger possibleFormatCharLocation ;
 	NSString* modifier = @"" ;
 	BOOL dollarsign = [scanner scanString:@"$"intoString:NULL] ;
 	if (dollarsign) {

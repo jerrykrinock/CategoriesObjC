@@ -17,10 +17,10 @@
  generally because it contains a word which is longer than the limit
  all by itself, characters are truncated instead.
 */
-- (NSString*)stringByTruncatingMiddleToLength:(int)limit
+- (NSString*)stringByTruncatingMiddleToLength:(NSUInteger)limit
 								   wholeWords:(BOOL)wholeWords ;
 
-- (NSAttributedString *)attributedStringWithTruncationStyle:(int)truncationStyle ;
+- (NSAttributedString *)attributedStringWithTruncationStyle:(NSLineBreakMode)truncationStyle ;
 
 @end
 

@@ -10,11 +10,12 @@
  @param    source  
  @param    error_p  If an error occurs, and if error_p is not
  nil, a descriptive error object will be assigned to *error_p.
- @result   YES if the script completed without error, otherwise
-NO.
+ @result   The result returned by the script, or nil if an error
+ occurred.  If the script returned null, result will be an
+ NSAppleEventDescriptor object wrapping null.
 */
-+ (BOOL)threadSafelyExecuteSource:(NSString*)source
-						  error_p:(NSError**)error_p ;
++ (NSAppleEventDescriptor*)threadSafelyExecuteSource:(NSString*)source
+											 error_p:(NSError**)error_p ;
 
 @end
 
