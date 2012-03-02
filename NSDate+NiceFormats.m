@@ -1,8 +1,8 @@
 #import "NSDate+NiceFormats.h"
 #import "NSString+SSYExtraUtils.h"
 
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) \
-|| (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4)
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
+
 /*!
 @brief    Declares stuff defined in the 10.6 SDK,
 to eliminate compiler warnings.
@@ -15,6 +15,7 @@ you've checked that you are running under Mac OS X 10.6.
 - (id)dateByAddingTimeInterval:(NSTimeInterval)seconds ;
 
 @end
+
 #endif
 
 @implementation NSDate (NiceFormats)
@@ -61,6 +62,20 @@ you've checked that you are running under Mac OS X 10.6.
 	return answer ;
 }
 
+- (NSString*)geekDateTimeStringMilli {
+	NSString* formatString = @"yyyy-MM-dd HH:mm:ss.SSS" ;
+	
+	NSDateFormatter* formatter ;
+	formatter = [[NSDateFormatter alloc] init] ;
+	[formatter setDateFormat:formatString];
+	
+	NSString* dateString = [formatter stringFromDate:self] ;	
+
+	[formatter release] ;
+	
+	return dateString ;
+}
+
 - (NSString*)compactDateTimeString {
 	//  Remove spaces, dash and colon from YYYY-MM-DD HH:MM:SS
 	NSString* s1 = [[self geekDateTimeString] stringByReplacingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" :-"]
@@ -73,5 +88,13 @@ you've checked that you are running under Mac OS X 10.6.
 + (NSString*)currentDateFormattedConcisely {	
 	return [[NSDate date] medDateShortTimeString] ;
 }
+
+/*
+NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+[dateFormatter setDateFormat:@"ss.SSSS"];
+NSDate *date = [NSDate date];	
+NSString* secondsWithMilliseconds = [dateFormatter stringFromDate:date];
+[dateFormatter release] ;
+*/
 
 @end

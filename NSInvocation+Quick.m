@@ -1,4 +1,3 @@
-#import "NSInvocation+Quick.h"
 
 // We need the address of nil object which will never go away.
 // But Cocoa cannot retain such an object since [nil retain] is a no-op.
@@ -46,7 +45,8 @@ static NSObject* gNil = nil ;
 					if (!address) {
 						address = &gNil ;
 					}
-					[invoc setArgument:address atIndex:i] ;
+					[invoc setArgument:address
+							   atIndex:i] ;
 				}
 				va_end(argumentList) ;
 			}

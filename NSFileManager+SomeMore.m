@@ -104,8 +104,17 @@ end:
 	return ok ;
 }
 
+- (BOOL)touchPath:(NSString*)path
+		  error_p:(NSError**)error_p {
+	NSDictionary* attributes = [NSDictionary dictionaryWithObject:[NSDate date]
+														   forKey:NSFileModificationDate] ;
+	return [self setAttributes:attributes
+				  ofItemAtPath:path
+						 error:error_p] ;
+}
+
 - (NSDate*)modificationDateForPath:(NSString*)path {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 	NSDictionary* fileAttributes = [self fileAttributesAtPath:path
 												 traverseLink:YES] ;
 #else
@@ -235,6 +244,12 @@ end:
 											&result
 											) ;
 		if (result == true) {
+			return NO ;
+		}
+		
+		// See if it's in the "Dropbox trash"
+		NSArray* components = [path pathComponents] ;
+		if ([components indexOfObject:@".dropbox.cache"] != NSNotFound) {
 			return NO ;
 		}
 	}

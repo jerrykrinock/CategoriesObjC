@@ -48,8 +48,9 @@
  creating dictionaries as needed if they do not exist, and inserting
  values into existing dictionaries if they do exist.
 
- @details  The opposite method, -valueForKeyPath:, is provided by
- NSObject and works as expected.
+ @details  Note that this is an override of the NSObject method.  
+ The opposite method, -valueForKeyPath:, is also provided by
+ NSObject, but it works as expected.
  @param    value  
  @param    keyPath  
 */

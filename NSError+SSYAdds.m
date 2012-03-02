@@ -6,6 +6,7 @@
 #import "NSObject+MoreDescriptions.h"
 #import "NSString+MorePaths.h"
 #import "SSYDebug.h"
+#import "NSDate+NiceFormats.h"
 
 NSString* const SSYMethodNameErrorKey = @"Method Name" ;
 NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
@@ -452,12 +453,20 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 		NSString* keyDescription = [key description] ;
 		NSString* valueDescription = nil ;
 		if ([value respondsToSelector:@selector(longDescriptionWithIndentationLevel:truncateForEmail:)]) {
+			// value must be an underlying error
 			NSInteger nextIndentationLevel = (indentationLevel + 1) ;
 			valueDescription = [value longDescriptionWithIndentationLevel:nextIndentationLevel
 														 truncateForEmail:truncateForEmail] ;
 		}
 		if (!valueDescription) {
-			valueDescription = [value longDescription] ;
+			// value is a value
+			if ([value respondsToSelector:@selector(geekDateTimeString)]) {
+				// value is a date
+				valueDescription = [value geekDateTimeString] ;
+			}
+			else {
+				valueDescription = [value longDescription] ;
+			}
 		}
 		NSString* truncatedKey = [keyDescription stringByTruncatingMiddleToLength:userInfoMaxKeyLength
 																	   wholeWords:NO] ;
@@ -500,9 +509,13 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 - (void)appendIfExistsUserInfoValueForKey:(NSString*)key
 								withLabel:(NSString*)label
 							toDescription:(NSMutableString*)string {
-	NSString* more = [[self userInfo] objectForKey:key] ;
-	if (more) {
-		[string appendFormat:@"\n\n%@\n%@", label, more] ;
+	id value = [[self userInfo] objectForKey:key] ;
+	if (value) {
+		if ([value respondsToSelector:@selector(geekDateTimeString)]) {
+			// It's a date
+			value = [value geekDateTimeString] ;
+		}
+		[string appendFormat:@"\n\n%@\n%@", label, value] ;
 	}
 }
 
@@ -593,7 +606,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	NSInteger code = [self code] ;
 	NSString* domain = [self domain] ;
 	NSDictionary* userInfo = [self userInfo] ;
-	NSDictionary* encodeableUserInfo = [userInfo mutableDeepCopyStyle:SSYDeepCopyStyleBitmaskEncodeable] ;
+	NSDictionary* encodeableUserInfo = [userInfo mutableCopyDeepStyle:SSYDeepCopyStyleBitmaskEncodeable] ;
 	NSError* encodeableError = [NSError errorWithDomain:domain
 												   code:code
 											   userInfo:encodeableUserInfo] ;

@@ -20,6 +20,7 @@
 		[mutant insertObject:object
 					 atIndex:index] ;
 		answer = [NSArray arrayWithArray:mutant] ;
+        [mutant release] ;
 	}
 	else {
 		answer = self ;

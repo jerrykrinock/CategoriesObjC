@@ -1,5 +1,6 @@
 #import "NSPersistentDocument+Pathify.h"
 #import "NSDocumentController+DisambiguateForUTI.h"
+#import "NSDocument+SyncModDate.h"
 
 NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotification" ;
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;
@@ -13,7 +14,22 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 				  error_p:(NSError**)error_p {
 	BOOL ok = YES ;
 	NSError* error_ = nil ;
-	NSInteger errorCode = 157160 ;
+	NSInteger errorCode = 0 ;
+	
+	// This section was added in BookMacster 1.9.9.
+	if ([[self fileURL] isEqual:newURL]) {
+		ok = NO ;
+		error_ =  [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
+									  code:157159
+								  userInfo:[NSDictionary dictionaryWithObject:@
+											"You requested to rename this document to the same name it already has, and leave it in the same folder it is already in.\n\n"
+											@"That means to do nothing.  We have therefore done nothing."
+																	   forKey:NSLocalizedDescriptionKey]] ;
+		goto end ;
+	}
+	
+	// I think this statement never has any consequence
+	errorCode = 157160 ;
 	
 	// In case this comes from a dialog, make sure that newPath has the
 	// proper filename extension.
@@ -58,6 +74,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 	}
 	
 	if (doSave) {
+		// Note 0934857
 		// Now we need to save the document.
 		// The first thing I thought of is this:
 		//   [self  saveToURL:oldURL
@@ -75,7 +92,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
         //                       error:&error_] ;
 		// However, for BookMacster's Bkmslf, its override of
 		// writeSafelyToURL:ofType:forSaveOperation:error: posts an
-		// SSYDocumentDidSaveNotification which will -doAfterSaveHousekeepingNotification,
+		// SSYDocumentDidSaveNotification which will -doHousekeepingAfterSaveNotification,
 		// which will check cloudability, which will find an error if
 		// we are in the process of moving *into* the dropbox to correct the
 		// cloudability error, since as you can see above we are still saving
@@ -86,7 +103,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		// set to the correct, new values when we re-invoke 
 		// saveToURL:ofType:forSaveOperation:error: below to save it to the
 		// newURL.  ***Update***.  Since we no longer check cloudability
-		// in -doAfterSaveHousekeepingNotification, this thing might work now.
+		// in -doHousekeepingAfterSaveNotification, this thing might work now.
 		//
 		// The next thing I tried was the same, except invoking super 
 		// ok = [super writeSafelyToURL:oldURL
@@ -146,7 +163,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		}
 	}
 	else {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 		ok = [fileManager copyPath:oldPath
 							toPath:newPath
 						   handler:nil] ;
@@ -157,7 +174,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 #endif
 		if (!ok) {
 			errorCode = 157165 ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
 										 code:errorCode
 									 userInfo:nil] ;
@@ -210,18 +227,23 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 	
 end:;
 	if (error_p && error_) {
-		NSString* errorDescription = [NSString stringWithFormat:
-									  @"Error in %s",
-									  __PRETTY_FUNCTION__] ;
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-								  errorDescription, NSLocalizedDescriptionKey,
-								  error_, NSUnderlyingErrorKey,
-								  newPath, @"New Path",
-								  oldURL, @"Old URL",
-								  nil] ;
-		*error_p = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-									   code:errorCode
-								   userInfo:userInfo] ;
+		if (errorCode > 0) {
+			NSString* errorDescription = [NSString stringWithFormat:
+										  @"Error in %s",
+										  __PRETTY_FUNCTION__] ;
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+									  errorDescription, NSLocalizedDescriptionKey,
+									  error_, NSUnderlyingErrorKey,
+									  newPath, @"New Path",
+									  oldURL, @"Old URL",
+									  nil] ;
+			*error_p = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
+										   code:errorCode
+									   userInfo:userInfo] ;
+		}
+		else {
+			*error_p = error_ ;
+		}
 	}
 
 	return ok ;
@@ -260,29 +282,43 @@ end:;
 - (void)saveMovePanelDidEnd:(NSSavePanel *)sheet
 				 returnCode:(int)returnCode
 				contextInfo:(void*)contextInfo {
+	NSInvocation* doneInvocation = (NSInvocation*)contextInfo ;
+	// contextInfo was previously retained
+	[doneInvocation autorelease] ;
+
 	if (returnCode == NSFileHandlingPanelOKButton) {
 		NSURL* newUrl = [sheet URL] ;
 		[self saveMoveToNewUrl:newUrl] ;
-	}	
+	}
+	
+	[doneInvocation invoke] ;
 }
 
-- (void)saveAsMoveToDirectory:(NSString*)parentPath {
+- (void)saveAsMoveToDirectory:(NSString*)parentPath
+					  message:(NSString*)message
+			   doneInvocation:(NSInvocation*)doneInvocation {
 	NSSavePanel* panel ;
 	panel = [NSSavePanel savePanel] ;
 	SEL selector ;
 	
-	NSString* message ;
-	selector = @selector(localize:) ;
-	if ([NSString respondsToSelector:selector]) {
-		// Category NSString (LocalizeSSY) is available
-		message = [NSString performSelector:selector
-								 withObject:@"saveMoveDetail"] ;
+	if (!message) {
+		selector = @selector(saveAsMoveMessage) ;
+		if ([self respondsToSelector:selector]) {
+			message = [self performSelector:selector] ;
+		}
 	}
-	else {
-		message = @"LOCALIZE: Choose a new name/location for this document." ;
+	[panel setMessage:message] ;
+	
+	selector = @selector(saveAsMoveLabel) ;
+	if ([self respondsToSelector:selector]) {
+		[panel setNameFieldLabel:[self performSelector:selector]] ;
 	}
 	
-	[panel setMessage:message] ;
+	selector = @selector(saveAsMovePrompt) ;
+	if ([self respondsToSelector:selector]) {
+		[panel setPrompt:[self performSelector:selector]] ;
+	}
+	
 	[panel setCanCreateDirectories:YES] ;
 	// The following two lines were added as a bug fix in BookMacster 1.1
 	[panel setAllowedFileTypes:[NSArray arrayWithObject:[[NSDocumentController sharedDocumentController] defaultDocumentFilenameExtension]]] ;
@@ -304,14 +340,18 @@ end:;
 				   modalForWindow:window
 					modalDelegate:self
 				   didEndSelector:@selector(saveMovePanelDidEnd:returnCode:contextInfo:)
-					  contextInfo:NULL] ;
+					  contextInfo:[doneInvocation retain]] ;
+	// doneInvocation will be released in -saveMovePanelDidEnd:returnCode:contextInfo:
+
 	// Note: Built-in behavior of NSSavePanel checks to see if the path chosen
 	// by the user already exists, and if so runs the "Replace?" sheet over
 	// this sheet.
 }
 
 - (IBAction)saveAsMove:(id)sender {
-	[self saveAsMoveToDirectory:nil] ;
+	[self saveAsMoveToDirectory:nil
+						message:nil
+				 doneInvocation:nil] ;
 }
 
 @end

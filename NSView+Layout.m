@@ -1,6 +1,11 @@
 #import "NSView+Layout.h"
 #import "NS(Attributed)String+Geometrics.h"
 
+void SSMoveView(NSView* view, float dX, float dY) ;
+void SSResizeView(NSView* view, float dX, float dY) ;
+void SSResizeViewMovingSubviews(NSView* view, float dXLeft, float dXRight, float dYTop, float dYBottom) ;
+NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, float dYTop, float dYBottom, BOOL moveSubviews) ;
+
 void SSMoveView(NSView* view, float dX, float dY) {
 	NSRect frame = [view frame] ;
 	frame.origin.x += dX ;
@@ -232,13 +237,17 @@ NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, 
 		// Subclass should have set height to fit
 	}
 
-	// Clip if taller than screen
+#if 0
+	// At one point, I clipped if this was taller than the screen.  However, that
+	// screwed up downstream clipping in SSYAlert, where the buttons needed to be
+	// placed on the screen.  So, the following code is OUT
 	float screenHeight = [[NSScreen mainScreen] frame].size.height ;
 	if ([self height] > screenHeight) {
 		NSRect frame = [self frame] ;
 		frame.size.height = screenHeight ;
 		[self setFrame:frame] ;
 	}
+#endif
 }	
 
 - (NSComparisonResult)compareLeftEdges:(NSView*)otherView {

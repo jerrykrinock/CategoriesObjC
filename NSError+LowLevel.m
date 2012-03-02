@@ -4,9 +4,9 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 
 @implementation NSError (LowLevel)
 
-+ (NSError*)errorWithMacErrorCode:(NSInteger)code {
-	NSString* domain ;
-	NSString* descString ;
++ (NSError*)errorWithMacErrorCode:(OSStatus)code {
+	NSString* domain = @"NSError_LowLevel_ErrorDomain" ;
+	NSString* descString = nil ;
 	if ((code > 0) && (code < 15)) {
 		domain = @"CFStreamErrorDomain" ;
 		descString = [NSString stringWithFormat:
@@ -15,7 +15,7 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	}
 	else if (code < kPOSIXErrorBase) {
 		domain = NSOSStatusErrorDomain ;
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4		
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040		
 		const char* cString = GetMacOSStatusCommentString(code) ;
 #else
 		const char* cString = NULL ;
@@ -36,13 +36,17 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	}
 	// I couldn't find any info on NSMachErrorDomain values
 	
-	NSError* error= [NSError errorWithDomain:domain
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              descString, NSLocalizedDescriptionKey,  // may be nil
+                              nil] ;
+    
+    NSError* error = [NSError errorWithDomain:domain
 										code:code
-									userInfo:nil] ;
+									userInfo:userInfo] ;
 	return error ;
 }
 
-+ (NSError*)errorWithPosixErrorCode:(NSInteger)code {
++ (NSError*)errorWithPosixErrorCode:(OSStatus)code {
 	return [self errorWithMacErrorCode:(code+kPOSIXErrorBase)] ;
 }
 

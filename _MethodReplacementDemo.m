@@ -2,6 +2,7 @@
 #import <Cocoa/Cocoa.h>
 #import "SSYAlert.h"
 
+
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
@@ -10,7 +11,7 @@
  
  The ReadMe.txt document in Apple's MethodReplacement "The trick is
  to define a category on the class whose method you want to replace."
- That this sentence is incorrect.  You do *not* need to define a category
+ That  sentence is incorrect.  You do *not* need to define a category
  on the class whose method you want to replace.
 
  In fact, the first argument of class_getInstanceMethod() need *not* be self,
@@ -180,10 +181,10 @@
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 /* Now, here's one done in a category */
 
-@interface NSTextView (DebugByReplacingMethod)
+@interface NSManagedObjectContext (DebugByReplacingMethod)
 @end
 
-@implementation NSTextView (DebugByReplacingMethod)
+@implementation NSManagedObjectContext (DebugByReplacingMethod)
 
 + (void)load {
 	// Swap the implementations of one method with another.
@@ -193,23 +194,55 @@
 	
 	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
 	NSLog(@"Replacing methods in %@", [self class]) ;
-	Method originalMethod = class_getInstanceMethod(self, @selector(insertText:replacementRange:)) ;
-	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_insertText:replacementRange:)) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(save:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_save:)) ;
 	method_exchangeImplementations(originalMethod, replacedMethod) ;
 }
 
-- (id)replacement_insertText:(id)value
-			replacementRange:(NSRange)range {
-	NSLog(@"931: self = %@  frame: %@", self, NSStringFromRect([self frame])) ;
-	NSLog(@"989:    value: %@  range: %@", value, NSStringFromRange(range)) ;
-	
+- (id)replacement_save:(NSError**)error {
+	NSString* path = [self path1] ;
+	if ([[[path lastPathComponent] pathExtension] isEqualToString:@"bkmslf"]) {
+		NSLog(@"8573: Saving %@", [path lastPathComponent]) ;
+		NSLog(@"7467: callers:\n%@", SSYDebugBacktraceDepth(6)) ;
+	}
 	// Due to the swap, this calls the original method
-	return [self replacement_insertText:value
-					   replacementRange:range] ;
+	return [self replacement_save:error] ;
 }
 
 @end
 
+#endif
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+/* Now, here's one done in a category */
+
+@interface NSManagedObjectContext (DebugByReplacingMethod)
+@end
+
+@implementation NSManagedObjectContext (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(deleteObject:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_deleteObject:)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (void)replacement_deleteObject:(NSManagedObject*)object {
+	NSLog(@"8573: Deleting object: %@", [object shortDescription]) ;
+
+	// Due to the swap, this calls the original method
+	return [self replacement_deleteObject:object] ;
+}
+
+@end
 #endif
 
 #if 0
@@ -326,4 +359,5 @@ error:(NSError**)error {
 @end
 
 #endif
+
 

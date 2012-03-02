@@ -4,7 +4,7 @@
 
 - (NSString*)listValuesOnePerLineForKeyPath:(NSString*)keyPath
 									 bullet:(NSString*)bullet {
-	int nItems = [self count] ;
+	NSInteger nItems = [self count] ;
 	if (!keyPath) {
 		keyPath = @"description" ;
 	}
@@ -50,7 +50,7 @@
 		array = self ;
 	}
 	
-	int nItems = [array count] ;
+	NSInteger nItems = [array count] ;
 	NSMutableString* string = [[NSMutableString alloc] init] ;
 	int i ;
 	for (i=0; i<nItems; i++) {

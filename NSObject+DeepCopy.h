@@ -23,7 +23,7 @@
  NSData* fooArchive = [NSKeyedArchiver archivedDataWithRootObject:foo] ;
  id fooCopy = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:fooArchive] ;
  
- Source: http://www.cocoadev.com/index.pl?MutableDeepCopyAndUserDefaults
+ Source: http://www.cocoadev.com/index.pl?mutableCopyDeepAndUserDefaults
  */
 
 /*!
@@ -50,8 +50,7 @@ extern SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable ;
 @interface NSObject (DeepCopy)
 
 /*!
- @brief    Returns a deep, mutable copy of the receiver with an extra
- retain count that you must release.
+ @brief    Returns a deep, mutable copy of the receiver
  
  @details  If an object responds to -mutableCopyWithZone and 
  -count, it is treated as a container node.&nbsp; and processed
@@ -76,7 +75,15 @@ extern SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable ;
  
  @param    style  Determines the makeup of non-collection
  objects in the result */
-- mutableDeepCopyStyle:(SSYDeepCopyStyleBitmask)style;
+- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style;
+
+/*!
+ @details  This method assumes that the receiver and all of its
+ descendants are property list types.  If not, it will probably raise
+ an exception.  If this is a possible issue, use -mutableCopyDeepStyle
+ instead.
+ */
+- (id)mutableCopyDeepPropertyList ;
 
 @end
 
@@ -110,7 +117,7 @@ int main(int argc, const char *argv[]) {
 	  forKeyPath:@"meals.lunch.cheese.color"] ;
 	NSLog(@"original = %@", md) ;
 	
-	NSMutableDictionary* mdc = [md mutableDeepCopyStyle:SSYDeepCopyStyleBitmaskSerializable] ;
+	NSMutableDictionary* mdc = [md mutableCopyDeepStyle:SSYDeepCopyStyleBitmaskSerializable] ;
 	NSLog(@"mdc = %@", mdc) ;
 	
 	

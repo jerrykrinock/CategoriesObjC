@@ -19,6 +19,7 @@
 	CFIndex strBufLen = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfStringRef), kCFStringEncodingUTF8) + 1;       // + 1 for null terminator
 	cString = (char *) malloc(strBufLen);
 	if(!cString) {
+        CFRelease(cfStringRef);
 		return nil ;
 	}
 	
@@ -34,6 +35,19 @@
 	
 	return serverName ;
 }
+
+- (NSUInteger)numberOfOccurrencesOfCharacter:(unichar)aChar {
+	NSInteger i ;
+	NSUInteger count = 0 ;
+	for (i=0; i<[self length]; i++) {
+		if ([self characterAtIndex:i] == aChar) {
+			count++ ;
+		}
+	}
+	
+	return count ;
+}
+
 
 - (NSRange)wholeRange {
 	return NSMakeRange(0, [self length]) ;
@@ -239,7 +253,7 @@
 	return [s autorelease] ;
 }
 
-- (NSInteger)occurencesOfSubstring:(NSString*)target
+- (NSInteger)occurrencesOfSubstring:(NSString*)target
 					 inRange:(NSRange)range {
 	NSInteger n = 0 ;
 	NSInteger locStart = range.location ;
@@ -438,7 +452,6 @@ NSString* const const aNewline = @"\n" ;
 		if (okSoFar) {
 			domain = @"";
 			[scanner scanUpToString:@"<" intoString:&domain] ;
-			[scanner release] ;
 			if ([domain length] < 2) {
 				okSoFar = NO ;
 			}
@@ -461,6 +474,7 @@ NSString* const const aNewline = @"\n" ;
 			done = YES ;
 		}
 	}
+    [scanner release] ;
 	
 	NSString* answer = done ? [NSString stringWithFormat:@"%@@%@", name, domain] : nil ;
 	return answer ;

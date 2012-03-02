@@ -241,12 +241,18 @@ end:
 	[metadata release] ;
 }
 
-- (void)addMetadata1:(NSDictionary*)moreMetadata {
+- (BOOL)addMetadata1:(NSDictionary*)moreMetadata {
+	BOOL didDoAnything = NO ;
 	NSDictionary* oldMetadata = [self metadata1] ;
 	NSMutableDictionary* metadata = [oldMetadata mutableCopy] ;
 	[metadata addEntriesFromDictionary:moreMetadata] ;
-	[[self store1] setMetadata:metadata] ;
+	if (![metadata isEqualToDictionary:oldMetadata]) {
+		[[self store1] setMetadata:metadata] ;
+		didDoAnything = YES ;
+	}
 	[metadata release] ;
+	
+	return didDoAnything ;
 }
 
 - (BOOL)trashStore1Error_p:(NSError**)error_p {
@@ -257,6 +263,64 @@ end:
 												error_p:&error] ;
 	return ok ;
 }
+
+- (NSManagedObject*)objectWithUri:(NSString*)uri {
+	NSPersistentStoreCoordinator* psc = [self persistentStoreCoordinator] ;
+	NSURL* url = [NSURL URLWithString:uri] ;
+	NSManagedObjectID* objectId = [psc managedObjectIDForURIRepresentation:url] ;
+	NSManagedObject* object ;
+	if (objectId) {
+		// Prior to BookMacster 1.9.3, we just did this here:
+		// object = [self objectWithID:objectId] ;
+		// That sometimes caused Core Data exceptions as explained below.
+		if ([self respondsToSelector:@selector(existingObjectWithID:error:)]) {
+			// Mac OS X 10.6 or later
+			NSError* error = nil ;
+			object = [self existingObjectWithID:objectId
+										  error:&error] ;
+			// If asking this method for nonexistent objects is expected
+			// behavior, you should delete this…
+			if (error) {
+				NSLog(@"Warning 927-4139 (not really an error) : %@", error) ;
+			}
+		}
+		else {
+			// Mac OS X 10.5 or earlier
+			object = [self objectWithID:objectId] ;
+			// If an object with objectId does not exist in the store, -objectWithID: will
+			// "helpfully" create a bogus object which will raise a "Core Data could not
+			// fulfill a fault" exception when we try to access any of its properties.
+			// (This behavior is per documentation.)
+			// The solution to this problem is to immediately test the object by
+			// trying to access one of its properties in a @try/catch block and
+			// catching the "Core Data could not fulfill a fault" exception.
+			// Amazingly, I tested this kludge and it actually worked, 3 times!
+			id value = nil ;
+			@try {
+				NSDictionary* attributes = [[object entity] propertiesByName] ;
+				NSArray* keys = [attributes allKeys] ;
+				NSString* aKey = [keys firstObjectSafely] ;
+				value = [object valueForKey:aKey] ;
+			}
+			@catch (NSException* exception) {
+				// If asking this method for nonexistent objects is expected
+				// behavior, you should delete the next line…
+				NSLog(@"Warning 927-6429 %@ : %@", exception, value) ;
+				object = nil ;
+			}
+			@finally {
+			}
+		}
+	}
+	else {
+		object = nil ;
+	}
+	
+	return object ;
+}
+
+
+
 /*
  // This method is not needed since -updatedObjects already behaves this way.
  - (NSSet*)updatedObjectsReally {

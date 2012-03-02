@@ -59,7 +59,7 @@
 	NSArray* directoryContents ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 		directoryContents = [fileManager directoryContentsAtPath:self] ;
 #else
 		directoryContents = [fileManager contentsOfDirectoryAtPath:self
@@ -77,7 +77,7 @@
 	NSArray* directoryContentsAsFullPaths ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 		NSArray* filenames = [fileManager directoryContentsAtPath:self] ;
 #else
 		NSArray* filenames = [fileManager contentsOfDirectoryAtPath:self
@@ -243,7 +243,8 @@ end:
 			}
 		}
 	}
-	
+	[path release] ;
+    
 	NSArray* output = [ancestors copy] ;
 	[ancestors release] ;
 	
@@ -332,7 +333,7 @@ end:
 	
 	NSArray* paths = nil ;
 	if (exists && isDir) {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
 		NSArray *childLastNames = [fileManager directoryContentsAtPath:self] ;
 #else
 		NSArray *childLastNames = [fileManager contentsOfDirectoryAtPath:self
@@ -408,17 +409,20 @@ end:
     return [(NSString*)hfsPath autorelease] ;
 }
 
+
+
 - (NSString*)uniqueFilenameInDirectory:(NSString*)directory
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
 							 maxLength:(NSUInteger)maxLength 
 #else
 							 maxLength:(int)maxLength 
 #endif
 							truncateOk:(BOOL)truncateOk {
+	
 	// Get list of already-existing filenames
 	NSArray* existingFilenames ;
 	if (directory) {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5) 
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1060		
 		existingFilenames = [[NSFileManager defaultManager] directoryContentsAtPath:directory] ;
 #else
 		existingFilenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory
@@ -489,7 +493,7 @@ end:
 		if ([existingFilenames indexOfObject:name] != NSNotFound) {
 			// Take it apart
 			NSString* decimalDigitSuffix = [baseName decimalDigitSuffix] ;
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
 			NSUInteger currentIndex = [decimalDigitSuffix integerValue] ;
 			NSUInteger suffixLength = [decimalDigitSuffix length] ;
 #else

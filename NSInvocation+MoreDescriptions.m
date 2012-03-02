@@ -117,6 +117,15 @@
 							   @"type=double value=%f",
 							   arg] ;
 				}
+				else if (!strcmp(argType, "^v")) {
+					// The argument is probably a block
+					void* arg ;
+					[self getArgument:&arg
+							  atIndex:iArg] ;
+					argDesc = [NSString stringWithFormat:
+							   @"type=block (I think) value=%p",
+							   arg] ;
+				}
 				else {
 					argDesc = [NSString stringWithFormat:
 							   @"typeCode='%s', an uncommon type.  See The "

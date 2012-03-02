@@ -1,5 +1,40 @@
 #import <Cocoa/Cocoa.h>
 
+@protocol NSPersistentDocumentMoveToStringer
+
+/*!
+ @brief    Implemented by a subclass of NSPersistentDocument including 
+ the NSPersistentDocument+Pathify category to return, in the dialog presented
+ by -saveAsMoveToDirectory:::, the localized string which appears in small
+ font at the top of the dialog
+
+ @details  Actually, see -[NSSavePanel setMessage:].
+*/
+- (NSString*)saveAsMoveMessage ;
+
+/*!
+ @brief    Implemented by a subclass of NSPersistentDocument including 
+ the NSPersistentDocument+Pathify category to return, in the dialog presented
+ by -saveAsMoveToDirectory:::, the localized string which appears to the
+ left of the text field wherein the user enters the file name.
+ 
+ @details  Actually, see -[NSSavePanel setNameFieldLabel:].
+ */
+- (NSString*)saveAsMoveLabel ;
+
+/*!
+ @brief    Implemented by a subclass of NSPersistentDocument including 
+ the NSPersistentDocument+Pathify category to return, in the dialog presented
+ by -saveAsMoveToDirectory:::, the localized string which appears in the
+ default button
+ 
+ @details  Actually, see -[NSSavePanel setPrompt:].
+ */
+- (NSString*)saveAsMovePrompt ;
+
+@end
+
+
 /*!
  @brief    Name of notification which you may post after a document is saved or
  atttempted to be saved.
@@ -48,19 +83,38 @@ extern NSString* const SSYDocumentSaveOperation ;
  old file, then if the user responds affirmatively,
  invokes -saveMoveToNewUrl:error_p.
  
- Suggested tooltip for the "Save As Move..." menu item:
+ In the dialog presented to the user, unless overidden
+ by a non-nil parameter, the small text at the
+ top ("message"), the text to the left of the filename
+ text field ("label") and the text on the default button
+ ("prompt") may be defined by implementing one or more of
+ the methods in the NSPersistentDocumentMoveToStringer
+ informal protocol in the receiver.
+ 
+ Suggested tooltip for such a "Save As Move..." menu item:
  "This is like 'Save As...', except your document file will
  also be removed from its current name/location."
  
  @param    directory  path to the directory which will
  be initially shown in the dialog.
+ @param    message  If not nil, in the dialog presented to
+ the user, the string passed here will override the string
+ returned by -saveAsMoveMessage and will appear as the
+ the small text at the top, as in -[NSSavePanel setMessage:].
+ @param    doneInvocation  An invocation which will be
+ invoked after the operation has either been cancelled or
+ completed.  May be nil.
 */
-- (void)saveAsMoveToDirectory:(NSString*)parentPath ;
+- (void)saveAsMoveToDirectory:(NSString*)parentPath
+					  message:(NSString*)message
+			   doneInvocation:(NSInvocation*)doneInvocation ;
 
 /*!
  @brief    Action method for a "Save As Move..."
- item in the "File" menu, which also allows setting the
- initial directory in the dialog
+ item in the "File" menu
+ 
+ @details  This method invokes -saveAsMoveToDirectory:::
+ with all parameters nil.
 */
 - (IBAction)saveAsMove:(id)sender ;
 

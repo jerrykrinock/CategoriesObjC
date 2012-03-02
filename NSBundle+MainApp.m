@@ -20,7 +20,7 @@ static NSBundle* mainAppBundle = nil ;
 
 + (NSBundle*)replacement_mainBundle {
 	NSBundle* myMainAppBundle ;
-	@synchronized(self) {
+ 	@synchronized(self) {
 		myMainAppBundle = mainAppBundle ;
 	}
 	
@@ -29,23 +29,24 @@ static NSBundle* mainAppBundle = nil ;
 		// an infinite loop, but because of the swap, we're
 		// actually invoking the original +mainBundle
 		NSBundle* bundle = [NSBundle replacement_mainBundle] ;
-		NSString* mainAppBundlePath = [bundle bundlePath] ;
+ 		NSString* mainAppBundlePath = [bundle bundlePath] ;
 		while (YES) {
 			if ([[[mainAppBundlePath lastPathComponent] pathExtension] isEqual:@"app"]) {
 				break ;
 			}
-			if ([mainAppBundlePath length] < 1) {
+			if ([mainAppBundlePath length] < 2) {
+                // mainAppBundlePath is probably "/"
 				NSLog(@"Warning 263-1857  Program apparently not in a .app") ;
 				mainAppBundlePath = nil ;
 				break ;
 			}
 			
 			mainAppBundlePath = [mainAppBundlePath stringByDeletingLastPathComponent] ;
-		}
+ 		}
 		myMainAppBundle = [NSBundle bundleWithPath:mainAppBundlePath] ;
 
 		@synchronized(self) {
-			mainAppBundle = myMainAppBundle ;
+ 			mainAppBundle = myMainAppBundle ;
 		}
 	}
 	

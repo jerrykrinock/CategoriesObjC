@@ -10,6 +10,9 @@
 
 - (NSRange)wholeRange ;
 
+
+- (NSUInteger)numberOfOccurrencesOfCharacter:(unichar)aChar ;
+
 /*!
  @brief    
  
@@ -90,7 +93,7 @@
 
 - (NSString*)stringByRemovingLastCharacters:(int)n ;
 
-- (NSInteger)occurencesOfSubstring:(NSString*)target inRange:(NSRange)range ;
+- (NSInteger)occurrencesOfSubstring:(NSString*)target inRange:(NSRange)range ;
 
 /*!
  @brief    Returns 1 plus the number of ASCII \n characters in a

@@ -16,7 +16,7 @@ extern NSString* const SSYAppleScriptErrorDomain ;
  make it work better.
  @param    code  An error code returned by a system function
  */
-+ (NSError*)errorWithMacErrorCode:(NSInteger) code ;
++ (NSError*)errorWithMacErrorCode:(OSStatus) code ;
 
 /*!
  @brief    Given a POSIX error code, such as errno, returns
@@ -26,7 +26,7 @@ extern NSString* const SSYAppleScriptErrorDomain ;
  @details  Uses +errorWithMacErrorCode: under the hood.
  @param    code  An error code returned by a system function
  */
-+ (NSError*)errorWithPosixErrorCode:(NSInteger)code ;
++ (NSError*)errorWithPosixErrorCode:(OSStatus)code ;
 
 + (NSError*)errorWithHTTPStatusCode:(int)code 
 					 prettyFunction:(const char*)prettyFunction ;

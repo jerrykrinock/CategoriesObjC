@@ -67,6 +67,17 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 		error_p:(NSError**)error_p ;
 
 /*!
+ @brief    Changes the modification date of a given path to the current
+ time and date
+
+ @param    error_p  If not NULL and if an error occurs, upon return,
+           will point to an error object encapsulating the error.
+ @result   YES if the method completed successfully, otherwise NO
+*/
+- (BOOL)touchPath:(NSString*)path
+		  error_p:(NSError**)error_p ;
+
+/*!
  @brief    Returns the modification date when the receiver is a
  filesystem path.
  
@@ -89,8 +100,14 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
 /*!
  @brief    Returns YES if a file or directory exists at a given
- path and is not in a temporary or Trash folder.&nbsp;  Otherwise,
- returns NO.
+ path and is not in a temporary or Trash folder, or is probably in
+ the "Dropbox trash", meaning that it has ".dropbox.cache" as one
+ of its path components.  Otherwise, returns NO.
+ 
+ @details  Until Dropbox version 2, I could look inside the Dropbox
+ database, find where the Dropbox folder is, and do this exactly.
+ Currently, this method will turn NO for any path which contains
+ ".dropbox.cache" as one of its path components.
  */
 - (BOOL)fileIsPermanentAtPath:(NSString*)path ;
 

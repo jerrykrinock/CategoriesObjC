@@ -80,7 +80,7 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 	}
 }
 
-- mutableDeepCopyStyle:(SSYDeepCopyStyleBitmask)style {
+- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style {
 	if (
 		[self respondsToSelector:@selector(mutableCopyWithZone:)]
 		&&
@@ -95,16 +95,28 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 	return nil ;
 }
 
+- (NSDictionary*)mutableCopyDeepPropertyList {
+	id copy = (NSMutableDictionary*)CFPropertyListCreateDeepCopy(
+																 kCFAllocatorDefault,
+																 (CFPropertyListRef)self,
+																 kCFPropertyListMutableContainers
+																 ) ;
+	return copy ;
+}
+
 @end
 
 @implementation NSDictionary (DeepCopy)
 
-- mutableDeepCopyStyle:(SSYDeepCopyStyleBitmask)style {
+- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style {
     NSMutableDictionary *newDictionary = [[NSMutableDictionary alloc] init];
+
     for (id key in self) {
-        id obj = [[self objectForKey:key] mutableDeepCopyStyle:style];
-        [newDictionary setObject:obj forKey:key];
-        [obj release];
+		id object = [self objectForKey:key] ;
+        id copy = [object mutableCopyDeepStyle:style] ;
+        [newDictionary setObject:copy
+						  forKey:key] ;
+        [copy release] ;
     }
     return newDictionary;
 }
@@ -114,10 +126,10 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 
 @implementation NSArray (DeepCopy)
 
-- mutableDeepCopyStyle:(SSYDeepCopyStyleBitmask)style {
+- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style {
    NSMutableArray *newArray = [[NSMutableArray alloc] init] ;
     for (id object in self) {
-		id copy = [object mutableDeepCopyStyle:style] ;
+		id copy = [object mutableCopyDeepStyle:style] ;
         [newArray addObject:copy];
         [copy release];
     }
@@ -129,10 +141,10 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 
 @implementation NSSet (DeepCopy)
 
-- mutableDeepCopyStyle:(SSYDeepCopyStyleBitmask)style {
+- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style {
     NSMutableSet *newSet = [[NSMutableSet alloc] init];
     for (id object in self) {
-		id copy = [object mutableDeepCopyStyle:style] ;
+		id copy = [object mutableCopyDeepStyle:style] ;
         [newSet addObject:copy];
         [copy release];
     }

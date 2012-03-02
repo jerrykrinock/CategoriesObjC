@@ -88,4 +88,54 @@
 	return answer ;
 }
 
+- (NSString*)stringByTruncatingEndToLength:(NSUInteger)limit
+								wholeWords:(BOOL)wholeWords {
+	NSUInteger length = [self length] ;
+    NSString* answer ;
+	if (length <= limit) {
+		answer = self ;
+	}
+	else if (limit > 0) {
+		NSInteger ellipsisAllowance = 1 ;
+		NSInteger limitNotIncludingEllipsis = limit - ellipsisAllowance ;
+		BOOL done = NO ;
+		if (wholeWords) {
+			NSMutableArray* words = [[self componentsSeparatedByString:@" "] mutableCopy] ;
+			// Keep removing the last word until we're under the limit
+			NSInteger newLength = length ;
+			while ([words count] > 1) {
+				NSString* removedWord = [words lastObject] ;
+				[words removeLastObject] ;
+				newLength -= ([removedWord length] + 1) ;
+				// In the above, the +1 is to remove the space between the
+				// removed word and the prior word
+				if (newLength <= limitNotIncludingEllipsis) {
+					done = YES ;
+					NSString* lastWord = [words lastObject] ;
+					NSString* truncation = [NSString stringWithFormat:
+											@"%@\u2026",
+											lastWord] ;											
+					[words replaceObjectAtIndex:([words count] - 1)
+									 withObject:truncation] ;
+					answer = [words componentsJoinedByString:@" "] ;
+					break ;
+				}
+			}
+			[words release] ;
+		}
+		
+		if (!done) {
+			NSUInteger length = limit  - 1 ;  // reserve 1 for the ellipsis
+			answer = [NSString stringWithFormat:@"%@%C",
+					  [self substringToIndex:length],
+					  0x2026] ;
+		}
+	}
+	else {
+		answer = @"" ;
+	}
+	
+	return answer ;
+}
+
 @end

@@ -3,6 +3,24 @@
 #import "SSYSqliter.h"
 #import "NSObject+MoreDescriptions.h"
 
+// Stuff defined in Mac OS X 10.7 SDK, defined here for compilability with earlier SDKs.
+#if (MAC_OS_X_VERSION_MAX_ALLOWED)
+
+/*!
+ @brief    Declares symbols that are defined in the 10.7 SDK,
+ to eliminate compiler warnings.
+ 
+ @details  Be careful to only invoke super on these methods after
+ you've checked that you are running under Mac OS X 10.7.
+ */
+@interface NSPersistentDocument (SSYMetadata_DefinedInMac_OS_X_10_7)
+
+- (BOOL)isInViewingMode ;
+
+@end
+
+#endif
+
 @implementation NSPersistentDocument (SSYMetadata)
 
 - (id)metadataObjectForKey:(NSString*)key {
@@ -96,16 +114,55 @@
 	 as the result of using clicking menu File ▸ Duplicate, then the Duplicate button.
 	 In that case, fileURL is nil and -[saveDocument never returns, blocks forever!
 	 */
-		
-	 
 	
 	if (![[self managedObjectContext] hasChanges]) {
-		if ([self respondsToSelector:@selector(invalidateRestorableState)]) {
-			// OS X Lion 10.7
-			NSError* error = nil ;
-			BOOL ok = [[self managedObjectContext] save:&error] ;
-			if (!ok) {
-				NSLog(@"Internal Error 624-0393 saving metadata: %@", [error longDescription]) ;
+		// This is very tricky.  In this switch, we want to know whether
+		// we are in pre-10.7 or post-10.7, because we're going to do a
+		// different kind of save.  We are *not* asking whether or not
+		// self responds to -isInViewingMode.  Actually, in BookMacster 1.7.2,
+		// we have, for convenience, defined -isInViewingMode in our
+		// NSPersistentDocument subclass, regardless of Mac OS X version !
+		// Probably I could use 1100.0 as threshold for Lion.
+		// 10.7.1 is 1138.0.
+		if (NSAppKitVersionNumber >= 1115.2) {
+			// We're in OS X Lion 10.7
+			// *By the way*, that means that we respond to -isInViewingMode
+			if (![self isInViewingMode]) {
+				/* There is a little non-bug bug here.  Steps to reproduce…
+				 • New Bookmarkshelf
+				 • No Clients
+				 • Done
+				 Result:
+				 Internal Error 134-8564: Silently clicked 'Save Anyway' to 67000 NSCocoaErrorDomain.
+				 pending operation selectors: ("doDone:")
+				 
+				 I tried to fix this by replacing the following -save: code with this:
+				 
+				 NSError* error ;
+				 BOOL ok = [self writeSafelyToURL:[self fileURL]
+				 ofType:[self fileType]
+				 forSaveOperation:NSSaveOperation
+				 error:&error] ;
+				 if (!ok) {
+				 NSLog(@"Internal Error 624-0394 saving metadata: %@", [error longDescription]) ;
+				 }
+				 
+				 but that did not have any effect on the problem.
+				 
+				 I also tried this:
+				 
+				 [super saveDocument:self] ;
+				 
+				 But that was even worse, resulting in the dreaded hang in
+				 -[NSDocument performActivityWithSynchronousWaiting:usingBlock:]
+				 
+				 So, I just leave it like this, until I think of something better…
+				*/
+				NSError* error = nil ;
+				BOOL ok = [[self managedObjectContext] save:&error] ;
+				if (!ok) {
+				    NSLog(@"Internal Error 624-0393 saving metadata: %@", [error longDescription]) ;
+				}
 			}
 		}
 		else {
@@ -128,8 +185,9 @@
 }	
 
 - (void)addMetadata:(NSDictionary*)moreMetadata {
-	[[self managedObjectContext] addMetadata1:moreMetadata] ;
-	[self saveMetadataOnly] ;
+	if ([[self managedObjectContext] addMetadata1:moreMetadata]) {
+		[self saveMetadataOnly] ;
+	}
 }	
 
 @end

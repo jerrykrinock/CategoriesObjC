@@ -19,7 +19,7 @@
  Replaced -updateChangeCount in NSDocument for debugging.
  Replaced -beginUndoGrouping and -endUndoGrouping in GCUndoManager for debugging.
  
- EDIT SOMETHING:
+ EDIT SOMETHING UNDOABLE:
  began undo grp:  grpLvl: 0:1  state: Collecting:Collecting  chgCnt: 0:0
  Did change type Do.  changeCount: 0:1
  ended undo grp:  grpLvl: 1:0  state: Collecting:Collecting  chgCnt: 0:1

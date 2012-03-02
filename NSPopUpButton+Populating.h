@@ -8,7 +8,7 @@
 				action:(SEL)action ;
 
 // Because this category is also used in Bookdog,
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)		
 
 /*!
  @brief    Sets tag of first item in receiver's itemArray

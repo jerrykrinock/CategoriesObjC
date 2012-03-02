@@ -4,7 +4,7 @@
 
 - (BOOL)tryScanPastString:(NSString*)target {
 	BOOL foundTarget = NO ;
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5		
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)		
 	NSUInteger startLoc = [self scanLocation] ;
 #else
 	int unsigned startLoc = [self scanLocation] ;

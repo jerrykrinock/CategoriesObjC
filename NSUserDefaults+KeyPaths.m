@@ -60,6 +60,7 @@
 	// the inside and setting little dictionaries as objects
 	// inside the bigger dictionaries
 	NSEnumerator* e = [dics reverseObjectEnumerator] ;
+    [dics release] ;
 	NSMutableDictionary* copy ;
 	for (NSDictionary* dic in e) {
 		copy = [dic mutableCopy] ;
@@ -173,7 +174,7 @@
 		
 	value++ ;
 	
-	number = [NSNumber numberWithInt:value] ;
+	number = [NSNumber numberWithInteger:value] ;
 	
 	[self setValue:number
 		forKeyPath:keyPath] ;

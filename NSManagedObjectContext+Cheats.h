@@ -110,15 +110,25 @@ extern NSString* const SSYManagedObjectContextCheatsErrorDomain ;
 
 /*!
  @brief    Adds a given dictionary to the metadata of the first persistent
- store of the receiver
+ store of the receiver, unless all of the given entries are already in the
+ store
 
  @details  Does not save the store.
  Warning: This method will not work in new managed object contexts
  until after the store has been saved once.
  If an error occurs, logs to stderr.
+ 
+ @result   YES if the metadata was changed, otherwise NO 
 */
-- (void)addMetadata1:(NSDictionary*)moreMetadata ;
+- (BOOL)addMetadata1:(NSDictionary*)moreMetadata ;
 
 - (BOOL)trashStore1Error_p:(NSError**)error_p  ;
+
+/*!
+ @brief    Returns an object currently existing in the receiver with
+ a give object URI, or nil if no such object exists
+*/
+- (NSManagedObject*)objectWithUri:(NSString*)uri ;
+
 
 @end

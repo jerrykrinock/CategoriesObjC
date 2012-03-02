@@ -14,7 +14,7 @@ NSString* constIndentation = @"   " ;
 	 performance bottleneck fix described in the release notes.  Prior to
 	 adding the truncating, I got this sample stack from Activity Monitor:
 	 100.000% -[SSYOperation(OperationImport) mergeImport_unsafe]  (was -readAndMerge)
-	 100.000% -[Ixporter ixportFromStartainer:toStartainer:info:error_p:]
+	 100.000% -[Ixporter mergeFromStartainer:toStartainer:info:error_p:]
 	 100.000% -[Stark overwriteAttributes:mergeTags:fabricateTags:fromStark:]
 	 100.000% -[NSManagedObject setValue:forKey:]
 	 100.000% -[Stark setUrl:]

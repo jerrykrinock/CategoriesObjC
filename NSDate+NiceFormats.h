@@ -17,6 +17,13 @@
 
 /*!
  @brief    Returns a string representation of the receiver formatted
+ as @"YY-MM-DD HH:mm:ss.SSS", where SSS is milliseconds.
+ */
+- (NSString*)geekDateTimeStringMilli ;
+
+
+/*!
+ @brief    Returns a string representation of the receiver formatted
  as YYYYMMDDHHmmss±HHmm
  */
 - (NSString*)compactDateTimeString ;

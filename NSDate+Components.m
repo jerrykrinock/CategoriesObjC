@@ -66,48 +66,60 @@
 }
 
 - (NSString*)yearString {
-	return [self descriptionWithCalendarFormat:@"%Y"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
 - (NSString*)monthString {
-	return [self descriptionWithCalendarFormat:@"%m"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"MM"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
 
 - (NSString*)dayString {
-	return [self descriptionWithCalendarFormat:@"%d"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"dd"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
 
 - (NSString*)hourString {
-	return [self descriptionWithCalendarFormat:@"%H"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"HH"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
 
 - (NSString*)minuteString {
-	return [self descriptionWithCalendarFormat:@"%M"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"mm"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
 
 - (NSString*)secondString {
-	return [self descriptionWithCalendarFormat:@"%S"
-									  timeZone:nil
-										locale:nil] ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"ss"];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
 }
 
 
@@ -147,7 +159,12 @@
 	return [[self secondString] intValue] ;
 }
 
-
+// Todo: Change *all* of the above methods to use NSDateFormatter, like -minutesString does.
+// (This is the method now recommended by Apple.)
+// This date format shows how to get time with milliseconds:
+// @"yyyy-MM-dd HH:mm:ss.SSS"];
+// For more format specifiers:
+// http://unicode.org/reports/tr35/tr35-10.html#Date_Format_Patterns
 
 
 @end
