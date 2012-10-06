@@ -26,8 +26,8 @@
  @details  The idea is that implementing this method will be simpler than
  implementing -menuForEvent:.
  */
-- (NSMenu*)menuForTableColumnIndex:(int)iCol
-						  rowIndex:(int)iRow ;
+- (NSMenu*)menuForTableColumnIndex:(NSInteger)iCol
+						  rowIndex:(NSInteger)iRow ;
 
 @end
 

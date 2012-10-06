@@ -20,13 +20,13 @@
 - (void)setFrameToFitContentViewThenDisplay:(BOOL)display {
 	NSRect frameW = NSMakeRect(0,0,255,255) ;
 	NSRect frameC = [self contentRectForFrameRect:frameW] ;
-	float titleToolBarHeight = frameW.size.height - frameC.size.height ;
+	CGFloat titleToolBarHeight = frameW.size.height - frameC.size.height ;
 	
 	frameC = [[self contentView] frame] ;
 	frameW = [self frame] ;
 	
-	float newHeight = frameC.size.height + titleToolBarHeight ;
-	float dY = newHeight - frameW.size.height ;
+	CGFloat newHeight = frameC.size.height + titleToolBarHeight ;
+	CGFloat dY = newHeight - frameW.size.height ;
 	
 	frameW.size.width = frameC.size.width ;
 	frameW.size.height = newHeight ;
@@ -76,13 +76,13 @@
 }
 #endif
 
-- (float)tootlebarHeight {
+- (CGFloat)tootlebarHeight {
 	// Calculate the height of the title bar + height of the toolbar
 	// by considering a hypothetical window size and running
 	// -contentRectForFrameRect: in reverse
 	NSRect frameW = NSMakeRect(0,0,255,255) ;
 	NSRect frameC = [self contentRectForFrameRect:frameW] ;
-	float tootlebarHeight = (frameW.size.height-frameC.size.height) ;
+	CGFloat tootlebarHeight = (frameW.size.height-frameC.size.height) ;
 
 	return tootlebarHeight ;
 }

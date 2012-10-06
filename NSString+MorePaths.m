@@ -415,7 +415,7 @@ end:
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
 							 maxLength:(NSUInteger)maxLength 
 #else
-							 maxLength:(int)maxLength 
+							 maxLength:(NSInteger)maxLength 
 #endif
 							truncateOk:(BOOL)truncateOk {
 	
@@ -497,8 +497,8 @@ end:
 			NSUInteger currentIndex = [decimalDigitSuffix integerValue] ;
 			NSUInteger suffixLength = [decimalDigitSuffix length] ;
 #else
-			int currentIndex = [decimalDigitSuffix intValue] ;
-			int suffixLength = [decimalDigitSuffix length] ;
+			NSInteger currentIndex = [decimalDigitSuffix integerValue] ;
+			NSInteger suffixLength = [decimalDigitSuffix length] ;
 #endif
 			NSRange suffixRange = NSMakeRange([baseName length] - suffixLength, suffixLength) ;
 			[baseName deleteCharactersInRange:suffixRange] ;
@@ -515,7 +515,7 @@ end:
 			if (needsConjunction) {
 				[baseName appendString:@"_"] ;
 			}
-			[baseName appendFormat:@"%d", (currentIndex + 1)] ;
+			[baseName appendFormat:@"%ld", (long)(currentIndex + 1)] ;
 			name = [baseName stringByAppendingPathExtension:extension] ;
 			lengthOK = NO ;
 			

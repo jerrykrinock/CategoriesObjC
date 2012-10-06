@@ -83,6 +83,10 @@
 }
 
 - (NSString*)stringByCollapsingConsecutiveSpaces {
+	if (![self containsString:@"  "]) {
+		return self ;
+	}
+
 	NSMutableString* copy = [self mutableCopy] ;
 	BOOL didModify = NO ;
 	BOOL didModifyThisTime ;
@@ -176,7 +180,7 @@
 }
 
 - (BOOL)isMinimumLength:(NSNumber*)minLength {
-	int iMinLength = [minLength intValue] ;
+	NSInteger iMinLength = [minLength integerValue] ;
 	return ([self length] >= iMinLength) ;
 }
 
@@ -246,7 +250,7 @@
 	return [NSNumber numberWithBool:answer] ;
 }
 
-- (NSString*)stringByRemovingLastCharacters:(int)n 
+- (NSString*)stringByRemovingLastCharacters:(NSInteger)n 
 {
 	NSInteger l = [self length] ;
 	NSString* s = [[NSString alloc] initWithString:[self substringWithRange:NSMakeRange(0, l-n)]] ;
@@ -460,7 +464,7 @@ NSString* const const aNewline = @"\n" ;
 		if (okSoFar) {
 			unichar chr ;	
 			name = [NSMutableString stringWithCapacity:32] ;
-			int i = 2 ;
+			NSInteger i = 2 ;
 			while ((chr = [self characterAtIndex:(atLoc-i)]) != '>') {
 				[name insertString:[NSString stringWithCharacters:&chr length:1] atIndex:0] ;
 				i++ ;
@@ -562,6 +566,34 @@ NSString* const const aNewline = @"\n" ;
 	return url ;
 }
 		
+
+- (NSString*)stringByOmittingAttachmentCharacters {
+	NSMutableString * mString = [self mutableCopy] ;
+	NSUInteger loc = 0 ;
+	unsigned long end = [mString length] ;
+	
+	while (loc < end) {
+		unichar ch = [mString characterAtIndex:loc] ;
+		// Since attachment characters are rare, it is probably
+		// cheaper to remove them when found, rather than building
+		// up a new string from valid characters.
+		if (ch == NSAttachmentCharacter) {
+			[mString replaceCharactersInRange:NSMakeRange(loc, 1)
+								   withString:@""] ;
+			// Get new length
+			end = [mString length] ;
+		}
+		else
+			// Just skip over the current character...
+			loc++ ;	
+	}
+	
+	NSString* result = [NSString stringWithString:mString] ;
+	[mString release] ;
+	
+	return result ;
+}
+
 
 
 @end

@@ -1,26 +1,26 @@
 #import "NSView+Layout.h"
 #import "NS(Attributed)String+Geometrics.h"
 
-void SSMoveView(NSView* view, float dX, float dY) ;
-void SSResizeView(NSView* view, float dX, float dY) ;
-void SSResizeViewMovingSubviews(NSView* view, float dXLeft, float dXRight, float dYTop, float dYBottom) ;
-NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, float dYTop, float dYBottom, BOOL moveSubviews) ;
+void SSMoveView(NSView* view, CGFloat dX, CGFloat dY) ;
+void SSResizeView(NSView* view, CGFloat dX, CGFloat dY) ;
+void SSResizeViewMovingSubviews(NSView* view, CGFloat dXLeft, CGFloat dXRight, CGFloat dYTop, CGFloat dYBottom) ;
+NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRight, CGFloat dYTop, CGFloat dYBottom, BOOL moveSubviews) ;
 
-void SSMoveView(NSView* view, float dX, float dY) {
+void SSMoveView(NSView* view, CGFloat dX, CGFloat dY) {
 	NSRect frame = [view frame] ;
 	frame.origin.x += dX ;
 	frame.origin.y += dY ;
 	[view setFrame:frame] ;
 }
 
-void SSResizeView(NSView* view, float dX, float dY) {
+void SSResizeView(NSView* view, CGFloat dX, CGFloat dY) {
 	NSRect frame = [view frame] ;
 	frame.size.width += dX ;
 	frame.size.height += dY ;
 	[view setFrame:frame] ;
 }	
 
-void SSResizeViewMovingSubviews(NSView* view, float dXLeft, float dXRight, float dYTop, float dYBottom) {
+void SSResizeViewMovingSubviews(NSView* view, CGFloat dXLeft, CGFloat dXRight, CGFloat dYTop, CGFloat dYBottom) {
 	SSResizeView(view, dXLeft + dXRight, dYTop + dYBottom) ;
 	
 	NSArray* subviews = [view subviews] ;
@@ -45,7 +45,7 @@ void SSResizeViewMovingSubviews(NSView* view, float dXLeft, float dXRight, float
 	[view display] ;
 }
 
-NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, float dYTop, float dYBottom, BOOL moveSubviews) {
+NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRight, CGFloat dYTop, CGFloat dYBottom, BOOL moveSubviews) {
 	NSView* view = [window contentView] ;
 	if (moveSubviews) {
 		SSResizeViewMovingSubviews(view, dXLeft, dXRight, dYTop, dYBottom) ;
@@ -69,87 +69,87 @@ NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, 
 
 @implementation NSView (Layout) 
 
-- (float)leftEdge {
+- (CGFloat)leftEdge {
 	return [self frame].origin.x ;
 }
 
-- (float)rightEdge {
+- (CGFloat)rightEdge {
 	return [self frame].origin.x + [self width] ;
 }
 
-- (float)centerX {
+- (CGFloat)centerX {
 	return ([self frame].origin.x + [self width]/2) ;
 }
 
-- (void)setLeftEdge:(float)t {
+- (void)setLeftEdge:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.origin.x = t ;
 	[self setFrame:frame] ;
 }
 
-- (void)setRightEdge:(float)t {
+- (void)setRightEdge:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.origin.x = t - [self width] ;
 	[self setFrame:frame] ;
 }
 
-- (void)setCenterX:(float)t {
-	float center = [self centerX] ;
-	float adjustment = t - center ;
+- (void)setCenterX:(CGFloat)t {
+	CGFloat center = [self centerX] ;
+	CGFloat adjustment = t - center ;
 	
 	NSRect frame = [self frame] ;
 	frame.origin.x += adjustment ;
 	[self setFrame:frame] ;
 }
 
-- (float)bottom {
+- (CGFloat)bottom {
 	return [self frame].origin.y ;
 }
 
-- (float)top {
+- (CGFloat)top {
 	return [self frame].origin.y + [self height] ;
 }
 
-- (float)centerY {
+- (CGFloat)centerY {
 	return ([self frame].origin.y + [self height]/2) ;
 }
 
-- (void)setBottom:(float)t {
+- (void)setBottom:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.origin.y = t ;
 	[self setFrame:frame] ;
 }
 
-- (void)setTop:(float)t {
+- (void)setTop:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.origin.y = t - [self height] ;
 	[self setFrame:frame] ;
 }
 
-- (void)setCenterY:(float)t {
-	float center = [self centerY] ;
-	float adjustment = t - center ;
+- (void)setCenterY:(CGFloat)t {
+	CGFloat center = [self centerY] ;
+	CGFloat adjustment = t - center ;
 	
 	NSRect frame = [self frame] ;
 	frame.origin.y += adjustment ;
 	[self setFrame:frame] ;
 }
 
-- (float)width {
+- (CGFloat)width {
 	return [self frame].size.width ;
 }
 
-- (float)height {
+- (CGFloat)height {
 	return [self frame].size.height ;
 }
 
-- (void)setWidth:(float)t {
+- (void)setWidth:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.size.width = t ;
 	[self setFrame:frame] ;
 }
 
-- (void)setHeight:(float)t {
+- (void)setHeight:(CGFloat)t {
 	NSRect frame = [self frame] ;
 	frame.size.height = t ;
 	[self setFrame:frame] ;
@@ -162,47 +162,47 @@ NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, 
 	[self setFrame:frame] ;
 }
 
-- (void)deltaX:(float)dX
-		deltaW:(float)dW {
+- (void)deltaX:(CGFloat)dX
+		deltaW:(CGFloat)dW {
 	NSRect frame = [self frame] ;
 	frame.origin.x += dX ;
 	frame.size.width += dW ;
 	[self setFrame:frame] ;
 }
 
-- (void)deltaY:(float)dY
-		deltaH:(float)dH {
+- (void)deltaY:(CGFloat)dY
+		deltaH:(CGFloat)dH {
 	NSRect frame = [self frame] ;
 	frame.origin.y += dY ;
 	frame.size.height += dH ;
 	[self setFrame:frame] ;
 }
 
-- (void)deltaX:(float)dX {
+- (void)deltaX:(CGFloat)dX {
 	[self deltaX:dX
 		  deltaW:0.0] ;
 }
 
-- (void)deltaY:(float)dY {
+- (void)deltaY:(CGFloat)dY {
 	[self deltaY:dY
 		  deltaH:0.0] ;
 }
 
-- (void)deltaW:(float)dW {
+- (void)deltaW:(CGFloat)dW {
 	[self deltaX:0.0
 		  deltaW:dW] ;
 }
 
-- (void)deltaH:(float)dH {
+- (void)deltaH:(CGFloat)dH {
 	[self deltaY:0.0
 		  deltaH:dH] ;
 }
 
 
 - (void)sizeHeightToFitAllowShrinking:(BOOL)allowShrinking {
-	float oldHeight = [self height] ;
-	float width = [self width] ;
-	float height ;
+	CGFloat oldHeight = [self height] ;
+	CGFloat width = [self width] ;
+	CGFloat height ;
 	if ([self isKindOfClass:[NSTextView class]]) {
 		NSAttributedString* attributedString = [(NSTextView*)self textStorage] ;
 		if (attributedString != nil) {
@@ -241,7 +241,7 @@ NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, 
 	// At one point, I clipped if this was taller than the screen.  However, that
 	// screwed up downstream clipping in SSYAlert, where the buttons needed to be
 	// placed on the screen.  So, the following code is OUT
-	float screenHeight = [[NSScreen mainScreen] frame].size.height ;
+	CGFloat screenHeight = [[NSScreen mainScreen] frame].size.height ;
 	if ([self height] > screenHeight) {
 		NSRect frame = [self frame] ;
 		frame.size.height = screenHeight ;
@@ -251,8 +251,8 @@ NSView* SSResizeWindowAndContent(NSWindow* window, float dXLeft, float dXRight, 
 }	
 
 - (NSComparisonResult)compareLeftEdges:(NSView*)otherView {
-	float myLeftEdge = [self leftEdge] ;
-	float otherLeftEdge = [otherView leftEdge] ;
+	CGFloat myLeftEdge = [self leftEdge] ;
+	CGFloat otherLeftEdge = [otherView leftEdge] ;
 	if (myLeftEdge < otherLeftEdge) {
 		return NSOrderedAscending ;
 	}

@@ -24,8 +24,8 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 	// Read minimums from user defaults
 	// Actually, these are from the default defaults.  They are hidden preferences.
 	// They are never written within in the app. They are only read here.
-	CGFloat firstColumnMin = [[[NSUserDefaults standardUserDefaults] valueForKey:constKeyMinWidthFirstColumn] floatValue] ;
-	CGFloat anyColumnMin = [[[NSUserDefaults standardUserDefaults] valueForKey:constKeyMinWidthAnyColumn] floatValue] ;
+	CGFloat firstColumnMin = [[[NSUserDefaults standardUserDefaults] valueForKey:constKeyMinWidthFirstColumn] doubleValue] ;
+	CGFloat anyColumnMin = [[[NSUserDefaults standardUserDefaults] valueForKey:constKeyMinWidthAnyColumn] doubleValue] ;
 	// Note that if keys are not present in standardUserDefaults for the
 	// above, firstColumnMin and anyColumnMin will default to 0.0.
 	// However, we guard against such corrupt prefs:
@@ -50,7 +50,7 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 			NSLog(@"Warning 345-5610 Ignoring bad width %f", width) ;
 			width = 80.0 ;
 		}		
-		[originalWidths addObject:[NSNumber numberWithFloat:width]] ;
+		[originalWidths addObject:[NSNumber numberWithDouble:width]] ;
 		totalOriginalWidth += width ;
 		if (tc == targetColumn) {
 			targetColumnOriginalWidth = width ;
@@ -72,7 +72,7 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 	// Set back to original widths
 	i = 0 ;
 	for (tc in tableColumns) {
-		CGFloat width = [[originalWidths objectAtIndex:i] floatValue] ;
+		CGFloat width = [[originalWidths objectAtIndex:i] doubleValue] ;
 		[tc setWidth:width] ;
 		i++ ;
 	}
@@ -99,7 +99,7 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 			
 			// We are only interested in negative deltas; columns that can get smaller
 			delta = MIN(0.0, delta) ;
-			[deltasAvailable addObject:[NSNumber numberWithFloat:delta]] ;
+			[deltasAvailable addObject:[NSNumber numberWithDouble:delta]] ;
 			totalDeltaAvailable += delta ;
 		}
 		
@@ -206,7 +206,7 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 				else {
 					// This column which must get smaller
 					// Do it in proportion to its available delta relative to other non-target available deltas
-					thisColumnFraction = [[deltasAvailable objectAtIndex:i] floatValue]/totalDeltaAvailable ;
+					thisColumnFraction = [[deltasAvailable objectAtIndex:i] doubleValue]/totalDeltaAvailable ;
 				}
 				CGFloat thisColumnDelta = delta * thisColumnFraction ;
 				newWidth = [tc width] + thisColumnDelta ;

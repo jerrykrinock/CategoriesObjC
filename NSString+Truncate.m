@@ -77,7 +77,7 @@
             NSRange endRange = NSMakeRange(endLocation, endLength) ;
 			answer = [NSString stringWithFormat:@"%@%C%@",
 					  [self substringToIndex:beginLength],
-					  0x2026,
+					  (unsigned short)0x2026,
 					  [self substringWithRange:endRange]] ;
 		}
 	}
@@ -128,7 +128,7 @@
 			NSUInteger length = limit  - 1 ;  // reserve 1 for the ellipsis
 			answer = [NSString stringWithFormat:@"%@%C",
 					  [self substringToIndex:length],
-					  0x2026] ;
+					  (unsigned short)0x2026] ;
 		}
 	}
 	else {

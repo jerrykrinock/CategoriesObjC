@@ -1,4 +1,3 @@
-
 @interface NSObject (NSObjectScriptingAdditions)
 
 //- (NSAppleEventDescriptor *) scriptingDescriptor;

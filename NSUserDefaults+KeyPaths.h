@@ -40,6 +40,12 @@
 */
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray ;
 
+/*!
+ @details  This method is a no-op of value is nil.  That could be changed, as
+ I have done in -[NSMutableDictionary(KeyPaths) setValue:forKeyPathArray:].
+ However, since I use this method in about 50 places, that would take a lot
+ of code review.
+*/
 - (void)setValue:(id)value
  forKeyPathArray:(NSArray*)keyPathArray ;
 

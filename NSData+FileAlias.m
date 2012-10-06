@@ -152,7 +152,7 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
 	
 	if (!responseData) {
 		error = SSYMakeError(59751, @"No stdout from helper") ;
-		error = [error errorByAddingUserInfoObject:[NSNumber numberWithInt:taskResult]
+		error = [error errorByAddingUserInfoObject:[NSNumber numberWithInteger:taskResult]
 											forKey:@"task result"] ;
 		error = [error errorByAddingUserInfoObject:stderrData
 											forKey:@"stderr"] ;
@@ -223,8 +223,10 @@ end:
 - (NSData*)resolveAliasWithInfo:(NSData*)requestData {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init] ;
 	
-	NSError* error = nil ;
-
+	AliasHandle handle = NULL ;
+    NSError* error = nil ;
+	NSString* path = nil ;
+	
 	NSDictionary* requestInfo = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:requestData] ;
 
 	if(!requestInfo) {
@@ -232,15 +234,13 @@ end:
 		goto end ;
 	}
 	
-	NSString* path = nil ;
-	
 	NSData* aliasRecord = [requestInfo objectForKey:NSDataFileAliasAliasRecord] ;
 	if(!aliasRecord) {
 		error = SSYMakeError(65838, @"No aliasRecord in request") ;
 		goto end ;
 	}
 	
-	AliasHandle handle = [aliasRecord aliasHandle] ;
+	handle = [aliasRecord aliasHandle] ;
 	if (!handle) {
 		error = SSYMakeError(26238, @"Could not create AliasHandle") ;
 		goto end ;
@@ -291,7 +291,7 @@ end:
 		DisposeHandle((Handle)handle);
 	}
 	
-	NSDictionary* returnInfo ;
+	NSDictionary* returnInfo = nil ;
 	if (path) {
 		returnInfo = [NSDictionary dictionaryWithObject:path
 												 forKey:NSDataFileAliasPath] ;
@@ -308,12 +308,15 @@ end:
 	// of its values be encodeable.  The only objects we put in there were
 	// NSString, and NSError whose userInfo dictionary contains only NSString
 	// keys and values.  Thus, we should be OK to do the following:
-	NSData* returnData = [NSKeyedArchiver archivedDataWithRootObject:returnInfo] ;
+	NSData* returnData = nil ;
+    if (returnInfo) {
+        [NSKeyedArchiver archivedDataWithRootObject:returnInfo] ;
+    }
 	
-	[returnData retain] ;	 
+	[returnData retain] ;
 	[pool drain] ;
 	
-	return returnData ;
+	return [returnData autorelease] ;
 }
 
 

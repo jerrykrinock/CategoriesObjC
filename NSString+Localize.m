@@ -39,13 +39,14 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 	[scanner scanUpToString:target
 				 intoString:NULL] ;
 	if (![scanner isAtEnd]) {
-		int targetLocation = [scanner scanLocation] ;
+		NSInteger targetLocation = [scanner scanLocation] ;
 		[self deleteCharactersInRange:NSMakeRange(targetLocation, [target length])] ; 
 		[self insertString:replacement
 				   atIndex:targetLocation] ;
 		didDo = YES ;
 	}
-	
+	[scanner release] ;
+    
 	return didDo ;
 }
 
@@ -60,7 +61,7 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 		[modifierCharacterSet retain] ; // Stick around until app quits
 	}
 	
-	int possibleFormatCharLocation ;
+	NSInteger possibleFormatCharLocation ;
 	NSString* modifier = @"" ;
 	BOOL dollarsign = [scanner scanString:@"$"intoString:NULL] ;
 	if (dollarsign) {
@@ -130,12 +131,15 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 			case 'X':
 			case 'o':
 			case 'O':
-				*substitution_p = [NSString stringWithFormat:formatString, va_arg(*argPtr, int unsigned)] ;
+				*substitution_p = [NSString stringWithFormat:formatString, va_arg(*argPtr, NSUInteger)] ;
 				break ;
 			default:
 				// Should never execute
-				*substitution_p = @"ERROR 575-9832: See Console Msgs", formatChar ;
-				NSLog(@"Internal Error 575-9832: [%@ %s]: Unsupported format type: %c", [self className], _cmd, formatChar) ;
+				*substitution_p = @"ERROR 575-9832: See Console Msgs" ;
+				NSLog(@"Internal Error 575-9832: [%@ %@]: Unsupported format type: %c",
+                      [self className],
+                      NSStringFromSelector(_cmd),
+                      formatChar) ;
 				break ;
 				
 		}
@@ -147,7 +151,7 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 }
 
 
-- (void)replacePlaceholdersWithIndex:(int)index
+- (void)replacePlaceholdersWithIndex:(NSInteger)index
 	withSubstitutionFromVaArgPointer:(va_list*)argPtr {
 	static NSCharacterSet* indexCharacterSet = nil ;
 	if (indexCharacterSet == nil) {
@@ -231,16 +235,16 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 		
 		[scanner release] ;
 		
-	} while ((foundQualifiedPlaceholder == YES)) ;
+	} while (foundQualifiedPlaceholder == YES) ;
 }
 
 @end
 
 @implementation NSString (SSYLocalize)
 
-- (int)countOccurrencesOfSubstring:(NSString*)substring {
+- (NSInteger)countOccurrencesOfSubstring:(NSString*)substring {
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
-	int count = 0 ;
+	NSInteger count = 0 ;
 	while ([scanner scanUpToAndThenLeapOverString:substring
 									   intoString:NULL] == YES) {
 		count++ ;
@@ -310,15 +314,15 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 	
 	NSString *answer;
 	
-	int nLiteralPercents = [s countOccurrencesOfSubstring:SSPercentPercent] ;
-	int nPlaceholders = [s countOccurrencesOfSubstring:SSPercent] - 2 * nLiteralPercents ;
+	NSInteger nLiteralPercents = [s countOccurrencesOfSubstring:SSPercentPercent] ;
+	NSInteger nPlaceholders = [s countOccurrencesOfSubstring:SSPercent] - 2 * nLiteralPercents ;
 	if (nPlaceholders == 0) {
 		answer = s ;
 		goto end ;
 	}
 	
 	NSMutableString* ss = [s mutableCopy] ;
-	int i ;
+	NSInteger i ;
 	for (i=-1; i<nPlaceholders; i++) {		
 		[ss replacePlaceholdersWithIndex:i
 		withSubstitutionFromVaArgPointer:argPtr_p] ;
@@ -433,8 +437,8 @@ end:
 }
 
 
-+ (NSString*)stringWithInt:(int)i {
-	return [NSString localizedStringWithFormat:@"%d", i] ;
++ (NSString*)stringWithInt:(NSInteger)i {
+	return [NSString localizedStringWithFormat:@"%ld", (long)i] ;
 }
 
 @end

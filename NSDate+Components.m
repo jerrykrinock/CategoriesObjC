@@ -16,32 +16,32 @@
 	NSString* substitution ;
 
 	if (year != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%04d", year] ;
+		substitution = [NSString stringWithFormat:@"%04ld", (long)year] ;
 		[dateString replaceCharactersInRange:NSMakeRange(0,4)
 								  withString:substitution] ;
 	}
 	if (month != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%02d", month] ;
+		substitution = [NSString stringWithFormat:@"%02ld", (long)month] ;
 		[dateString replaceCharactersInRange:NSMakeRange(5,2)
 								  withString:substitution] ;
 	}
 	if (day != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%02d", day] ;
+		substitution = [NSString stringWithFormat:@"%02ld", (long)day] ;
 		[dateString replaceCharactersInRange:NSMakeRange(8,2)
 								  withString:substitution] ;
 	}
 	if (hour != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%02d", hour] ;
+		substitution = [NSString stringWithFormat:@"%02ld", (long)hour] ;
 		[dateString replaceCharactersInRange:NSMakeRange(11,2)
 								  withString:substitution] ;
 	}
 	if (minute != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%02d", minute] ;
+		substitution = [NSString stringWithFormat:@"%02ld", (long)minute] ;
 		[dateString replaceCharactersInRange:NSMakeRange(14,2)
 								  withString:substitution] ;
 	}
 	if (second != NSNotFound) {
-		substitution = [NSString stringWithFormat:@"%02d", second] ;
+		substitution = [NSString stringWithFormat:@"%02ld", (long)second] ;
 		[dateString replaceCharactersInRange:NSMakeRange(17,2)
 								  withString:substitution] ;
 	}
@@ -50,10 +50,10 @@
 		NSInteger timeZoneMagnitude = abs(timeZoneOffset) ;
 		NSInteger timeZoneHours = timeZoneMagnitude/3600 ;
 		NSInteger timeZoneMinutes = (timeZoneMagnitude - 3600*timeZoneHours)/60 ;
-		substitution = [NSString stringWithFormat:@"%c%02d%02d",
+		substitution = [NSString stringWithFormat:@"%c%02ld%02ld",
 						timeZoneSign,
-						timeZoneHours,
-						timeZoneMinutes] ;
+						(long)timeZoneHours,
+						(long)timeZoneMinutes] ;
 		[dateString replaceCharactersInRange:NSMakeRange(20,5)
 								  withString:substitution] ;
 	}
@@ -131,32 +131,32 @@
 }
 
 - (NSInteger)year {
-	return [[self yearString] intValue] ;
+	return [[self yearString] integerValue] ;
 }
 
 
 - (NSInteger)month {
-	return [[self monthString] intValue] ;
+	return [[self monthString] integerValue] ;
 }
 
 
 - (NSInteger)day {
-	return [[self dayString] intValue] ;
+	return [[self dayString] integerValue] ;
 }
 
 
 - (NSInteger)hour {
-	return [[self hourString] intValue] ;
+	return [[self hourString] integerValue] ;
 }
 
 
 - (NSInteger)minute {
-	return [[self minuteString] intValue] ;
+	return [[self minuteString] integerValue] ;
 }
 
 
 - (NSInteger)second {
-	return [[self secondString] intValue] ;
+	return [[self secondString] integerValue] ;
 }
 
 // Todo: Change *all* of the above methods to use NSDateFormatter, like -minutesString does.

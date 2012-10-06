@@ -3,14 +3,14 @@
 
 @implementation NSManagedObject (Attributes)
 
-- (NSSet*)allAttributes {
-	return [NSSet setWithArray:[[[self entity] attributesByName] allKeys]] ;
+- (NSArray*)allAttributes {
+	return [[[self entity] attributesByName] allKeys] ;
 }	
 
 - (NSDictionary*)attributesDictionaryWithNulls:(BOOL)withNulls {
 	NSDictionary* answer ;
 	if (withNulls) {
-		answer = [self dictionaryWithValuesForKeys:[[self allAttributes] allObjects]] ;
+		answer = [self dictionaryWithValuesForKeys:[self allAttributes]] ;
 		// Note: -dictionaryWithValuesForKeys: puts in the NSNulls.
 	}
 	else {

@@ -10,7 +10,7 @@
  by doubling the values in the 32-bit version.  I have no idea
  how well this will work.
  */
-int mix(unsigned long long a, unsigned long long b, unsigned long long c)
+int64_t mix(unsigned long long a, unsigned long long b, unsigned long long c)
 {
 	a=a-b;  a=a-c;  a=a^(c >> 25);
 	b=b-c;  b=b-a;  b=b^(a << 16); 
@@ -25,7 +25,7 @@ int mix(unsigned long long a, unsigned long long b, unsigned long long c)
 }
 #endif
 
-unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
+uint32_t mix(uint32_t a, uint32_t b, uint32_t c)
 {
 	a=a-b;  a=a-c;  a=a^(c >> 13);
 	b=b-c;  b=b-a;  b=b^(a << 8); 
@@ -41,11 +41,11 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 
 @implementation NSObject (HashBetter)
 
-- (unsigned long)hashBetter32 {
+- (uint32_t)hashBetter32 {
 #ifdef __LP64__
-	unsigned long hash = [self hash] & 0x00000000ffffffff ;
+	uint32_t hash = [self hash] & 0x00000000ffffffff ;
 #else
-	unsigned long hash = [self hash] ;
+	uint32_t hash = [self hash] ;
 #endif
 	if ([self respondsToSelector:@selector(integerValue)]) {
 		if ([(NSNumber*)self integerValue] < 0) {
@@ -68,7 +68,7 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 
 @implementation NSArray (HashBetter)
 
-- (unsigned long)mixHash:(unsigned long)hash {
+- (uint32_t)mixHash:(uint32_t)hash {
 	// Jenkins' function is designed to mix in two values with the
 	// initial value.  Threfore, the following loop takes groups our
 	// values into pairs (hash1, hash2) and calls mix() on alternate
@@ -76,7 +76,8 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 	NSUInteger count = [self count] ;
 	NSUInteger i=0 ;
 	for (id object in self) {
-		unsigned long hash1, hash2 ;
+		uint32_t hash1 = 0 ;
+        uint32_t hash2 = 0 ;
 		if (i%2==0) {
 			// This is the 0th, 2nd, 4th etc. element
 			hash1 = [object hashBetter32] ;
@@ -101,7 +102,7 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 	return hash ;	
 }
 
-- (unsigned long)hashBetter32 {
+- (uint32_t)hashBetter32 {
 	return [self mixHash:0] ;
 }
 

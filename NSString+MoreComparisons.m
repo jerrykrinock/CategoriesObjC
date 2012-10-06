@@ -1,5 +1,3 @@
-
-
 @implementation NSString (MoreComparisons)
 
 + (BOOL)isEqualHandlesNilString1:(NSString*)string1

@@ -1,11 +1,11 @@
-
+#import "NSTableView+Scrolling.h"
 
 @implementation NSTableView (Scrolling)
 
-- (void)scrollRowToTop:(int)row {
+- (void)scrollRowToTop:(NSInteger)row {
 	if ((row != NSNotFound) && (row >=0)) {
-		float rowPitch = [self rowHeight] + [self intercellSpacing].height ;
-		float y = row * rowPitch ;
+		CGFloat rowPitch = [self rowHeight] + [self intercellSpacing].height ;
+		CGFloat y = row * rowPitch ;
 		[self scrollPoint:NSMakePoint(0, y)] ;
 	}
 }

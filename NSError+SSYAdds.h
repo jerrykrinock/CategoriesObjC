@@ -1,11 +1,15 @@
 #import <Cocoa/Cocoa.h>
 #import "NSError+SSYAdds.h"
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED > 1060
+#define SSYHelpAnchorErrorKey NSHelpAnchorErrorKey
+#endif
+
 // Macros for making NSErrors
 
 /*
  Quick macros to make a simple error without much thinking
- First argument is int, second is NSString*.
+ First argument is NSInteger, second is NSString*.
  Adds the current method name from __PRETTY_FUNCTION__ as an
  object in the userInfo dictionary.
  */
@@ -106,7 +110,7 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 + (NSString*)myDomain ;
 
 + (NSError*)errorWithLocalizedDescription:(NSString*)localizedDescription
-									 code:(int)code
+									 code:(NSInteger)code
 						   prettyFunction:(const char*)prettyFunction ;
 
 #pragma mark * Methods for adding userInfo keys to errors already created
@@ -212,11 +216,15 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  */
 - (NSError*)errorByAddingHelpAnchor:(NSString*)helpAnchor ;
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 /*!
  @brief    Returns the string which was added to the receiver's userInfo by
  -errorByAddingHelpAnchor:, or nil if no such invocation has been added.
  */
 - (NSString*)helpAnchor ;
+#else
+// Apple implemented this method starting with the 10.6 SDK
+#endif
 
 /*!
  @brief    Returns the object for key NSUnderlyingErrorKey in the receiver's userInfo dictionary
@@ -519,6 +527,8 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  
  */
 - (BOOL)isNotFileNotFoundError ;
+
+- (BOOL)isUserCancelledCocoaError ;
 
 /*!
  @brief    Returns whether or not the receiver has either a recovery 

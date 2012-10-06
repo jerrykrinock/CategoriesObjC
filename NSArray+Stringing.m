@@ -13,7 +13,7 @@
 	}
 	
 	NSMutableString* string = [[NSMutableString alloc] init] ;
-	int i ;
+	NSInteger i ;
 	for (i=0; i<nItems; i++) {
 		NSString* value = [[self objectAtIndex:i] valueForKeyPath:keyPath] ;
 		if (value) {
@@ -52,7 +52,7 @@
 	
 	NSInteger nItems = [array count] ;
 	NSMutableString* string = [[NSMutableString alloc] init] ;
-	int i ;
+	NSInteger i ;
 	for (i=0; i<nItems; i++) {
 		id object = [array objectAtIndex:i] ;
 		NSString* value = nil ;
@@ -87,7 +87,7 @@
 	}
 	
 	if (ellipsize) {
-		[string appendFormat:@", %C", 0x2026] ;
+		[string appendFormat:@", %C", (unsigned short)0x2026] ;
 	}
 	
 	NSString* output = [string copy] ;

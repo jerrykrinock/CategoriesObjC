@@ -179,8 +179,18 @@
 
 - (void)setMetadataObject:(id)object
 				   forKey:(NSString*)key {
+    NSError* error = nil ;
 	[[self managedObjectContext] setMetadata1Object:object
-										   forKey:key] ;
+										   forKey:key
+                                            error_p:&error] ;
+    if (error) {
+        if ([error code] == SSYManagedObjectContextCheatsErrorStoreIsReadOnly) {
+            // This is expected when operating on store in Versions Browser
+        }
+        else {
+            NSLog(@"Internal Error 292-0484  %@", [error localizedDescription]) ;
+        }
+    }
 	[self saveMetadataOnly] ;
 }	
 

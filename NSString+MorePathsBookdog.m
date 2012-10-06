@@ -1,4 +1,3 @@
-
 #import "NSError+Bookdog.h"
 #import "NSCharacterSet+SSYMoreCS.h"
 
@@ -72,8 +71,8 @@
 	
 	NSString* homePath = nil ;
 	NSArray* comps = [self pathComponents] ;
-	int nComps = [comps count] ;
-	int homeIndex = NSNotFound - 1 ;
+	NSInteger nComps = [comps count] ;
+	NSInteger homeIndex = NSNotFound - 1 ;
 	
 	// The shortest valid number of comps is 3.  Examples:
 	//   Case 1: {"/", "Users", "jk"}
@@ -87,7 +86,7 @@
 		goto end ;
 	}
 	
-	int usersIndex = [comps indexOfObject:@"Users"] ;
+	NSInteger usersIndex = [comps indexOfObject:@"Users"] ;
 	// But if someone has named an external drive "Users", we'll be at "/Volumes/Users/Users/..."
 	if (usersIndex == 1) {
 		if ([[comps objectAtIndex:2] isEqualToString:@"Users"]) {
@@ -104,7 +103,7 @@
 		homeIndex = 2 ;
 	}
 			
-	int nHomeComps = homeIndex + 1 ;
+	NSInteger nHomeComps = homeIndex + 1 ;
 	if (nComps >= nHomeComps) {
 		NSRange range = NSMakeRange(0, nHomeComps) ;
 		NSArray* homeComps = [comps subarrayWithRange:range] ;
@@ -162,7 +161,7 @@ end:
 
 - (NSArray*)pathAncestorsUpTo:(NSString*)tooHighAncestor {
 	NSArray* components = [self pathComponents] ;
-	int nAncestors = [components count] ;
+	NSInteger nAncestors = [components count] ;
 	// In most cases we should have subtracted one or two, because
 	// the first "component" returned by -pathComponents will be the slash, @"/"
 	// (if self begins with a slash), and appending the last component will make self,
@@ -227,7 +226,7 @@ end:
 	// Example:            If target is: @"/Users/jk"
 	//       will return YES if self is: @"/Users/jk/Docs"
 	//       will return YES if self is: @"/Users/jk/Docs/MyDocs" 
-	int targetLength = [target length] ;
+	NSInteger targetLength = [target length] ;
 	if ([self hasPrefix:target]) {
 		if ([self length] > targetLength) {
 			//   Example: s = /Users/jk/Docs 
@@ -253,7 +252,7 @@ end:
 
 - (NSString*)pathRelativeToFirstComponent {
 	//	Returns empty string if path separator "/" is not found
-	int loc = [self rangeOfString:@"/"].location + 1 ;
+	NSInteger loc = [self rangeOfString:@"/"].location + 1 ;
 	loc = MIN(loc, [self length]) ; 
 	return [self substringFromIndex:loc] ;
 }
@@ -352,10 +351,10 @@ end:
 
 - (NSString*)daReverseAsciiChars {
 	const char* fwdBytes = [self UTF8String] ;
-	int L = [self length] ;
-	int end = L - 1 ;
+	NSInteger L = [self length] ;
+	NSInteger end = L - 1 ;
 	char* revBytes = malloc(L) ;
-	int i ;
+	NSInteger i ;
 	for (i=end; i>=0; i--) {
 		revBytes[end-i] = fwdBytes[i] ;
 	}
@@ -404,7 +403,7 @@ end:
 	
 	// Replace characters not allowed in a Mac or Unix filename with "-"
 	NSCharacterSet* disallowedSet = [[NSCharacterSet filenameLegalMacUnixCharacterSet] invertedSet] ;
-	int loc = 0 ;
+	NSInteger loc = 0 ;
 	while (loc < [nameMutable length]) {
 		loc = [nameMutable rangeOfCharacterFromSet:disallowedSet].location ;
 		if (loc < NSNotFound) {
@@ -421,14 +420,14 @@ end:
 	BOOL lengthOK = NO ;
 	BOOL unique = NO ;
 	NSMutableArray* baseNamesAlreadyTried = [[NSMutableArray alloc] init] ;
-	int maxBaseNameLength = MAX_FILENAME_LENGTH - 1 - [extension length] ;  // 1 for the dot "."
-	int endLength = ((maxBaseNameLength - 1)*2)/3 ;
-	int beginLength = maxBaseNameLength - endLength - 2 ;  // reserve 2 for the dashes
+	NSInteger maxBaseNameLength = MAX_FILENAME_LENGTH - 1 - [extension length] ;  // 1 for the dot "."
+	NSInteger endLength = ((maxBaseNameLength - 1)*2)/3 ;
+	NSInteger beginLength = maxBaseNameLength - endLength - 2 ;  // reserve 2 for the dashes
 	while (YES) {		
 		// Modify if needed for length requirement
-		int length = [name length] ;
+		NSInteger length = [name length] ;
 		if (length > MAX_FILENAME_LENGTH) {
-			int endLocation = [baseName length] - endLength ;
+			NSInteger endLocation = [baseName length] - endLength ;
 			NSRange endRange = NSMakeRange(endLocation, endLength) ;
 			baseName = [NSMutableString stringWithFormat:@"%@--%@",  // 2 dashes are subtracted above
 							[baseName substringToIndex:beginLength],
@@ -443,8 +442,8 @@ end:
 		if ([existingFilenames indexOfObject:name] != NSNotFound) {
 			// Take it apart
 			NSString* decimalDigitSuffix = [[NSString stringWithString:baseName] daDecimalDigitSuffix] ;
-			int currentIndex = [decimalDigitSuffix intValue] ;
-			int suffixLength = [decimalDigitSuffix length] ;
+			NSInteger currentIndex = [decimalDigitSuffix integerValue] ;
+			NSInteger suffixLength = [decimalDigitSuffix length] ;
 			NSRange suffixRange = NSMakeRange([baseName length] - suffixLength, suffixLength) ;
 			[baseName deleteCharactersInRange:suffixRange] ;
 			unichar lastChar ;
@@ -460,7 +459,7 @@ end:
 			if (needsConjunction) {
 				[baseName appendString:@"_"] ;
 			}
-			[baseName appendFormat:@"%d", (currentIndex + 1)] ;
+			[baseName appendFormat:@"%ld", (long)(currentIndex + 1)] ;
 			name = [baseName stringByAppendingPathExtension:extension] ;
 			lengthOK = NO ;
 			

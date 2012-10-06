@@ -2,9 +2,9 @@
 
 @implementation NSFont (Height) 
 
-- (float)tableRowHeight {
+- (CGFloat)tableRowHeight {
 	NSLayoutManager* lm = [[NSLayoutManager alloc] init] ;
-	float dlhff = [lm defaultLineHeightForFont:self] ;
+	CGFloat dlhff = [lm defaultLineHeightForFont:self] ;
 	[lm release] ;
 	return dlhff + 1.0 ;
 }

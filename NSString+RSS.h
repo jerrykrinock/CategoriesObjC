@@ -50,7 +50,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMA
 
 - (NSString *) stripHTML;
 
-- (NSString *) ellipsizeAfterNWords: (int) n;
+- (NSString *) ellipsizeAfterNWords: (NSInteger) n;
 
 + (BOOL) stringIsEmpty: (NSString *) s;
 

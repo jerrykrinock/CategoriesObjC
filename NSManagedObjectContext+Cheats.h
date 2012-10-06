@@ -1,8 +1,19 @@
 #import <Cocoa/Cocoa.h>
 
 extern NSString* const SSYManagedObjectContextCheatsErrorDomain ;
+extern NSString* const SSYManagedObjectContextPathExtensionForSqliteStores ;
+
+#define SSYManagedObjectContextCheatsErrorNoManagedObjectModel 613201
+#define SSYManagedObjectContextCheatsErrorCouldNotCreatePSC 613202
+#define SSYManagedObjectContextCheatsErrorCouldNotCreateUrlForStore 613203
+#define SSYManagedObjectContextCheatsErrorCouldNotDeleteCorruptStore 613204
+#define SSYManagedObjectContextCheatsErrorCouldNotFReplaceCorruptStore 613205
+#define SSYManagedObjectContextCheatsErrorCouldNotCreateStore 613206
+#define SSYManagedObjectContextCheatsErrorCouldNotGetStore 315644
+#define SSYManagedObjectContextCheatsErrorStoreIsReadOnly 315645
 
 @interface NSManagedObjectContext (Cheats)
+
 
 /*!
  @brief    Returns the first persistent store of the receiver, or nil
@@ -104,9 +115,14 @@ extern NSString* const SSYManagedObjectContextCheatsErrorDomain ;
  until after the store has been saved once.
  
  @param    object  A serializable object.  (It will be set as a value in an NSDictionary.)
+ @param    error_p  If not NULL and if an error occurs, upon return, will point
+ to an error object encapsulating the error.  If NULL and an error occurs, the
+ error will be logged to the system console
+ @result   YES if the metadata was written successfully, otherwise NO
  */
-- (void)setMetadata1Object:(id)object
-				   forKey:(id)key ;
+- (BOOL)setMetadata1Object:(id)object
+				   forKey:(id)key
+                   error_p:(NSError**)error_p ;
 
 /*!
  @brief    Adds a given dictionary to the metadata of the first persistent

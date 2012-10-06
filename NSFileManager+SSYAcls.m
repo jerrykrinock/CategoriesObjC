@@ -6,8 +6,8 @@
 - (BOOL)processAcl:(acl_t)acl
 {
     NSLog(@"      ACL text is:\n%s", acl_to_text(acl, NULL)) ;
-    int returnCode ;
-    int entryId = ACL_FIRST_ENTRY ;
+    NSInteger returnCode ;
+    NSInteger entryId = ACL_FIRST_ENTRY ;
     BOOL didDeleteAnyEntry = NO ;
     do {
         NSLog(@"      Requesting next entry") ;
@@ -19,7 +19,7 @@
                 acl_tag_t tagType = 0 ;
                 acl_get_tag_type(acl_entry, &tagType) ;
                 if (tagType == ACL_EXTENDED_DENY) {                    
-                    int innerReturnCode ;
+                    NSInteger innerReturnCode ;
 
 #if 0
                     // This section is just to see what else I can learn
@@ -27,8 +27,8 @@
                     acl_permset_t permset = NULL ;
                     innerReturnCode = acl_get_permset(acl_entry, &permset) ;
                     
-                    NSLog(@"      Got entry:  tagType=%d  qualifier=%p(retCode=%d)  permset=%p",
-                          tagType, qualifier, innerReturnCode, permset) ;
+                    NSLog(@"      Got entry:  tagType=%ld  qualifier=%p(retCode=%ld)  permset=%p",
+                          (long)tagType, qualifier, (long)innerReturnCode, permset) ;
                     
                     if (qualifier != NULL) {
                         acl_free(qualifier) ;
@@ -37,7 +37,7 @@
 #endif                    
                     innerReturnCode = acl_delete_entry(acl, acl_entry) ;
                     if (innerReturnCode != 0) {
-                        NSLog(@"      Err Deleting ACL : %d", errno) ;
+                        NSLog(@"      Err Deleting ACL : %ld", (long)errno) ;
                     }
                     else {
                         NSLog(@"      Successfully deleted entry") ;
@@ -50,29 +50,29 @@
             }
         }
         else {
-            NSLog(@"      Err getting entry : %d", errno) ;
+            NSLog(@"      Err getting entry : %ld", (long)errno) ;
         }
         
         entryId = ACL_NEXT_ENTRY ;
     } while (returnCode == 0) ;
     
-    NSLog(@"      returnCode = %d", returnCode) ;
+    NSLog(@"      returnCode = %ld", (long)returnCode) ;
     
     return didDeleteAnyEntry ;
 }
 
 - (acl_t)processAclType:(acl_type_t)aclType path:(const char *)pathC
 {
-    NSLog(@"   Testing for ACL type %d", aclType) ;
+    NSLog(@"   Testing for ACL type %ld", (long)aclType) ;
     BOOL didDeleteAnyEntry = NO ;
     acl_t acl = acl_get_file(pathC, aclType) ;
     if (acl != NULL) {
         didDeleteAnyEntry = [self processAcl:acl] ;
-        NSLog(@"didDeleteAnyEntry = %d", didDeleteAnyEntry) ;
+        NSLog(@"didDeleteAnyEntry = %hhd", didDeleteAnyEntry) ;
         acl_free(acl) ;
     }
     else {
-        NSLog(@"      ACL type %d is NULL", aclType) ;   
+        NSLog(@"      ACL type %ld is NULL", (long)aclType) ;   
     }
     
     if (!didDeleteAnyEntry) {
@@ -100,10 +100,10 @@
         // remove *all* entries from path's ACL.
         NSInteger returnCode = acl_set_file(pathC, ACL_TYPE_EXTENDED, acl) ;
         if (returnCode != 0) {
-            NSLog(@"Setting ACL returned errno %d", EACCES) ;
+            NSLog(@"Setting ACL returned errno %ld", (long)EACCES) ;
         }
         else {
-            NSLog(@"Setting ACL returned %ld", returnCode) ;
+            NSLog(@"Setting ACL returned %ld", (long)returnCode) ;
         }
     }
     

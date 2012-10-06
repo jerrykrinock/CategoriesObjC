@@ -30,7 +30,7 @@
  defeats our next improvement because 0*N=0, this change
  will improve the randomness of results.
 */
-- (unsigned long)hashBetter32 ;
+- (uint32_t)hashBetter32 ;
 
 @end
 
@@ -77,7 +77,7 @@
  @param    hash  An optional initial hash value which may be used to 
  chain hashes of arrays together.  Pass 0 if you only have one array.
 */
-- (unsigned long)mixHash:(unsigned long)hash ;
+- (uint32_t)mixHash:(uint32_t)hash ;
 
 /*!
  @brief    An override of hashBetter32 which really does work better for
@@ -88,7 +88,7 @@
  In Mac OS 10.7.2, Apple's -hash of an NSArray is particularly lame, returning
  the number of elements in the array.  Eeeek!
 */
-- (unsigned long)hashBetter32 ;
+- (uint32_t)hashBetter32 ;
 
 @end
 

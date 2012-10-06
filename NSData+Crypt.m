@@ -22,10 +22,10 @@ static __inline void swap_bytes(u_char *a, u_char *b) {
 void rc4_init(
 			  struct rc4_state* const state,
 			  const u_char* key,
-			  int keylen
+			  NSInteger keylen
 			  ) {
 	u_char j;
-	int i;
+	NSInteger i;
 	
 	/* Initialize state with identity permutation */
 	for (i = 0; i < 256; i++)
@@ -50,9 +50,9 @@ void rc4_crypt(
 			   struct rc4_state* const state,
 			   const u_char* inbuf,
 			   u_char* outbuf,
-			   int buflen
+			   NSInteger buflen
 			   ) {
-	int i;
+	NSInteger i;
 	u_char j;
 	
 	for (i = 0; i < buflen; i++) {
@@ -74,18 +74,18 @@ void rc4_crypt(
 
 @implementation NSData (Crypt)
 
-+ (NSData*)dataKeyByteCount:(int)nKeyBytes
++ (NSData*)dataKeyByteCount:(NSInteger)nKeyBytes
 			 from7BitString:(NSString*)password {
 	const char* passwordString = [password UTF8String] ;
 	NSMutableData* keyData = [[NSMutableData alloc] init] ;
-	int gotBits = 0 ;
-	int carryBits ;
+	NSInteger gotBits = 0 ;
+	NSInteger carryBits ;
 	u_char currentByte = 0 ;
 	u_char nextByte ;
 	u_char mask ;
 	u_char newASCIIChar ;
-	int gotKeyBytes = 0 ;
-	int iASCII = 0 ;
+	NSInteger gotKeyBytes = 0 ;
+	NSInteger iASCII = 0 ;
 	while ((newASCIIChar = passwordString[iASCII]) != 0) {
 		currentByte = currentByte | (newASCIIChar << gotBits) ; // "<<" shifts on zeros
 		carryBits = 8 - gotBits ;
@@ -105,11 +105,11 @@ void rc4_crypt(
 	
 	if (gotKeyBytes < nKeyBytes) {
 		NSLog(
-			  @"Failed since %d-bit key requires password of %d bytes.  Password %@ has only %u.",
-			  nKeyBytes*8,
-			  (int)ceil((nKeyBytes*8)/7.0),
+			  @"Failed since %ld-bit key requires password of %ld bytes.  Password %@ has only %lu.",
+			  (long)(nKeyBytes*8),
+			  (long)ceil((nKeyBytes*8)/7.0),
 			  password,
-			  (unsigned int)strlen(passwordString)) ;
+			  (unsigned long)strlen(passwordString)) ;
 		[keyData release] ;
 		keyData = nil ;
 	}
@@ -118,12 +118,12 @@ void rc4_crypt(
 }	
 
 - (NSData*)cryptRC4WithKeyData:(NSData*)keyData {	
-	int nKeyBytes = [keyData length] ;
+	NSInteger nKeyBytes = [keyData length] ;
 	u_char key[nKeyBytes] ;
 	[keyData getBytes:key] ;	
 	struct rc4_state state ;
 	rc4_init(&state, key, nKeyBytes) ;
-	int nPayloadBytes = [self length] ;
+	NSInteger nPayloadBytes = [self length] ;
 	unsigned char buf[nPayloadBytes] ;
 	[self getBytes:buf] ;
 	

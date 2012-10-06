@@ -13,6 +13,18 @@
 	// Safari:    Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; en-us) AppleWebKit/531.21.8 (KHTML, like Gecko) Version/4.0.4 Safari/531.21.10
 	// Chrome:    Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10
 	
+    if (!candidates) {
+        candidates = [NSArray arrayWithObjects:
+                      @"Camino",
+                      @"Chrome",
+                      @"Firefox",
+                      @"Minefield",
+                      @"OmniWeb",
+                      @"Opera",
+                      @"Safari",
+                      nil] ;
+    }
+    
 	// First, remove any parenthesized clauses
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
 	[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@""]] ;

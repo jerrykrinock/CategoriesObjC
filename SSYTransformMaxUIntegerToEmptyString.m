@@ -12,11 +12,11 @@
 }
 
 - (id)transformedValue:(id)number {
-	if ([number unsignedIntValue] == NSUIntegerMax) {
+	if ([number unsignedIntegerValue] == NSUIntegerMax) {
 		return @"" ;
 	}
 	else {
-		return [NSString stringWithFormat:@"%u", [number unsignedIntValue]] ;
+		return [NSString stringWithFormat:@"%qu", (unsigned long long)[number unsignedIntegerValue]] ;
 	}
 }
 

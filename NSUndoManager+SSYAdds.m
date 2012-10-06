@@ -22,16 +22,16 @@
 	if ([self respondsToSelector:@selector(_undoStack)]) {
 		_NSUndoStack* undoStack = [self performSelector:@selector(_undoStack)] ;
 		msg = [NSMutableString stringWithFormat:
-			   @"\nCurrent Undo Stack for %@:\n  count:%d  nestingLevel:%d  max:%d",
+			   @"\nCurrent Undo Stack for %@:\n  count:%ld  nestingLevel:%ld  max:%ld",
 			   self,
-			   [undoStack performSelector:@selector(count)],
-			   [undoStack performSelector:@selector(nestingLevel)],
-			   [undoStack performSelector:@selector(max)]] ;
+			   (long)[undoStack performSelector:@selector(count)],
+			   (long)[undoStack performSelector:@selector(nestingLevel)],
+			   (long)[undoStack performSelector:@selector(max)]] ;
 		_NSUndoObject* object = [undoStack performSelector:@selector(topUndoObject)] ;
 		NSInteger iObject = 0 ;
 		while (object) {
-			[msg appendFormat:@"\nUndo Stack Object at index %d is of class %@:\n",
-			 iObject,
+			[msg appendFormat:@"\nUndo Stack Object at index %ld is of class %@:\n",
+			 (long)iObject,
 			 [object class]] ;
 			if ([object isKindOfClass:NSClassFromString(@"_NSUndoInvocation")]) {
 				[msg appendString:[[object valueForKeyPath:@"invocation"] longDescription]] ;
@@ -109,14 +109,18 @@
 
 - (void)replacement_beginUndoGrouping {
 	if (self == [[[NSDocumentController sharedDocumentController] currentDocument] undoManager]) {
-		NSLog(@"WILL beginUndoGrouping gsn=%d %@", gSeqNum, self) ;
+		NSLog(@"WILL beginUndoGrouping gsn=%ld %@", (long)gSeqNum, self) ;
 		NSInteger oldLevel = [self groupingLevel] ;
 		if (badBegin) {
-			/*DB?Line*/ NSLog(@"Bad Jump in %s", __PRETTY_FUNCTION__) ;
+			NSLog(@"Bad Jump in %s", __PRETTY_FUNCTION__) ;
 		}
 		badBegin = YES ;
 		[self replacement_beginUndoGrouping] ;
-		NSLog(@" DID beginUndoGrouping gsn=%d %d->%d %@", gSeqNum, oldLevel, [self groupingLevel], self) ;
+		NSLog(@" DID beginUndoGrouping gsn=%ld %ld->%ld %@",
+			(long)gSeqNum,
+			(long)oldLevel,
+			(long)[self groupingLevel],
+			self) ;
 		badBegin = NO ;
 		gSeqNum++ ;
 	}
@@ -129,28 +133,38 @@
 	/*DB?Line*/ NSLog(@"WILL endddUndoGrouping (deferred) %@", self) ;
 	NSInteger oldLevel = [self groupingLevel] ;
 	[self replacement_endUndoGrouping] ;
-	/*DB?Line*/ NSLog(@" DID endddUndoGrouping (deferred) %d->%d %@", oldLevel, [self groupingLevel], self) ;
+	/*DB?Line*/ NSLog(@" DID endddUndoGrouping (deferred) %ld->%ld %@",
+		(long)oldLevel,
+		(long)[self groupingLevel],
+		self) ;
 }
 
 - (void)replacement_endUndoGrouping {
 	if (self == [[[NSDocumentController sharedDocumentController] currentDocument] undoManager]) {
-		NSLog(@"WILL endddUndoGrouping gsn=%d %@", gSeqNum, self) ;
+		NSLog(@"WILL endddUndoGrouping gsn=%ld %@", (long)gSeqNum, self) ;
 		NSInteger oldLevel = [self groupingLevel] ;
 		BOOL ok = YES ;
 		if (badEnd) {
-			/*DB?Line*/ NSLog(@"Bad Jump in %s", __PRETTY_FUNCTION__) ;
+			NSLog(@"Bad Jump in %s", __PRETTY_FUNCTION__) ;
 			ok = NO ;
 		}
 		badEnd = YES ;
 		if (ok) {
 			[self replacement_endUndoGrouping] ;
-			NSLog(@" DID endddUndoGrouping gsn=%d %d->%d %@", gSeqNum, oldLevel, [self groupingLevel], self) ;
+			NSLog(@" DID endddUndoGrouping gsn=%ld %ld->%ld %@",
+			(long)gSeqNum,
+			(long)oldLevel,
+			(long)[self groupingLevel],
+			self) ;
 		}
 		else {
 			[self performSelector:@selector(doDeferred_endUndoGrouping)
 					   withObject:nil
 					   afterDelay:0.0] ;
-			NSLog(@" DEFERRED endddUndoGrouping gsn=%d %d->%d %@", gSeqNum, oldLevel, [self groupingLevel], self) ;
+			NSLog(@" DEFERRED endddUndoGrouping gsn=%ld %ld->%ld %@",
+			(long)gSeqNum, 
+			(long)oldLevel,
+			(long)[self groupingLevel], self) ;
 		}
 		badEnd = NO ;
 	}
@@ -223,9 +237,9 @@
 }
 
 - (void)reallyEndUndoGrouping {
-	NSLog(@"872 Will really end Undo Grouping with groupingLevel=%d", [self groupingLevel]) ;
+	NSLog(@"872 Will really end Undo Grouping with groupingLevel=%ld", (long)[self groupingLevel]) ;
 	[self replacement_endUndoGrouping] ;
-	NSLog(@"874 Did really end undo grouping with groupingLevel = %d", [self groupingLevel]) ;
+	NSLog(@"874 Did really end undo grouping with groupingLevel = %ld", (long)[self groupingLevel]) ;
 }
 #endif
 

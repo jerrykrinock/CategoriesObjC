@@ -1,5 +1,5 @@
 
-NSSize const unlimitedSize = {FLT_MAX, FLT_MAX} ;
+NSSize const unlimitedSize = {CGFLOAT_MAX, CGFLOAT_MAX} ;
 
 @implementation NSTextView (Configurations)
 
@@ -15,11 +15,11 @@ NSSize const unlimitedSize = {FLT_MAX, FLT_MAX} ;
     NSSize contentSize = [[self enclosingScrollView] contentSize] ;
 	[self setMinSize:contentSize] ;
     NSSize size ;
-	size.width = horizontal ? FLT_MAX : contentSize.width ;
+	size.width = horizontal ? CGFLOAT_MAX : contentSize.width ;
 	if (vertical) {
 		size.width -= [[[self enclosingScrollView] verticalScroller] frame].size.height ;
 	}
-	size.height = vertical ? FLT_MAX : contentSize.height ;
+	size.height = vertical ? CGFLOAT_MAX : contentSize.height ;
 	if (horizontal) {
 		size.height -= [[[self enclosingScrollView] horizontalScroller] frame].size.height ;
 	}

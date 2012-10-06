@@ -1,5 +1,3 @@
-
-
 @implementation NSArray (Select1)
 
 - (id)select1 {

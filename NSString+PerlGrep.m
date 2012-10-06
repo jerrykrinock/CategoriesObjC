@@ -77,16 +77,26 @@
 }
 
 - (NSString*)extractEmail {
-	// RFC 2821, 2822 specifies the characters that are valid in the "local" 
-	// part of an email address, the part before the @, that is, the account name.
+	// The part before the @ in an email address, which is commonly
+	// thought of as the "account name", is, technically, called the
+	// "local-part" in RFC 2821 and RFC 5321.  Unfortunately, these
+	// RFC do not very well specify what characters are allowed in the
+	// local-part.  So I got the answer instead from here…
+	// http://www.remote.org/jochen/mail/info/chars.html
+	// I included all of the characters that Jochen lists as YES or MAYBE.
 	// Because many of these characters are also quantifiers in Perl regex,
 	// and because I got frustrated, I just backslash-escaped all of them.
+	// Note that the first item, \\w, means 0-9, a-z, A-Z, and _.
+	NSString* localCharacterPattern = @"[\\w\\-\\+\\&\\'\\*\\/\\=\\?\\^\\{\\}\\~\\.]+" ;
 	// Actually, double-backslashes are used to escape the NSString constant compilation.
-	NSString* localCharacterPattern = @"[\\w\\-\\+\\&\\'\\*\\/\\=\\?\\^\\{\\}\\~]+" ;
+	// The last item, \\., was added in BookMacster 1.11 to fix the bug that
+	// firstname.lastname@gmail.com was being returned as lastname.gmail.com.
+
 	// RFC 1123 specifies the characters that are valid in the hostname labels.
 	// They do not include the underscore, so I don't use \w.
 	// Actually, a double-backslash is used to escape the NSString constant compilation.
 	NSString* hostnameLabelPattern = @"[a-zA-z0-9\\-]+" ;
+
 	NSString* matchPattern = [NSString stringWithFormat:
 							  @"(%@)@(%@).(%@)",
 							  localCharacterPattern,

@@ -1,9 +1,9 @@
-#import "NSDictionary+DeepDooDoo.h"
+#import "NSDictionary+DoNil.h"
 
 @implementation NSDictionary (DoNil)
 
-+ (BOOL)isEqualDeepHandlesNilDic1:(NSDictionary*)dic1
-							 Dic2:(NSDictionary*)dic2 {
++ (BOOL)isEqualHandlesNilDic1:(NSDictionary*)dic1
+						 Dic2:(NSDictionary*)dic2 {
 	BOOL isEqual = NO ;
 	if (dic1) {
 		if (!dic2) {
@@ -15,7 +15,7 @@
 			// Leave isEqual as initialized, to NO.
 		}
 		else {
-			isEqual = [dic1 isEqualDeepToDictionary:dic2] ;
+			isEqual = [dic1 isEqualToDictionary:dic2] ;
 		}
 	}
 	else if (dic2) {

@@ -279,20 +279,9 @@ end:;
 	}		
 }	
 
-- (void)saveMovePanelDidEnd:(NSSavePanel *)sheet
-				 returnCode:(int)returnCode
-				contextInfo:(void*)contextInfo {
-	NSInvocation* doneInvocation = (NSInvocation*)contextInfo ;
-	// contextInfo was previously retained
-	[doneInvocation autorelease] ;
-
-	if (returnCode == NSFileHandlingPanelOKButton) {
-		NSURL* newUrl = [sheet URL] ;
-		[self saveMoveToNewUrl:newUrl] ;
-	}
-	
-	[doneInvocation invoke] ;
-}
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
+#define NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END 1
+#endif
 
 - (void)saveAsMoveToDirectory:(NSString*)parentPath
 					  message:(NSString*)message
@@ -323,17 +312,19 @@ end:;
 	// The following two lines were added as a bug fix in BookMacster 1.1
 	[panel setAllowedFileTypes:[NSArray arrayWithObject:[[NSDocumentController sharedDocumentController] defaultDocumentFilenameExtension]]] ;
 	[panel setAllowsOtherFileTypes:NO] ;  // Supposedly this is default, but I want to make sure this always works.
-	NSDocumentController* dc = [NSDocumentController sharedDocumentController] ;
-	selector = @selector(nextDefaultDocumentUrl) ;
-	NSURL* suggestedURL = nil ;
-	if ([dc respondsToSelector:selector]) {
-		suggestedURL = [dc performSelector:selector] ;
-	}
 	
 	NSWindow* window = nil ;
 	NSArray* windowControllers = [self windowControllers] ;
 	if ([windowControllers count] > 0) {
 		window = [[windowControllers objectAtIndex:0] window] ;
+	}
+#if NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END
+	NSDocumentController* dc = [NSDocumentController sharedDocumentController] ;
+	selector = @selector(nextDefaultDocumentUrl) ;
+	NSURL* suggestedURL = nil ;
+
+	if ([dc respondsToSelector:selector]) {
+		suggestedURL = [dc performSelector:selector] ;
 	}
 	[panel beginSheetForDirectory:parentPath
 							 file:[[suggestedURL path] lastPathComponent]
@@ -342,11 +333,38 @@ end:;
 				   didEndSelector:@selector(saveMovePanelDidEnd:returnCode:contextInfo:)
 					  contextInfo:[doneInvocation retain]] ;
 	// doneInvocation will be released in -saveMovePanelDidEnd:returnCode:contextInfo:
-
+#else
+    [panel beginSheetModalForWindow:window
+                  completionHandler:^(NSInteger returnCode) {
+                      if (returnCode == NSFileHandlingPanelOKButton) {
+                          NSURL* newUrl = [panel URL] ;
+                          [self saveMoveToNewUrl:newUrl] ;
+                      }
+                      
+                      [doneInvocation invoke] ;
+                  }];
+#endif
 	// Note: Built-in behavior of NSSavePanel checks to see if the path chosen
 	// by the user already exists, and if so runs the "Replace?" sheet over
 	// this sheet.
 }
+
+#if NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END
+- (void)saveMovePanelDidEnd:(NSSavePanel *)sheet
+				 returnCode:(NSInteger)returnCode
+				contextInfo:(void*)contextInfo {
+	NSInvocation* doneInvocation = (NSInvocation*)contextInfo ;
+	// contextInfo was previously retained
+	[doneInvocation autorelease] ;
+    
+	if (returnCode == NSFileHandlingPanelOKButton) {
+		NSURL* newUrl = [sheet URL] ;
+		[self saveMoveToNewUrl:newUrl] ;
+	}
+	
+	[doneInvocation invoke] ;
+}
+#endif
 
 - (IBAction)saveAsMove:(id)sender {
 	[self saveAsMoveToDirectory:nil

@@ -4,30 +4,32 @@
 @implementation NSSegmentedControl (FitTextNice)
 
 - (void)fitTextNice {
-	int N = [self segmentCount] ;
-	int i ;
+	NSInteger N = [self segmentCount] ;
+	NSInteger i ;
 
-	float totalWidthAvailable = 0.0 ;
+	CGFloat totalWidthAvailable = 0.0 ;
 	for (i=0; i<N; i++) {
 		totalWidthAvailable += [self widthForSegment:i] ;
 	}
 	
-	float totalTextWidth = 0.0 ;
+	CGFloat totalTextWidth = 0.0 ;
 	NSMutableArray* textWidths = [[NSMutableArray alloc] init] ;
 	for (i=0; i<N; i++) {
-		float textWidth = [[self labelForSegment:i] widthForHeight:FLT_MAX
+		CGFloat textWidth = [[self labelForSegment:i] widthForHeight:CGFLOAT_MAX
 															  font:[self font]] ;
-		[textWidths addObject:[NSNumber numberWithFloat:textWidth]] ;
+		[textWidths addObject:[NSNumber numberWithDouble:textWidth]] ;
 		totalTextWidth += textWidth ;
 	}
 		 
-	float factor = totalWidthAvailable/totalTextWidth ;
+	CGFloat factor = totalWidthAvailable/totalTextWidth ;
 
 	for (i=0; i<N; i++) {
-		float textWidth = [[textWidths objectAtIndex:i] floatValue] * factor ;
+		CGFloat textWidth = [[textWidths objectAtIndex:i] doubleValue] * factor ;
 		[self setWidth:textWidth
 			forSegment:i] ;
 	}
+    
+    [textWidths release] ;
 }
 
 @end

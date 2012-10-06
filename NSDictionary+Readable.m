@@ -1,4 +1,3 @@
-
 @implementation NSDictionary (Readable)
 
 - (NSString*)readable {

@@ -7,7 +7,7 @@
  @brief    Returns all attributes in the receiver's entity
  description, as an array of strings.
  */
-- (NSSet*)allAttributes ;
+- (NSArray*)allAttributes ;
 
 /*!
  @brief    A dictionary containing all attribute keys of the

@@ -15,7 +15,7 @@ NSString* constIndentation = @"   " ;
 	 adding the truncating, I got this sample stack from Activity Monitor:
 	 100.000% -[SSYOperation(OperationImport) mergeImport_unsafe]  (was -readAndMerge)
 	 100.000% -[Ixporter mergeFromStartainer:toStartainer:info:error_p:]
-	 100.000% -[Stark overwriteAttributes:mergeTags:fabricateTags:fromStark:]
+	 100.000% -[Stark overwriteAttributes:locals:mergeTags:fabricateTags:fromStark:]
 	 100.000% -[NSManagedObject setValue:forKey:]
 	 100.000% -[Stark setUrl:]
 	 100.000% -[SSYManagedObject postWillSetNewValue:forKey:]
@@ -57,9 +57,9 @@ NSString* constIndentation = @"   " ;
 													 wholeWords:NO] ;
 }
 
-- (NSString*)deepNiceDescriptionIndentLevel:(int)indentLevel {
+- (NSString*)deepNiceDescriptionIndentLevel:(NSInteger)indentLevel {
 	NSMutableString* indentation = [NSMutableString string] ;
-	int i ;
+	NSInteger i ;
 	for (i=0; i<indentLevel; i++) {
 		[indentation appendString:constIndentation] ;
 	}	
@@ -68,7 +68,7 @@ NSString* constIndentation = @"   " ;
 	NSString* countClause = @"" ;
 	if ([self respondsToSelector:@selector(count)]) {
 		countClause = [NSString stringWithFormat:
-					   @" count=%d ", [(id)self count]] ;
+					   @" count=%ld ", (long)[(id)self count]] ;
 	}
 	NSString* valueClause ;
 	if ([self respondsToSelector:@selector(keyEnumerator)]) {
@@ -92,12 +92,12 @@ NSString* constIndentation = @"   " ;
 		NSMutableString* ms = [NSMutableString string] ;
 		NSEnumerator* e = [(id)self objectEnumerator] ;
 		id object ;
-		int i = 0 ;
+		NSInteger i = 0 ;
 		while ((object = [e nextObject])) {
-			[ms appendFormat:@"\n%@%@item %d:<%@> %@",
+			[ms appendFormat:@"\n%@%@item %ld:<%@> %@",
 			 indentation,
 			 constIndentation,
-			 i++,
+			 (long)i++,
 			 [object className],
 			 [(id)object deepNiceDescriptionIndentLevel:(indentLevel+1)]] ;
 		}

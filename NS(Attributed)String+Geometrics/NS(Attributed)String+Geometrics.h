@@ -123,7 +123,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-extern int gNSStringGeometricsTypesetterBehavior ;
+extern NSInteger gNSStringGeometricsTypesetterBehavior ;
 
 @interface NSAttributedString (Geometrics) 
 

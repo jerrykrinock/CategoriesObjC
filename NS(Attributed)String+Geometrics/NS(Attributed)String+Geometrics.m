@@ -1,6 +1,6 @@
 #import "NS(Attributed)String+Geometrics.h"
 
-int gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
+NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 
 @implementation NSAttributedString (Geometrics) 
 
@@ -28,8 +28,15 @@ int gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 		answer = [layoutManager usedRectForTextContainer:textContainer].size ;
 		[textStorage release] ;
 		[textContainer release] ;
-		[layoutManager release] ;
 		
+		// Adjust if there is extra height for the cursor
+		NSSize extraLineSize = [layoutManager extraLineFragmentRect].size ;
+		if (extraLineSize.height > 0) {
+			answer.height -= extraLineSize.height ;
+		}
+		
+		[layoutManager release] ;
+
 		// In case we changed it above, set typesetterBehavior back
 		// to the default value.
 		gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;

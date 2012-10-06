@@ -3,6 +3,15 @@
 
 @interface NSCountedSet (Votes)
 
+#if 0
+/*!
+ @brief    Returns an array of the receiver's contents, ordered
+ primarily by the count of each object, with higher counts
+ first, and secondarily by comparing the objects with compare:.
+ */
+- (NSArray*)arrayOrderedByCount ;
+#endif
+
 /*!
  @brief    Returns the member of the receiver which has the
  highest count

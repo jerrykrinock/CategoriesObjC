@@ -135,6 +135,23 @@ static NSString* const constStringRFC3896AdditionsTo2396 = @"!*'();:@&=+$,/?" ;
 	return cfWay ;
 }
 
+- (NSString*)stringByFixingPercentEscapes {
+    CFStringRef s1 = CFURLCreateStringByReplacingPercentEscapes(kCFAllocatorDefault,
+                                                                   (CFStringRef)self,
+                                                                   CFSTR("")) ;
+    NSString* s2 = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                              s1,
+                                                              CFSTR("#"),
+                                                              CFSTR("+-"),
+                                                              kCFStringEncodingUTF8) ;
+    [s2 autorelease] ;
+    if (s1) {
+        CFRelease(s1) ;
+    }
+    
+    return s2 ;
+}
+
 - (BOOL)hasPercentEscapeEncodedCharacters {
 	NSString* decodedString = [self decodePercentEscapesButNot:nil] ;
 	// Decoding percent escapes will always cause the string to become shorter.
@@ -165,8 +182,8 @@ This work-in-progress does not handle multi-byte encoded characters.
 			BOOL foundHex = [scanner scanCharactersFromSet:[NSCharacterSet ssyHexDigitsCharacterSet]
 												intoString:&hexString] ;
 			if (foundHex) {
-				char codeValue ;
-				sscanf([hexString UTF8String], @"%2x", &codeValue) ;
+				int16_t codeValue ;
+				sscanf([hexString UTF8String], @"%2hx", &codeValue) ;
 				if (!mutant) {
 					mutant = [[NSMutableDictionary alloc] init] ;
 				}
@@ -231,7 +248,8 @@ This work-in-progress does not handle multi-byte encoded characters.
 			[pairs setObject:value forKey:key] ;
 		}
 	}
-	
+	[scanner release] ;
+    
 	return [NSDictionary dictionaryWithDictionary:pairs] ;
 }
 			

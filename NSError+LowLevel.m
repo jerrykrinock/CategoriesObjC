@@ -9,9 +9,10 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	NSString* descString = nil ;
 	if ((code > 0) && (code < 15)) {
 		domain = @"CFStreamErrorDomain" ;
+        NSInteger intCode = (NSInteger)code ;
 		descString = [NSString stringWithFormat:
-					  @"CFStreamError code %d",
-					  code] ;
+					  @"CFStreamError code %ld",
+					  (long)intCode] ;
 	}
 	else if (code < kPOSIXErrorBase) {
 		domain = NSOSStatusErrorDomain ;
@@ -25,8 +26,8 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 		}
 		else {
 			descString = [NSString stringWithFormat:
-						  @"OSStatus error code %d.  See MacErrors.h",
-						  code] ;
+						  @"OSStatus error code %ld.  See MacErrors.h",
+						  (long)code] ;
 		}
 	}
 	else if (code <= kPOSIXErrorEOPNOTSUPP) {
@@ -50,7 +51,7 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	return [self errorWithMacErrorCode:(code+kPOSIXErrorBase)] ;
 }
 
-+ (NSError*)errorWithHTTPStatusCode:(int)code 
++ (NSError*)errorWithHTTPStatusCode:(NSInteger)code 
 					 prettyFunction:(const char*)prettyFunction {
 	NSString* methodName = [NSString stringWithCString:prettyFunction
 											  encoding:NSASCIIStringEncoding] ;
@@ -70,7 +71,7 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 		return nil ;
 	}
 	
-	NSInteger code = [[dic objectForKey:NSAppleScriptErrorNumber] intValue] ;
+	NSInteger code = [[dic objectForKey:NSAppleScriptErrorNumber] integerValue] ;
 	NSString* localizedDescription = [dic objectForKey:NSAppleScriptErrorBriefMessage] ;
 	// The following is probably not very good, but the best I can think of
 	NSString* localizedFailureReason = [dic objectForKey:NSAppleScriptErrorMessage] ;						 

@@ -1,4 +1,3 @@
-
 @implementation NSPopUpButton (Populating)
 
 - (void)populateTitles:(NSArray*)titles
@@ -9,7 +8,7 @@
 	NSMenu* menu = [self menu] ;
 	[self setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]] ;
 	NSMenuItem* menuItem ;
-	int i = 0 ;
+	NSInteger i = 0 ;
 	NSEnumerator * e = [titles objectEnumerator] ;
 	NSString* title ;
 	while ((title = [e nextObject])) {
@@ -26,7 +25,7 @@
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)		
 
 - (void)tagItemsAsPositioned {
-	int i=0 ;
+	NSInteger i=0 ;
 	for(NSMenuItem* item in [self itemArray]) {
 		[item setTag:i++] ;
 	}

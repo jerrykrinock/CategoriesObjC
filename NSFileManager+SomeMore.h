@@ -175,14 +175,17 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 					   error_p:(NSError**)error_p ;
 
 /*!
- @brief    Trashes a given path by telling the Finder to do it with AppleScript
+ @brief    Trashes a given path
 
- @details  The Finder will play the trash sound if successful
+ @param    scriptFinder  If YES, tells the Finder to do it via AppleScript.
+           The Finder will play the trash sound if successful.  If NO, uses
+           the File Manager function FSPathMoveObjectToTrashSync()
  @param    error_p  If not NULL and if an error occurs, upon return,
            will point to an error object encapsulating the error.
  @result   YES if the method completed successfully, otherwise NO
 */
 - (BOOL)trashPath:(NSString*)path
+	 scriptFinder:(BOOL)scriptFinder
 		  error_p:(NSError**)error_p ;
 
 

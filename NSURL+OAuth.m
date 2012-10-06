@@ -11,7 +11,7 @@
 	
 	NSString* port ;
 	if (portNumber) {
-		port = [NSString stringWithFormat:@"%d", portNumber] ;
+		port = [NSString stringWithFormat:@"%ld", (long)[portNumber integerValue]] ;
 	}
 	else {
 		port = [scheme isEqualToString:@"http"] ? @"80" : @"443" ;

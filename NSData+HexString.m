@@ -27,7 +27,7 @@ char ASCIIHexCharacterForNibble(short nibble, BOOL uppercaseLetters) {
 	// integer-size numbers and using format strings with %x, but 
 	// that might have raised endian issues.  I think this way will
 	// be endian-agnostic.
-	int i ;
+	NSInteger i ;
 	char hashCString[33] ;
 	for (i=0; i<[self length]; i++) {
 		NSData* dataChunk = [self subdataWithRange:NSMakeRange(i, 1)] ;

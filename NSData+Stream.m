@@ -8,7 +8,7 @@
 + (NSData*)dataWithStream:(FILE*)stream {
 	NSMutableData* data = [[NSMutableData alloc] init] ;
 	unsigned char *buf = NULL ;
-	int inBytes;
+	NSInteger inBytes;
 	do {
 		buf = (unsigned char*)malloc(STDIN_CHUNK_SIZE);
 		inBytes = fread(buf, 1, STDIN_CHUNK_SIZE, stream);
@@ -23,7 +23,7 @@
 }
 
 - (void)writeToStream:(FILE*)stream {
-	int size = [self length] ;
+	NSInteger size = [self length] ;
 	if (size > 0) {
 		void* buffer = malloc(size) ;
 		[self getBytes:buffer] ;

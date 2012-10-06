@@ -20,7 +20,11 @@ NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailBu
 NSString* const SSYIsOnlyInformationalErrorKey = @"isOnlyInformational" ;
 NSString* const SSYIsLoggedErrorKey = @"isLogged" ;
 NSString* const SSYDidRecoverInvocationErrorKey = @"didRecoverInvocation" ;
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 NSString* const SSYHelpAnchorErrorKey = @"helpAnchor" ;
+#else
+#define SSYHelpAnchorErrorKey NSHelpAnchorErrorKey
+#endif
 
 NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That error description was truncated! ***" ;
 
@@ -41,7 +45,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 }
 
 + (NSError*)errorWithLocalizedDescription:(NSString*)localizedDescription
-									 code:(int)code
+									 code:(NSInteger)code
 						   prettyFunction:(const char*)prettyFunction {
 	NSDictionary* userInfo = nil ;
 	if (localizedDescription) {
@@ -74,9 +78,9 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	}
 	else {
 		uniqueKey = [NSString stringWithFormat:
-						@"%@-%02d",
+						@"%@-%02ld",
 						[baseKey description],
-						sequenceNumber] ;
+						(long)sequenceNumber] ;
 	}
 	
 	return uniqueKey ;
@@ -211,7 +215,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 										   forKey:SSYMethodNameErrorKey] ;
 	}
 	else {
-		error = self ;
+		error = self ; 
 	}
 	
 	return error ;
@@ -256,10 +260,11 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 									  forKey:SSYHelpAnchorErrorKey] ;
 }
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 - (NSString*)helpAnchor {
 	return [[self userInfo] objectForKey:SSYHelpAnchorErrorKey] ;
 }
-
+#endif
 
 - (NSError*)underlyingError {
 	return [[self userInfo] objectForKey:NSUnderlyingErrorKey] ;
@@ -407,15 +412,15 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	}
 	
 	NSMutableString* indentation = [NSMutableString string] ;
-	int ii ;
+	NSInteger ii ;
 	for (ii=0; ii<indentationLevel; ii++) {
 		[indentation appendString:@"   "] ;
 	}
 
 	// Set truncation limits
-	int userInfoMaxKeyLength ;
-	int userInfoMaxValueLength;
-	int userInfoMaxTotalLength;
+	NSInteger userInfoMaxKeyLength ;
+	NSInteger userInfoMaxValueLength;
+	NSInteger userInfoMaxTotalLength;
 	if (truncateForEmail) {
 		userInfoMaxKeyLength = 256 ;
 		userInfoMaxValueLength = 16384 ;
@@ -492,13 +497,13 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 
 	return [NSString stringWithFormat:
 			@"%@NSError %p\n"
-			@"%@***     code: %d\n"
+			@"%@***     code: %ld\n"
 			@"%@***   domain: %@\n"
 			@"%@*** userInfo:\n%@%@",
 			indentation,
 			self,
 			indentation,
-			[self code],
+			(long)[self code],
 			indentation,
 			[self domain],
 			indentation,
@@ -704,6 +709,11 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	return NO ;
 }
 
+- (BOOL)isUserCancelledCocoaError {
+	return [self involvesCode:NSUserCancelledError
+					   domain:NSCocoaErrorDomain] ;
+}
+
 - (BOOL)isRecoverable {
 	return (
 			(NO
@@ -756,7 +766,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			}
 			
 			recoveryAttempter = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:recoveryAttempterUrl
-																									   display:NO
+																									   display:YES
 																										 error:error_p] ;
 		}
 		else if (!recoveryAttempter) {

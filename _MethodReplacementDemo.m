@@ -79,7 +79,7 @@
 }
 
 - (void)my_initWithObjects:(id*)objects
-					 count:(unsigned)count ;
+					 count:(NSUInteger)count ;
 
 @end
 
@@ -98,12 +98,12 @@
 }
 
 - (void)my_initWithObjects:(id*)objects
-					 count:(unsigned)count {
+					 count:(NSUInteger)count {
 	if (count > 0) {
 		NSAssert1(
 				  objects[0] != nil,
-				  @"Attempt to init array with %d objects and first one is nil",
-				  count) ;
+				  @"Attempt to init array with %ld objects and first one is nil",
+				  (long)count) ;
 	}
 	
 	// Call the original method, whose implementation was exchanged with our own.
@@ -289,10 +289,10 @@ error:(NSError**)error {
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
-@interface NSObject (DebugByReplacingMethod)
+@interface NSTextView (DebugByReplacingMethod)
 @end
 
-@implementation NSObject (DebugByReplacingMethod)
+@implementation NSTextView (DebugByReplacingMethod)
 
 + (void)load {
 	// Swap the implementations of one method with another.
@@ -302,22 +302,18 @@ error:(NSError**)error {
 	
 	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
 	NSLog(@"Replacing methods in %@", [self class]) ;
-	Method originalMethod = class_getInstanceMethod(self, @selector(bind:toObject:withKeyPath:options:)) ;
-	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_bind:toObject:withKeyPath:options:)) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(shouldChangeTextInRange:replacementString:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_shouldChangeTextInRange:replacementString:)) ;
 	method_exchangeImplementations(originalMethod, replacedMethod) ;
 }
 
-- (id)replacement_bind:binding
-			  toObject:object
-		   withKeyPath:keyPath
-			   options:options {
-	NSLog(@"binding: %@ to: %@ keyPath: %@ opts: %@", binding, [object shortDescription], keyPath, options) ;
+- (id)replacement_shouldChangeTextInRange:(NSRange)range
+						replacementString:(NSString*)replacement {
+	NSLog(@"replacing in self=%p  range: %@  replacement: '%@'  current-text: '%@'  superview:%@  frame:%@  isHidden=%d", self, NSStringFromRange(range), replacement, [[self textStorage] string], [self superview], NSStringFromRect([self frame]), [self isHidden]) ;
 	
 	// Due to the swap, this calls the original method
-	return [self replacement_bind:binding
-						 toObject:object
-					  withKeyPath:keyPath
-						  options:options] ;
+				return [self replacement_shouldChangeTextInRange:range
+											   replacementString:replacement] ;
 }
 
 @end
@@ -360,4 +356,36 @@ error:(NSError**)error {
 
 #endif
 
+#if 1
+#warning * Doing Method Replacement for Debugging!!!!!!!!
 
+@interface NSMenuItem (DebugByReplacingMethod)
+@end
+
+@implementation NSMenuItem (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(setTarget:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_setTarget:)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_setTarget:(id)target {
+    if ([self tag] == 4201) {
+        NSLog(@"For %@ setting target=%@ bt:\n%@", [self title], target, SSYDebugBacktrace()) ;
+    }
+	
+	// Due to the swap, this calls the original method
+    return [self replacement_setTarget:target] ;
+}
+
+@end
+
+#endif

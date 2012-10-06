@@ -34,4 +34,9 @@
 + (NSDate*)laterDate:(NSDate*)date1
 				date:(NSDate*)date2 ;
 
++ (BOOL)isEqualHandlesNilDate1:(NSDate*)date1
+                         date2:(NSDate*)date2
+                     tolerance:(NSTimeInterval)tolerance ;
+
+
 @end

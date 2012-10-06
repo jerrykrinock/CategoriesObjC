@@ -14,6 +14,8 @@
 		case NO:
 			string = [NSString localize:@"no"] ;
 			break ;
+        default:
+            string = @"" ;
 	}
 	
 	return string ;

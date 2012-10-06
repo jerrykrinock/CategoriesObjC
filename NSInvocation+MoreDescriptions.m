@@ -13,11 +13,11 @@
 }
 
 - (NSString*)longDescription {
-	int nArgs = [[self methodSignature] numberOfArguments] ;
+	NSInteger nArgs = [[self methodSignature] numberOfArguments] ;
 	NSScanner* scanner = [[NSScanner alloc] initWithString:NSStringFromSelector([self selector])] ;
 	NSMutableString* msg = [NSMutableString string] ;
 	NSString* piece ;
-	int iArg = 2 ; // Because arguments 0 and 1 and cmd and sel
+	NSInteger iArg = 2 ; // Because arguments 0 and 1 and cmd and sel
 	while (![scanner isAtEnd]) {
 		piece = @"" ;
 		[scanner scanUpToString:@":"
@@ -32,7 +32,7 @@
 		if ([scanner scanString:@":"
 					 intoString:&piece]) {
 			// This piece has an argument
-			[msg appendFormat:@"(arg %d/%d)", iArg, nArgs] ;
+			[msg appendFormat:@"(arg %ld/%ld)", (long)iArg, (long)nArgs] ;
 			NSString* argDesc = @"Internal Error 655-6086";
 			if(iArg < nArgs) {
 				const char* argType = [[self methodSignature] getArgumentTypeAtIndex:iArg] ;
@@ -64,21 +64,21 @@
 				}
 				else if (!strcmp(argType, "i")) {
 					// The argument is an integer
-					int arg ;
+					NSInteger arg ;
 					[self getArgument:&arg
 							  atIndex:iArg] ;
 					argDesc = [NSString stringWithFormat:
-							   @"type=int value = %d",
-							   arg] ;
+							   @"type=int value = %ld",
+							   (long)arg] ;
 				}
 				else if (!strcmp(argType, "c")) {
 					// The argument is an BOOL or unsigned char
-					unsigned char arg ;
+					uint8_t arg ;
 					[self getArgument:&arg
 							  atIndex:iArg] ;
 					argDesc = [NSString stringWithFormat:
-							   @"type=BOOL/uchar decimalValue=%d charValue='%c'",
-							   arg,
+							   @"type=BOOL/uchar decimalValue=%ld charValue='%c'",
+							   (long)arg,
 							   arg] ;
 				}
 				else if (!strcmp(argType, ":")) {

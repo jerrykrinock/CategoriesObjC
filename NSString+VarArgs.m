@@ -67,15 +67,22 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 			case 'd':
 			case 'D':
 			case 'i':
+			case 'h':  // length modifier for an integer
+			case 'l':  // length modifier for an integer
+			case 'q':  // length modifier for an integer
+			case 'z':  // length modifier for an integer
+			case 't':  // length modifier for an integer
+			case 'j':  // length modifier for an integer
 			case 'c':  // 'unsigned char' is promoted to 'int' when passed through va-arg's '...'
 			case 'C':  // 'unichar' is promoted to 'int' when passed through va-arg's '...'
-				*substitution_p = [NSString stringWithFormat:formatString, va_arg(*argPtr, int)] ;
+				*substitution_p = [NSString stringWithFormat:formatString, va_arg(*argPtr, NSInteger)] ;
 				break ;
 			case 'e':
 			case 'f':
 			case 'F':
 			case 'g':
 			case 'G':
+			case 'L':  // length modifier for an double
 				*substitution_p = [NSString stringWithFormat:formatString, va_arg(*argPtr, double)] ;
 				break ;
 			case 's':
@@ -97,7 +104,7 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 				break ;
 			default:
 				// Should never execute
-				*substitution_p = @"ERROR 575-9832: See Console Msgs", formatChar ;
+				*substitution_p = @"ERROR 575-9832: See Console Msgs" ;
 				NSLog(@"Internal Error 575-9832: [%@ %@]: Unsupported format type: %c", [self className], NSStringFromSelector(_cmd), formatChar) ;
 				break ;
 				
@@ -110,7 +117,7 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 }
 
 
-- (void)replacePlaceholdersWithIndex:(int)index
+- (void)replacePlaceholdersWithIndex:(NSInteger)index
 	withSubstitutionFromVaArgPointer:(va_list*)argPtr {
 	static NSCharacterSet* indexCharacterSet = nil ;
 	if (indexCharacterSet == nil) {
@@ -143,7 +150,6 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 		BOOL foundQualifiedUnindexedPlaceholder = NO ;
 		
 		do {
-			leftOffAt = [scanner scanLocation] ;
 			BOOL didFindFirstPercent = [scanner scanUpToAndThenLeapOverString:@"%"
 																   intoString:NULL] ;
 			leftOffAt = [scanner scanLocation] ;
@@ -232,12 +238,14 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 		// the unused substitution, so we'll get the next one when we need
 		// it subsequently.
 		
-		// The 'notUsed' nonsense is to eliminate compiler warning.  LLVM-Clang
-		// seems to think that va_arg() has no effect other than to return a
-		// value which they expect you to use.  If they are correct, then
+		// The following nonsense is to eliminate compiler warning in Clang
+        // in Xcode 3, which was apparently a bug, because it no longer
+        // occurs in Xcode 4.  In Xcode 3, LLVM-Clang
+		// seemed to think that va_arg() had no effect other than to return a
+		// value which they expect you to use.  If they were correct, then
 		// this whole section is nonsense.
-		id notUsed = va_arg(*argPtr, id) ;
-		notUsed = nil ;
+        //		id notUsed = va_arg(*argPtr, id) ;
+        //		notUsed = nil ;
 	}
 }
 
@@ -246,9 +254,9 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 
 @implementation NSString (VarArgs)
 
-- (int)countOccurrencesOfSubstring:(NSString*)substring {
+- (NSInteger)countOccurrencesOfSubstring:(NSString*)substring {
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
-	int count = 0 ;
+	NSInteger count = 0 ;
 	while ([scanner scanUpToAndThenLeapOverString:substring
 									   intoString:NULL] == YES) {
 		count++ ;
@@ -260,15 +268,15 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 }
 
 
-- (int)countMaxPlaceholders {
+- (NSInteger)countMaxPlaceholders {
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
-	int count = 0 ;
-	int highest = 0 ;
+	NSInteger count = 0 ;
+	NSInteger highest = 0 ;
 	while ([scanner scanUpToAndThenLeapOverString:SSPercent
 									   intoString:NULL] == YES) {
 		count++ ;
-		int n = 0 ;
-		[scanner scanInt:&n] ;
+		NSInteger n = 0 ;
+		[scanner scanInteger:&n] ;
 		highest = MAX(n,highest) ;
 	}
 	
@@ -289,15 +297,15 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 	
 	NSString *answer;
 	
-	int nLiteralPercents = [s countOccurrencesOfSubstring:SSPercentPercent] ;
-	int nPlaceholders = [s countMaxPlaceholders] - 2 * nLiteralPercents ;
+	NSInteger nLiteralPercents = [s countOccurrencesOfSubstring:SSPercentPercent] ;
+	NSInteger nPlaceholders = [s countMaxPlaceholders] - 2 * nLiteralPercents ;
 	if (nPlaceholders == 0) {
 		answer = s ;
 		goto end ;
 	}
 	
 	NSMutableString* ss = [s mutableCopy] ;
-	int i ;
+	NSInteger i ;
 	for (i=-1; i<nPlaceholders; i++) {		
 		[ss replacePlaceholdersWithIndex:i
 		withSubstitutionFromVaArgPointer:argPtr_p] ;
@@ -318,8 +326,8 @@ end:
 	return answer;
 }
 
-+ (NSString*)stringWithInt:(int)i {
-	return [NSString localizedStringWithFormat:@"%d", i] ;
++ (NSString*)stringWithInt:(NSInteger)i {
+	return [NSString localizedStringWithFormat:@"%ld", (long)i] ;
 }
 
 @end

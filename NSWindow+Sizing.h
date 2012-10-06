@@ -13,7 +13,7 @@
  @details  
  @result   
 */
-- (float)toolbarHeight ;
+- (CGFloat)toolbarHeight ;
 #endif
 
 /*!
@@ -23,7 +23,7 @@
  @details  
  @result   
  */
-- (float)tootlebarHeight ;
+- (CGFloat)tootlebarHeight ;
 
 @end
 

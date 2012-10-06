@@ -225,7 +225,7 @@
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
 							 maxLength:(NSUInteger)maxLength 
 #else
-							 maxLength:(int)maxLength 
+							 maxLength:(NSInteger)maxLength 
 #endif
 							truncateOk:(BOOL)truncateOk ;
 

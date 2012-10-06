@@ -5,10 +5,10 @@
 
 - (NSString*)longDescription {
 	return [NSString stringWithFormat:
-			@"<%@: %p statusCode=%d Headers: \n%@>\n",
+			@"<%@: %p statusCode=%ld Headers: \n%@>\n",
 			[self class],
 			self,
-			[self statusCode],
+			(long)[self statusCode],
 			[self allHeaderFields]] ;	
 }
 

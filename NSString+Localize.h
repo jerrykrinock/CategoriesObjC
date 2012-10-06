@@ -287,7 +287,7 @@
 /*
  returns a string representation of the integer.  Examples: "1" "42", "-579".
 */
-+ (NSString*)stringWithInt:(int)i ;
++ (NSString*)stringWithInt:(NSInteger)i ;
 
 @end
 

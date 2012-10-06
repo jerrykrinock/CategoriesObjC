@@ -110,6 +110,8 @@ typedef enum SSYPercentEscapeStandard_enum SSYPercentEscapeStandard ;
 */
 - (NSString*)decodePercentEscapesButNot:(NSString*)butNot ;
 
+- (NSString*)stringByFixingPercentEscapes ;
+
 - (BOOL)hasPercentEscapeEncodedCharacters ;
 
 #if 0

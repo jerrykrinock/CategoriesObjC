@@ -5,7 +5,7 @@
 
 - (NSArray*)arrayWithOrderKey:(NSString*)orderKey
 				   payloadKey:(NSString*)payloadKey {
-	int count = [self count] ;
+	NSInteger count = [self count] ;
 	
 	NSMutableArray* array = [[self allObjects] mutableCopy] ;
 	
@@ -23,7 +23,7 @@
 	// information is now carried in the object's index. 
 	// Use an old-fashioned C loop since modifying an array while
 	// enumerating through it is "not safe"
-	int i ;
+	NSInteger i ;
 	for (i=0; i<count; i++) {
 		objectFromSet = [array objectAtIndex:i] ;
 		id payloadObject = [objectFromSet valueForKey:payloadKey] ;
@@ -47,13 +47,13 @@
 	// For each object in array,
 	NSEnumerator* e = [array objectEnumerator] ;
 	id payloadObject ;
-	int i = 0 ;
+	NSInteger i = 0 ;
 	while ((payloadObject = [e nextObject])) {
 		// Create a glueClass object carrying the
 		// payload and augmented with the position
 		// and add it to the set
 		id glueObject = [[glueClass alloc] init] ;
-		NSNumber* position = [[NSNumber alloc] initWithInt:i] ;
+		NSNumber* position = [[NSNumber alloc] initWithInteger:i] ;
 		[glueObject setValue:position forKey:orderKey] ;
 		[glueObject setValue:payloadObject forKey:payloadKey] ;
 		[self addObject:glueObject] ;

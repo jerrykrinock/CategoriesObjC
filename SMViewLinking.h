@@ -76,7 +76,7 @@ extern NSString *SMViewLinkingDistanceKeyName;
 	(NSView *)destView
 			border:(SMViewLinkingBorderType)destBorder;
 - (void)unlinkView:(NSView *)destView;
-- (void)moveLinkedBorder:(SMViewLinkingBorderType)border by:(float) 
+- (void)moveLinkedBorder:(SMViewLinkingBorderType)border by:(CGFloat) 
 	offset;
 - (SMViewLinkingLinkedResizingMask)linkedResizingMask;
 - (void)setLinkedResizingMask:(SMViewLinkingLinkedResizingMask)mask;
@@ -88,7 +88,7 @@ extern NSString *SMViewLinkingDistanceKeyName;
 
 
 // helper function
-float SMViewLinkingBorderPosition(NSRect frame,  
+CGFloat SMViewLinkingBorderPosition(NSRect frame,  
 								  SMViewLinkingBorderType border)
 {
 	if (border == SMViewLinkingTopBorderType) {return (frame.origin.y +  

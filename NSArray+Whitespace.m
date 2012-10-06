@@ -1,4 +1,4 @@
-
+#import "NSArray+Whitespace.h"
 
 @implementation NSArray (Whitespace)
 

@@ -22,8 +22,8 @@
 		menu = nil ;
 		
 		NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil] ;
-		int iCol = [self columnAtPoint:point];
-		int iRow = [self rowAtPoint:point];
+		NSInteger iCol = [self columnAtPoint:point];
+		NSInteger iRow = [self rowAtPoint:point];
 		
 		if ((iCol >= 0) && (iRow >= 0)) {
 			menu = [self menuForTableColumnIndex:iCol

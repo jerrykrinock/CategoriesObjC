@@ -91,7 +91,7 @@
  */
 - (NSNumber*)isValidEmail ;
 
-- (NSString*)stringByRemovingLastCharacters:(int)n ;
+- (NSString*)stringByRemovingLastCharacters:(NSInteger)n ;
 
 - (NSInteger)occurrencesOfSubstring:(NSString*)target inRange:(NSRange)range ;
 
@@ -187,6 +187,15 @@
 */
 - (NSString*)parseForUrlAndName_p:(NSString**)name_p ;
 
+/*!
+ @brief    Returns a replica of the receiver, with any
+ NSAttachmentCharacter characters removed
+ 
+ @details  Adapted from Keith Blount, see
+ http://lists.apple.com/archives/cocoa-dev/2006/Sep/msg00001.html
+ */
+- (NSString*)stringByOmittingAttachmentCharacters ;
+
 @end
 
 
@@ -233,31 +242,31 @@ NSLog(@"\"%@\" returns \"%@\"", s, [s versionSubstring]) ;
 NSLog(@"\nTesting -majorVersion") ;
 
 s = @"6.0" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"Aurora 6.0a2" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U version 1.0.0 (123)" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U version 123" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U 1.0.0" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U 1.0.0b6" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U 1.0.0 (2.1.1)" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 s = @"App4U 5" ;
-NSLog(@"\"%@\" returns %d", s, [s majorVersion]) ;
+NSLog(@"\"%@\" returns %ld", s, (long)[s majorVersion]) ;
 
 exit(0) ;
 

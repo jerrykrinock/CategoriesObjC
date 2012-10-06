@@ -19,7 +19,7 @@
 	
 	NSString* unitsKey ;
 	NSString* format ;
-	float absoluteInterval = fabs(interval) ;
+	CGFloat absoluteInterval = fabs(interval) ;
 	if (absoluteInterval < 1.0) {
 		unitsKey = @"timeIntSecsX" ;
 		format = @"%5.3f" ;

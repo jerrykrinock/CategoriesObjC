@@ -1,4 +1,3 @@
-
 @implementation NSView (FocusRing)
 
 // Invoke the following metod during -awakeFromNib

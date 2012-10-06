@@ -15,7 +15,7 @@ NSString* const constKeyUserDefinedAttributes = @"userDefinedAttributes" ;
 	innerDic = [[NSMutableDictionary alloc] init] ;
 	for (NSTableColumn* column in [self tableColumns]) {
 		if ([column identifier]) {
-			[innerDic setObject:[NSNumber numberWithFloat:[column width]]
+			[innerDic setObject:[NSNumber numberWithDouble:[column width]]
 					 forKey:[column identifier]] ;
 		}
 	}
@@ -67,7 +67,7 @@ NSString* const constKeyUserDefinedAttributes = @"userDefinedAttributes" ;
 	for (NSTableColumn* column in [self tableColumns]) {
 		NSString* identifier = [column identifier] ;
 		NSNumber* widthNumber = [widths objectForKey:identifier] ;
-		CGFloat width = [widthNumber floatValue] ;
+		CGFloat width = [widthNumber doubleValue] ;
 		if (isnan(width)) {
 			width = 80.0 ;
 			NSLog(@"Warning 152-0842 Ignoring corrupt pref to set col width to nan") ;

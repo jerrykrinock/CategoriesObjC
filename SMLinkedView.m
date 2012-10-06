@@ -5,7 +5,7 @@
 @interface SMLinkedView (private)
 - (void)_updateLinkedViews;
 - (void)_moveBorder:(SMViewLinkingBorderType)border ofView:(NSView *) 
-			view by:(float)offset;
+			view by:(CGFloat)offset;
 @end
 
 
@@ -57,25 +57,25 @@
 	NSRect destFrame = [[destView superview] convertRect:[destView  
 		frame] toView:nil];
 	// TODO: better (faster ?) transformation!!!
-	float distance = SMViewLinkingBorderPosition(destFrame, destBorder)
+	CGFloat distance = SMViewLinkingBorderPosition(destFrame, destBorder)
 		- SMViewLinkingBorderPosition(sourceFrame, sourceBorder);
 	
 	// add to the linkedViews array
 	NSDictionary *linkedViewDict = [NSDictionary  
 dictionaryWithObjectsAndKeys:
 		destView, SMViewLinkingDestViewKeyName,
-		[NSNumber numberWithInt:sourceBorder],  
+		[NSNumber numberWithInteger:sourceBorder],  
 		SMViewLinkingSourceBorderKeyName,
-		[NSNumber numberWithInt:destBorder],  
+		[NSNumber numberWithInteger:destBorder],  
 		SMViewLinkingDestBorderKeyName,
-		[NSNumber numberWithFloat:distance], SMViewLinkingDistanceKeyName,
+		[NSNumber numberWithDouble:distance], SMViewLinkingDistanceKeyName,
 		nil];
 	[linkedViews addObject:linkedViewDict];
 }
 
 - (void)unlinkView:(NSView *)destView
 {
-	int i;
+	NSInteger i;
 	NSDictionary * linkedViewDict;
 	
 	for (i = [linkedViews count] - 1; i--; i < 0) {
@@ -87,7 +87,7 @@ dictionaryWithObjectsAndKeys:
 	}
 }
 
-- (void)moveLinkedBorder:(SMViewLinkingBorderType)border by:(float) 
+- (void)moveLinkedBorder:(SMViewLinkingBorderType)border by:(CGFloat) 
 	offset
 {
 	NSRect frame = [self frame];
@@ -190,7 +190,7 @@ dictionaryWithObjectsAndKeys:
 	// TODO: better (faster ?) transformation!!!
 	NSRect destFrame;
 	SMViewLinkingBorderType sourceBorder, destBorder;
-	float linkedDistance, actualDistance;
+	CGFloat linkedDistance, actualDistance;
 	
 	while (linkedViewDict = [enumerator nextObject])
 	{
@@ -199,11 +199,11 @@ dictionaryWithObjectsAndKeys:
 											   toView:nil];
 		// TODO: better (faster ?) transformation!!!
 		sourceBorder = [[linkedViewDict  
-objectForKey:SMViewLinkingSourceBorderKeyName] intValue];
+objectForKey:SMViewLinkingSourceBorderKeyName] integerValue];
 		destBorder = [[linkedViewDict  
-objectForKey:SMViewLinkingDestBorderKeyName] intValue];
+objectForKey:SMViewLinkingDestBorderKeyName] integerValue];
 		linkedDistance = [[linkedViewDict  
-objectForKey:SMViewLinkingDistanceKeyName] floatValue];
+objectForKey:SMViewLinkingDistanceKeyName] doubleValue];
 		
 		actualDistance = SMViewLinkingBorderPosition(destFrame, destBorder)
 			- SMViewLinkingBorderPosition(sourceFrame, sourceBorder);

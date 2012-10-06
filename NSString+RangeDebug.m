@@ -34,7 +34,7 @@
 		||
 		(max > [self length])
 		) {
-		NSLog(@"Requested substringWithRange %@ out of range for string of length %d.  Set breakpoint at -[NSString badRange] to debug if you don't recognize string:\n%@", NSStringFromRange(range), [self length], self) ;
+		NSLog(@"Requested substringWithRange %@ out of range for string of length %ld.  Set breakpoint at -[NSString badRange] to debug if you don't recognize string:\n%@", NSStringFromRange(range), (long)[self length], self) ;
 		return [self badRange] ;
 	}
 	

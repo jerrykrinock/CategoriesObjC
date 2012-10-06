@@ -1,4 +1,3 @@
-
 static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 @implementation NSData (MBBase64)
@@ -18,7 +17,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 		if (decodingTable == NULL)
 			return nil;
 		memset(decodingTable, CHAR_MAX, 256);
-		int i;
+		NSInteger i;
 		for (i = 0; i < 64; i++)
 			decodingTable[(short)encodingTable[i]] = i;
 	}
@@ -29,9 +28,9 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	char *bytes = malloc((([string length] + 3) / 4) * 3);
 	if (bytes == NULL)
 		return nil;
-	int length = 0;
+	NSInteger length = 0;
 	
-	int i = 0;
+	NSInteger i = 0;
 	while (YES)
 	{
 		char buffer[4];
@@ -78,9 +77,9 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
     char *characters = malloc((([self length] + 2) / 3) * 4);
 	if (characters == NULL)
 		return nil;
-	int length = 0;
+	NSInteger length = 0;
 	
-	int i = 0;
+	NSInteger i = 0;
 	while (i < [self length])
 	{
 		char buffer[3] = {0,0,0};

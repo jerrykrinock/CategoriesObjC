@@ -5,8 +5,8 @@
 @implementation NSProcessInfo (SSYMoreInfo)
 
 - (NSDictionary*)geekyProcessInfo {
-	int myPid = [self processIdentifier] ;
-	NSString* myPidString = [NSString stringWithFormat:@"%d", myPid] ;
+	NSInteger myPid = [self processIdentifier] ;
+	NSString* myPidString = [NSString stringWithFormat:@"%ld", (long)myPid] ;
 	
 	NSData* stdoutData ;
 	NSArray* args ;
@@ -24,10 +24,11 @@
 	
 	NSString* parentInfo = @"No ppid" ;
 	if (stdoutData) {
-		parentInfo = [[NSString alloc] initWithData:stdoutData
+		NSString* rawParentInfo = [[NSString alloc] initWithData:stdoutData
 									   encoding:[NSString defaultCStringEncoding]] ;
 		// Remove the trailing newline
-		parentInfo = [parentInfo stringByRemovingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]] ;
+		parentInfo = [rawParentInfo stringByRemovingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]] ;
+        [rawParentInfo release] ;
 		
 		args = [NSArray arrayWithObjects:@"-lxww", @"-p", parentInfo, nil] ;
 		[SSYShellTasker doShellTaskCommand:@"/bin/ps"
@@ -39,8 +40,8 @@
 								   timeout:5.0
 								   error_p:NULL] ;
 		if (stdoutData) {
-			parentInfo = [[NSString alloc] initWithData:stdoutData
-										   encoding:[NSString defaultCStringEncoding]] ;
+			parentInfo = [[[NSString alloc] initWithData:stdoutData
+										   encoding:[NSString defaultCStringEncoding]] autorelease] ;
 		}
 	}
 	

@@ -2,6 +2,6 @@
 
 @interface NSFont (Height) 
 
-- (float)tableRowHeight ;
+- (CGFloat)tableRowHeight ;
 
 @end

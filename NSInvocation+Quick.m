@@ -1,4 +1,3 @@
-
 // We need the address of nil object which will never go away.
 // But Cocoa cannot retain such an object since [nil retain] is a no-op.
 // So we use a static variable...
@@ -39,7 +38,7 @@ static NSObject* gNil = nil ;
 			// The following loops executes if selector takes > 1 argument
 			if ([methSig numberOfArguments] > 3) {
 				va_start(argumentList, firstArgumentAddress) ;
-				int i ;
+				NSInteger i ;
 				for (i=3; i<[methSig numberOfArguments]; i++) { 
 					address = va_arg(argumentList, void*) ;
 					if (!address) {
@@ -101,7 +100,7 @@ static NSObject* gNil = nil ;
 		// The following loops executes if selector takes > 1 argument
 		if ([methSig numberOfArguments] > 3) {
 			va_start(argumentList, firstArgumentAddress) ;
-			int i ;
+			NSInteger i ;
 			for (i=3; i<[methSig numberOfArguments]; i++) { 
 				address = va_arg(argumentList, void*) ;
 				if (!address) {

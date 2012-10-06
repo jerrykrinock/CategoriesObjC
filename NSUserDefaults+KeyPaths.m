@@ -1,5 +1,5 @@
 #import "NSUserDefaults+KeyPaths.h"
-#import "NSArray+SimpleMutations.h"
+#import "NSArray+SSYMutations.h"
 #import "NSDictionary+SimpleMutations.h"
 
 
@@ -8,8 +8,12 @@
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray {
 	// Don't use componentsJoinedByString:@"." because it is legal
 	// for a key path to contain a dot/period.
-	id obj = self;
+	id obj = self ;
 	for(id key in keyPathArray) {
+		if (![obj respondsToSelector:@selector(objectForKey:)]) {
+			// Corrupt pref?
+			return nil ;
+		}
 		obj = [obj objectForKey:key] ;
 	}
 	
@@ -168,8 +172,8 @@
 	NSNumber* number = [self valueForKeyPath:keyPath] ;
 	NSInteger value = 0 ;
 	// We are careful since user defaults may be corrupted.
-	if ([number respondsToSelector:@selector(intValue)]) {
-		value = [number intValue] ;
+	if ([number respondsToSelector:@selector(integerValue)]) {
+		value = [number integerValue] ;
 	}
 		
 	value++ ;

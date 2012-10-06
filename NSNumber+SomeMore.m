@@ -7,7 +7,7 @@
 }
 
 - (NSNumber*)plus1 {
-	return [NSNumber numberWithInt:([self intValue] + 1)] ;
+	return [NSNumber numberWithInteger:([self integerValue] + 1)] ;
 }
 
 @end

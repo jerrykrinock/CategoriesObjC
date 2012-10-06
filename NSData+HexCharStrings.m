@@ -12,8 +12,8 @@
 		NSInteger loc = 0 ;
 		while (loc < [piece length]) {
 			const char* byteString = [[piece substringWithRange:NSMakeRange(loc, 2)] UTF8String] ;
-			NSInteger byte ;
-			sscanf(byteString, "%x", &byte) ;
+			int16_t byte ;
+			sscanf(byteString, "%hx", &byte) ;
 			// Adjustment for endian on PowerPC may be needed here?
 			loc += 2 ;
 			[data appendBytes:&byte

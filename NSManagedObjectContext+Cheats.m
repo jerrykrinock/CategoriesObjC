@@ -7,6 +7,7 @@
 #import "NSFileManager+SomeMore.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
+NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
 
 @implementation NSManagedObjectContext (Cheats)
 
@@ -28,6 +29,7 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 										 error_p:(NSError**)error_p {
 	NSString* errorDescription = nil ;
 	NSInteger errorCode = 0 ;
+	NSError* error = nil ;
 	NSManagedObjectContext* managedObjectContext = nil ;
 	
 	NSManagedObjectModel* mom = [NSManagedObjectModel managedObjectModelWithMomdName:momdName
@@ -37,7 +39,7 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 							@"Could not find managed object model %@ in %@",
 							versionName,
 							momdName] ;
-		errorCode = 613201 ;
+		errorCode = SSYManagedObjectContextCheatsErrorNoManagedObjectModel ;
 		goto end ;
 	}
 	
@@ -47,18 +49,18 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 		errorDescription = [NSString stringWithFormat:
 							@"Could not create persistent store coordinator for %@",
 							versionName] ;
-		errorCode = 613202 ;
+		errorCode = SSYManagedObjectContextCheatsErrorCouldNotCreatePSC ;
 		goto end ;
 	}
 	
-	sqlFilename = [sqlFilename stringByAppendingPathExtension:@"sql"] ;
+	sqlFilename = [sqlFilename stringByAppendingPathExtension:SSYManagedObjectContextPathExtensionForSqliteStores] ;
 	NSString* path = [[NSString applicationSupportFolderForThisApp] stringByAppendingPathComponent:sqlFilename] ;
 	NSURL* url = [NSURL fileURLWithPath:path] ;
 	if (!url) {
 		errorDescription = [NSString stringWithFormat:
 							@"Could not create url for store %@",
 							sqlFilename] ;
-		errorCode = 613203 ;
+		errorCode = SSYManagedObjectContextCheatsErrorCouldNotCreateUrlForStore ;
 		goto end ;
 	}
 	
@@ -68,7 +70,6 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
 							 nil] ;
 	}
-	NSError* error = nil ;
 	NSPersistentStore* persistentStore = [coordinator addPersistentStoreWithType:NSSQLiteStoreType
 																   configuration:nil
 																			 URL:url
@@ -90,7 +91,7 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 					errorDescription = [NSString stringWithFormat:
 										@"Could not delete corrupt store %@",
 										path] ;
-					errorCode = 613204 ;
+					errorCode = SSYManagedObjectContextCheatsErrorCouldNotDeleteCorruptStore ;
 					goto end ;
 				}
 			}
@@ -106,7 +107,7 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 				errorDescription = [NSString stringWithFormat:
 									@"Could not replace corrupt store %@",
 									url] ;
-				errorCode = 613205 ;
+				errorCode = SSYManagedObjectContextCheatsErrorCouldNotFReplaceCorruptStore ;
 				goto end ;
 			}
 		}
@@ -114,7 +115,7 @@ NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectCon
 			errorDescription = [NSString stringWithFormat:
 								@"Could not create store %@",
 								url] ;
-			errorCode = 613206 ;
+			errorCode = SSYManagedObjectContextCheatsErrorCouldNotCreateStore ;
 			goto end ;
 		}
 	}
@@ -218,27 +219,51 @@ end:
 	return [[self metadata1] objectForKey:key] ;
 }
 
-- (void)setMetadata1Object:(id)object
-				   forKey:(id)key {
+- (BOOL)setMetadata1Object:(id)object
+                    forKey:(id)key
+                   error_p:(NSError**)error_p {
+    BOOL result = NO ;
+    NSError* error = nil ;
 	NSMutableDictionary* metadata = [[self metadata1] mutableCopy] ;
 	[metadata setObject:object
 				 forKey:key] ;
 	NSPersistentStoreCoordinator* persistentStoreCoordinator = [self persistentStoreCoordinator] ;
 	NSPersistentStore* persistentStore = [self store1] ;
-	if (persistentStore) {
+	if (![persistentStore isReadOnly]) {
 		[persistentStoreCoordinator setMetadata:metadata
 							 forPersistentStore:persistentStore] ;
+        result = YES ;
 	}
-	else {
-		NSError* error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
-											 code:315644
-										 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-												   @"Could not get store", NSLocalizedDescriptionKey,
-												   nil]] ;
-		NSLog(@"Internal Error in %s: %@", __PRETTY_FUNCTION__, error) ;
+	else if (!persistentStore) {
+		error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
+                                    code:SSYManagedObjectContextCheatsErrorCouldNotGetStore
+                                userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                          @"Could not get store", NSLocalizedDescriptionKey,
+                                          nil]] ;
 	}
+    else {
+		NSString* desc = [NSString stringWithFormat:
+                          @"Store is readonly : %@",
+                          [persistentStore URL]] ;
+        error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
+                                    code:SSYManagedObjectContextCheatsErrorStoreIsReadOnly
+                                userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                          desc, NSLocalizedDescriptionKey,
+                                          nil]] ;
+    }
 	
+    if (error) {
+        if (error_p) {
+            *error_p = error ;
+        }
+        else {
+            NSLog(@"Error in %s: %@", __PRETTY_FUNCTION__, [error localizedDescription]) ;
+        }
+    }
+    
 	[metadata release] ;
+    
+    return result ;
 }
 
 - (BOOL)addMetadata1:(NSDictionary*)moreMetadata {
@@ -260,6 +285,7 @@ end:
 	NSString* path = [storeUrl path] ;
 	NSError* error = nil ;
 	BOOL ok = [[NSFileManager defaultManager] trashPath:path
+										   scriptFinder:NO
 												error_p:&error] ;
 	return ok ;
 }
@@ -273,44 +299,57 @@ end:
 		// Prior to BookMacster 1.9.3, we just did this here:
 		// object = [self objectWithID:objectId] ;
 		// That sometimes caused Core Data exceptions as explained below.
-		if ([self respondsToSelector:@selector(existingObjectWithID:error:)]) {
-			// Mac OS X 10.6 or later
-			NSError* error = nil ;
-			object = [self existingObjectWithID:objectId
-										  error:&error] ;
-			// If asking this method for nonexistent objects is expected
-			// behavior, you should delete this…
-			if (error) {
-				NSLog(@"Warning 927-4139 (not really an error) : %@", error) ;
-			}
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
+		// Mac OS X 10.5 or earlier
+		object = [self objectWithID:objectId] ;
+		// If an object with objectId does not exist in the store, -objectWithID: will
+		// "helpfully" create a bogus object which will raise a "Core Data could not
+		// fulfill a fault" exception when we try to access any of its properties.
+		// (This behavior is per documentation.)
+		// The solution to this problem is to immediately test the object by
+		// trying to access one of its properties in a @try/catch block and
+		// catching the "Core Data could not fulfill a fault" exception.
+		// Amazingly, I tested this kludge and it actually worked, 3 times!
+		id value = nil ;
+		@try {
+			NSDictionary* attributes = [[object entity] propertiesByName] ;
+			NSArray* keys = [attributes allKeys] ;
+			NSString* aKey = [keys firstObjectSafely] ;
+			value = [object valueForKey:aKey] ;
 		}
-		else {
-			// Mac OS X 10.5 or earlier
-			object = [self objectWithID:objectId] ;
-			// If an object with objectId does not exist in the store, -objectWithID: will
-			// "helpfully" create a bogus object which will raise a "Core Data could not
-			// fulfill a fault" exception when we try to access any of its properties.
-			// (This behavior is per documentation.)
-			// The solution to this problem is to immediately test the object by
-			// trying to access one of its properties in a @try/catch block and
-			// catching the "Core Data could not fulfill a fault" exception.
-			// Amazingly, I tested this kludge and it actually worked, 3 times!
-			id value = nil ;
-			@try {
-				NSDictionary* attributes = [[object entity] propertiesByName] ;
-				NSArray* keys = [attributes allKeys] ;
-				NSString* aKey = [keys firstObjectSafely] ;
-				value = [object valueForKey:aKey] ;
-			}
-			@catch (NSException* exception) {
-				// If asking this method for nonexistent objects is expected
-				// behavior, you should delete the next line…
-				NSLog(@"Warning 927-6429 %@ : %@", exception, value) ;
-				object = nil ;
-			}
-			@finally {
-			}
+		@catch (NSException* exception) {
+			// If asking this method for nonexistent objects is expected,
+			// you should delete the next line…
+			NSLog(@"Warning 927-6429 %@ : %@", exception, value) ;
+			object = nil ;
 		}
+		@finally {
+		}
+#else
+		// Mac OS X 10.6 or later
+		NSError* error = nil ;
+		object = [self existingObjectWithID:objectId
+									  error:&error] ;
+		// If asking this method for nonexistent objects is expected,
+		// you should delete this…
+		if (error) {
+#if DEBUG
+			// Be more verbose
+            NSString* backtrace = SSYDebugBacktraceDepth(8) ;
+#else
+			// Be less verbose
+            NSString* backtrace = SSYDebugCaller() ;
+#endif
+			NSLog(@"Warning 927-4139 (not really an error) : %@ for %@", error, backtrace) ;
+            
+            if (object != nil) {
+                // I think this indicates a bug in Mac OS X, because
+                // -existingObjectWithID:error: is documented to return nil
+                // if anything bad happens.
+                NSLog(@"Warning 927-4140  object=%p", object) ;
+            }
+		}
+#endif
 	}
 	else {
 		object = nil ;

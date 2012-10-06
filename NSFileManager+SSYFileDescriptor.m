@@ -21,8 +21,8 @@ NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDe
 														   @"-Fn",  // output only the process 'name' (n)
 														   @"-w",   // suppress warnings
 														   @"-a",   // logical-AND the next two arguments
-														   [NSString stringWithFormat:@"-p%d", pid],
-														   [NSString stringWithFormat:@"-d%d", fileDescriptor],
+														   [NSString stringWithFormat:@"-p%ld", (long)pid],
+														   [NSString stringWithFormat:@"-d%ld", (long)fileDescriptor],
 														   nil]
 											  inDirectory:nil
 										  stdinData:nil
@@ -91,6 +91,8 @@ NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDe
 									   code:errorCode
 								   userInfo:errorInfo] ;
 	}
+    
+    [errorInfo release] ;
 		 
 	return path ;
 }

@@ -4,8 +4,9 @@
 @implementation NSOperationQueue (Depends)
 
 - (void)addAtEndOperation:(NSOperation*)operation {
-	for (NSOperation* existingOperation in [self operations]) {
-		[operation addDependency:existingOperation] ;
+	NSOperation* priorOperation = [[self operations] lastObject] ;
+	if (priorOperation) {
+		[operation addDependency:priorOperation] ;
 	}
 	
 	[self addOperation:operation] ;

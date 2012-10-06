@@ -3,37 +3,37 @@
 @interface NSView (Layout) 
 
 	// Origin X
-- (float)leftEdge ;
-- (float)rightEdge ;
-- (float)centerX ;
-- (void)setLeftEdge:(float)t ;
-- (void)setRightEdge:(float)t ;
-- (void)setCenterX:(float)t ;
+- (CGFloat)leftEdge ;
+- (CGFloat)rightEdge ;
+- (CGFloat)centerX ;
+- (void)setLeftEdge:(CGFloat)t ;
+- (void)setRightEdge:(CGFloat)t ;
+- (void)setCenterX:(CGFloat)t ;
 
 	// Origin Y
-- (float)bottom ;
-- (float)top ;
-- (float)centerY ;
-- (void)setBottom:(float)t ;
-- (void)setTop:(float)t ;
-- (void)setCenterY:(float)t ;
+- (CGFloat)bottom ;
+- (CGFloat)top ;
+- (CGFloat)centerY ;
+- (void)setBottom:(CGFloat)t ;
+- (void)setTop:(CGFloat)t ;
+- (void)setCenterY:(CGFloat)t ;
 
 	// Size
-- (float)width ;
-- (float)height ;
-- (void)setWidth:(float)t ;
-- (void)setHeight:(float)t ;
+- (CGFloat)width ;
+- (CGFloat)height ;
+- (void)setWidth:(CGFloat)t ;
+- (void)setHeight:(CGFloat)t ;
 - (void)setSize:(NSSize)size ;
 
 	// Incrememental Changes
-- (void)deltaX:(float)dX
-		deltaW:(float)dW ;
-- (void)deltaY:(float)dY
-		deltaH:(float)dH ;
-- (void)deltaX:(float)dX ;
-- (void)deltaY:(float)dY ;
-- (void)deltaW:(float)dW ;
-- (void)deltaH:(float)dH ;
+- (void)deltaX:(CGFloat)dX
+		deltaW:(CGFloat)dW ;
+- (void)deltaY:(CGFloat)dY
+		deltaH:(CGFloat)dH ;
+- (void)deltaX:(CGFloat)dX ;
+- (void)deltaY:(CGFloat)dY ;
+- (void)deltaW:(CGFloat)dW ;
+- (void)deltaH:(CGFloat)dH ;
 
 
 /*!

@@ -9,7 +9,7 @@
 	// compute an MD5 digest.
 	EVP_MD_CTX mdctx;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
-	int unsigned md_len;
+	unsigned int md_len;
 	EVP_DigestInit(&mdctx, EVP_md5());
 	EVP_DigestUpdate(&mdctx, [self bytes], [self length]);
 	EVP_DigestFinal(&mdctx, md_value, &md_len);
@@ -22,7 +22,7 @@
 	// compute an SHA1 digest.
 	EVP_MD_CTX mdctx;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
-	int unsigned md_len;
+	unsigned int md_len;
 	EVP_DigestInit(&mdctx, EVP_sha1());
 	EVP_DigestUpdate(&mdctx, [self bytes], [self length]);
 	EVP_DigestFinal(&mdctx, md_value, &md_len);

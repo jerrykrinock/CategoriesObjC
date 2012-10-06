@@ -7,6 +7,6 @@
 
 - (id)lastObjectSafely ;
 
-- (id)objectSafelyAtIndex:(int)index ;
+- (id)objectSafelyAtIndex:(NSInteger)index ;
 
 @end

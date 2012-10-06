@@ -10,7 +10,7 @@
 	//   key   = index of string containing one or more target strings
 	//   value = string with spoofs replaced by underscore
 	NSMutableDictionary* patches = nil ;
-	int index = 0 ;
+	NSInteger index = 0 ;
 	for (NSString* string in self) {
 		if (([string containsString:target])) {
 			NSMutableString* newTag = [string mutableCopy] ;
@@ -19,7 +19,7 @@
 			if (!patches) {
 				patches = [[NSMutableDictionary alloc] init] ;
 			}
-			[patches setObject:newTag forKey:[NSNumber numberWithInt:index]] ;
+			[patches setObject:newTag forKey:[NSNumber numberWithInteger:index]] ;
 			[newTag release] ;
 		}
 		index++ ;
@@ -29,7 +29,7 @@
 	if (patches) {
 		NSMutableArray* newArray = [self mutableCopy] ;
 		for (NSNumber* oIndex in patches) {
-			[newArray replaceObjectAtIndex:[oIndex intValue]
+			[newArray replaceObjectAtIndex:[oIndex integerValue]
 							   withObject:[patches objectForKey:oIndex]] ;
 		}
 		[patches release] ;

@@ -7,7 +7,7 @@
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)		
 	NSUInteger startLoc = [self scanLocation] ;
 #else
-	int unsigned startLoc = [self scanLocation] ;
+	NSUInteger startLoc = [self scanLocation] ;
 #endif
     [self scanUpToString:target intoString:NULL] ;
 	if ([self scanString:target intoString:NULL]) {

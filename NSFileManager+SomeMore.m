@@ -237,7 +237,7 @@ end:
 			return NO ;
 		}
 		
-		FSDetermineIfRefIsEnclosedByFolder (
+        FSDetermineIfRefIsEnclosedByFolder (
 											0,
 											kChewableItemsFolderType,
 											&fsRef,
@@ -460,7 +460,7 @@ end:
 	BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path] ;
 	if (exists) {
 		const char* pathC = [path UTF8String] ;
-		int fd = open(
+		NSInteger fd = open(
 					  pathC,
 					  FREAD | O_CREAT | O_TRUNC,
 					  S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH) ;
@@ -472,11 +472,11 @@ end:
 		
 		// Jonathan says: Attempt to get lock status; if this
 		// returns -1 it means fcntl isn't supported on this file
-		int getlock = fcntl(fd, F_GETLK, &daFlock) ;
+		NSInteger getlock = fcntl(fd, F_GETLK, &daFlock) ;
 		
 		if (getlock != -1) {
 			// Attempt to lock the file
-			int setlock = fcntl(fd, F_SETLK, &daFlock) ;
+			NSInteger setlock = fcntl(fd, F_SETLK, &daFlock) ;
 			if (setlock == -1) {
 				// Attempt to lock the file failed
 				if (errno == EAGAIN || errno == EACCES) {
@@ -515,18 +515,43 @@ end:
 
 
 - (BOOL)trashPath:(NSString*)path
+	 scriptFinder:(BOOL)scriptFinder
 		  error_p:(NSError**)error_p {
-	NSString* source = [NSString stringWithFormat:
-						/**/@"tell application \"Finder\"\n"
-						/**/	@"delete POSIX file \"%@\"\n"
-						/**/@"end tell\n",
-						path] ;
-	NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source];
-	NSDictionary* errorDic = nil ;
-	[script executeAndReturnError:&errorDic] ;
-	[script release] ;
+	NSError* error = nil ;
+	
 	BOOL ok = YES ;
-	NSError* error = [NSError errorWithAppleScriptErrorDictionary:errorDic] ;
+	if (scriptFinder) {
+		NSString* source = [NSString stringWithFormat:
+							/**/@"tell application \"Finder\"\n"
+							/**/	@"delete POSIX file \"%@\"\n"
+							/**/@"end tell\n",
+							path] ;
+		NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source];
+		NSDictionary* errorDic = nil ;
+		[script executeAndReturnError:&errorDic] ;
+		[script release] ;
+		if (errorDic) {
+			ok = NO ;
+			error = [NSError errorWithAppleScriptErrorDictionary:errorDic] ;
+		}
+	}
+	else {
+		const char* pathC = [path fileSystemRepresentation] ;
+		OSStatus status = FSPathMoveObjectToTrashSync (
+													   pathC,
+													   NULL,
+													   (kFSFileOperationOverwrite | kFSFileOperationSkipSourcePermissionErrors)
+													   ) ;
+		if (status != noErr) {
+			ok = NO ;
+			error = SSYMakeError(572287, @"Could not trash path") ;
+			error = [error errorByAddingUserInfoObject:path
+												forKey:@"Path"] ;
+			error = [error errorByAddingUserInfoObject:[NSNumber numberWithLong:status]
+												forKey:@"OSStatus"] ;
+		}
+	}
+	
 	if (error_p && error) {
 		*error_p = [error errorByAddingUserInfoObject:path
 											   forKey:@"Path Attempted to Trash"] ;		

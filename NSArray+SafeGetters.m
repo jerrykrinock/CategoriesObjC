@@ -16,7 +16,7 @@
 - (id)lastObjectSafely {
 	id answer = nil ;
 	
-	int count = [self count] ;
+	NSInteger count = [self count] ;
 	if (count > 0) {
 		answer = [self objectAtIndex:(count-1)] ;
 	}
@@ -24,7 +24,7 @@
 	return answer ;
 }
 
-- (id)objectSafelyAtIndex:(int)index {
+- (id)objectSafelyAtIndex:(NSInteger)index {
 	id answer = nil ;
 	
 	if ((index >= 0) && (index < [self count])) {

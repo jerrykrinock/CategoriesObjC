@@ -1,5 +1,3 @@
-
-
 @implementation NSView (ActiveControl)
 
 - (BOOL)isTheActiveControl {

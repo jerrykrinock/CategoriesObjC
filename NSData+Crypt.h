@@ -4,7 +4,7 @@
 @interface NSData (Crypt)
 
 // Utility method for generating keys from string passwords
-+ (NSData*)dataKeyByteCount:(int)nKeyBytes
++ (NSData*)dataKeyByteCount:(NSInteger)nKeyBytes
 			 from7BitString:(NSString*)password ;
 	// nKeyBytes may be of
 	// any length, although if you believe the fiction that 

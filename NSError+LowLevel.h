@@ -28,7 +28,7 @@ extern NSString* const SSYAppleScriptErrorDomain ;
  */
 + (NSError*)errorWithPosixErrorCode:(OSStatus)code ;
 
-+ (NSError*)errorWithHTTPStatusCode:(int)code 
++ (NSError*)errorWithHTTPStatusCode:(NSInteger)code 
 					 prettyFunction:(const char*)prettyFunction ;
 
 + (NSError*)errorWithAppleScriptErrorDictionary:(NSDictionary*)dic ;

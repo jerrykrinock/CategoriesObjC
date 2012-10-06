@@ -1,5 +1,3 @@
-
-
 @implementation NSTextView (LineBreakControl)
 
 - (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {
