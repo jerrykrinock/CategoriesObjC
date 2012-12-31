@@ -54,9 +54,9 @@
 */
 
 // The following nested compiler directives look a little redundant.  However,
-// I follow the convention of always enabling debug code with "#if 1", so that
+// I follow the convention of always enabling debug code with "#if 11", so that
 // I can always find all of them, for example when it's time to ship, by
-// searching the project for "#if 1".
+// searching the project for "#if 11".
 #if 0
 #define GCUNDOMANAGER_DEBUG 1 
 #warning Compiling with GCUndoManager+Debug Code

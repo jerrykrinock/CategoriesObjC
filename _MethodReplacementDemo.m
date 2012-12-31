@@ -356,7 +356,7 @@ error:(NSError**)error {
 
 #endif
 
-#if 1
+#if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
 @interface NSMenuItem (DebugByReplacingMethod)

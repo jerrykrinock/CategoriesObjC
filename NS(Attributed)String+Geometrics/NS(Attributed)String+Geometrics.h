@@ -73,8 +73,8 @@
  
  In the sizeFor... methods, pass either a width or height which is known to 
  be larger than the width or height that is required.  Usually, one of these
- should be the "unlimited" value of FLT_MAX.
- If text will be drawn on one line, you may pass FLT_MAX for width.
+ should be the "unlimited" value of CGFLOAT_MAX.
+ If text will be drawn on one line, you may pass CGFLOAT_MAX for width.
  
  * ARGUMENT attributes, NSAttributedString attributes
  

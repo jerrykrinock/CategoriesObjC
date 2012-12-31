@@ -87,7 +87,7 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 							  appName, @"From application",                                          // won't be nil
 							  explanation, @"ReadMe",                                                // won't be nil
 							  localizedDescription, NSLocalizedDescriptionKey,                       // won't be nil
-							  [[NSProcessInfo processInfo] processName], @"Process receiving error", // will be, for example, "BookMacster" or "BookMacster-Worker"
+							  [[NSProcessInfo processInfo] processName], @"Process receiving error", // will be, for example, "BookMacster" or "Sheep-Sys-Worker"
 							  localizedFailureReason, NSLocalizedFailureReasonErrorKey,              // may be nil
 							  nil] ;
 	return [NSError errorWithDomain:SSYAppleScriptErrorDomain  // Seems like Apple should provide a constant for this

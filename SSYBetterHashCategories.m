@@ -10,7 +10,7 @@
  by doubling the values in the 32-bit version.  I have no idea
  how well this will work.
  */
-int64_t mix(unsigned long long a, unsigned long long b, unsigned long long c)
+uint64_t mix(unsigned long long a, unsigned long long b, unsigned long long c)
 {
 	a=a-b;  a=a-c;  a=a^(c >> 25);
 	b=b-c;  b=b-a;  b=b^(a << 16); 
@@ -75,9 +75,12 @@ uint32_t mix(uint32_t a, uint32_t b, uint32_t c)
 	// iterations.
 	NSUInteger count = [self count] ;
 	NSUInteger i=0 ;
+    // Prior to BookMacster 1.12.3, the following two lines were tragically put
+    // inside the following loop.  So that's why my hashes weren't reliable
+    // and sometimes erroneously indicated no difference.
+    uint32_t hash1 = 0 ;
+    uint32_t hash2 = 0 ;
 	for (id object in self) {
-		uint32_t hash1 = 0 ;
-        uint32_t hash2 = 0 ;
 		if (i%2==0) {
 			// This is the 0th, 2nd, 4th etc. element
 			hash1 = [object hashBetter32] ;
@@ -99,7 +102,7 @@ uint32_t mix(uint32_t a, uint32_t b, uint32_t c)
 		i++ ;
 	}
 	
-	return hash ;	
+	return hash ;
 }
 
 - (uint32_t)hashBetter32 {

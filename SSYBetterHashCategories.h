@@ -70,8 +70,7 @@
  
  The receiver is an array instead of a set because, in 
  order to get the same result each time the hash of a collection
- is computed, which is a required property of a hash f
- unction,
+ is computed, which is a required property of a hash function,
  the values must be mixed in the same order each time.
  
  @param    hash  An optional initial hash value which may be used to 
