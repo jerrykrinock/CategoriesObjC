@@ -4,6 +4,9 @@
 
 @implementation NSTableView (ContextMenu)
 
+#if 0
+#warning Disabled NSTableView(ContextMenu)
+#else
 + (void)load {
 	// Swap the implementations of -menuForEvent: and -replacement_menuForEvent.
 	// When the -menuForEvent: message is sent to any NSTableView instance, -replacement_menuForEvent will
@@ -40,4 +43,5 @@
 	return menu ;
 }
 
+#endif
 @end
