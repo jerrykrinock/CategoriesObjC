@@ -59,12 +59,8 @@
 	NSArray* directoryContents ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
-		directoryContents = [fileManager directoryContentsAtPath:self] ;
-#else
 		directoryContents = [fileManager contentsOfDirectoryAtPath:self
 															 error:NULL] ;
-#endif
 }
 	else {
 		directoryContents = nil ;
@@ -77,12 +73,8 @@
 	NSArray* directoryContentsAsFullPaths ;
 	if ([self isDirectory]) {
 		NSFileManager* fileManager = [NSFileManager defaultManager] ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
-		NSArray* filenames = [fileManager directoryContentsAtPath:self] ;
-#else
 		NSArray* filenames = [fileManager contentsOfDirectoryAtPath:self
 															  error:NULL] ;
-#endif
 NSMutableArray* a = [[NSMutableArray alloc] init] ;
 		NSEnumerator* e = [filenames objectEnumerator] ;
 		NSString* filename ;
@@ -333,12 +325,8 @@ end:
 	
 	NSArray* paths = nil ;
 	if (exists && isDir) {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
-		NSArray *childLastNames = [fileManager directoryContentsAtPath:self] ;
-#else
 		NSArray *childLastNames = [fileManager contentsOfDirectoryAtPath:self
 																   error:NULL] ;
-#endif
 		NSMutableArray* bucket = [[NSMutableArray alloc] initWithCapacity:[childLastNames count]] ;
 		NSEnumerator* e = [childLastNames objectEnumerator] ;
 		NSString* childLastName ;
@@ -422,12 +410,8 @@ end:
 	// Get list of already-existing filenames
 	NSArray* existingFilenames ;
 	if (directory) {
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 1060		
-		existingFilenames = [[NSFileManager defaultManager] directoryContentsAtPath:directory] ;
-#else
 		existingFilenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory
 																				error:NULL] ;
-#endif
 }
 	else {
 		existingFilenames = [NSArray array] ;

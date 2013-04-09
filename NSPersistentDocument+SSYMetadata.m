@@ -4,7 +4,7 @@
 #import "NSObject+MoreDescriptions.h"
 
 // Stuff defined in Mac OS X 10.7 SDK, defined here for compilability with earlier SDKs.
-#if (MAC_OS_X_VERSION_MAX_ALLOWED)
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1070)
 
 /*!
  @brief    Declares symbols that are defined in the 10.7 SDK,
@@ -138,7 +138,7 @@
 				 
 				 I tried to fix this by replacing the following -save: code with this:
 				 
-				 NSError* error ;
+				 NSError* error = nil  ;
 				 BOOL ok = [self writeSafelyToURL:[self fileURL]
 				 ofType:[self fileType]
 				 forSaveOperation:NSSaveOperation

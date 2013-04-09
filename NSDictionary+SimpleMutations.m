@@ -17,6 +17,11 @@
 	return newDic ;
 }
 
+- (NSDictionary*)dictionaryByRemovingObjectForKey:(id)key {
+	return [self dictionaryBySettingValue:nil
+                                   forKey:key] ;
+}
+
 - (NSDictionary*)dictionaryByAddingEntriesFromDictionary:(NSDictionary*)otherDic {
 	NSMutableDictionary* mutant = [self mutableCopy] ;
 	if (otherDic) {

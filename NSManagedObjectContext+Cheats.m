@@ -280,16 +280,6 @@ end:
 	return didDoAnything ;
 }
 
-- (BOOL)trashStore1Error_p:(NSError**)error_p {
-	NSURL* storeUrl = [[self store1] URL] ;
-	NSString* path = [storeUrl path] ;
-	NSError* error = nil ;
-	BOOL ok = [[NSFileManager defaultManager] trashPath:path
-										   scriptFinder:NO
-												error_p:&error] ;
-	return ok ;
-}
-
 - (NSManagedObject*)objectWithUri:(NSString*)uri {
 	NSPersistentStoreCoordinator* psc = [self persistentStoreCoordinator] ;
 	NSURL* url = [NSURL URLWithString:uri] ;
@@ -299,7 +289,7 @@ end:
 		// Prior to BookMacster 1.9.3, we just did this here:
 		// object = [self objectWithID:objectId] ;
 		// That sometimes caused Core Data exceptions as explained below.
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1060) 
 		// Mac OS X 10.5 or earlier
 		object = [self objectWithID:objectId] ;
 		// If an object with objectId does not exist in the store, -objectWithID: will

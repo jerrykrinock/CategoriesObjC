@@ -114,7 +114,7 @@ end:
 }
 
 - (NSDate*)modificationDateForPath:(NSString*)path {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1050) 
 	NSDictionary* fileAttributes = [self fileAttributesAtPath:path
 												 traverseLink:YES] ;
 #else
@@ -135,7 +135,10 @@ end:
 									isDirectory:&isDirectory] ;
 	
 	BOOL ok = YES ;
-	if (!isDirectory) {
+    // Next line has bug fixed in BookMacster 1.13.6.  Prior to this, it was
+    // simply if(!isDirectory), which passed and created an error if neither
+    // file nor directory existed at path.
+	if (exists && !isDirectory) {
 		ok = [fileManager removeItemAtPath:path
 									 error:&error] ;
 		if (!ok) {
@@ -344,7 +347,7 @@ end:
 
 - (NSInteger)fileIsLockedAtPath:(NSString*)path
 						error_p:(NSError**)error_p {
-	NSError* error ;
+	NSError* error = nil  ;
 	FSCatalogInfo catInfo ;
 	BOOL ok = [self fsGetCatalogInfo_p:&catInfo
 						  whichInfo:kFSCatInfoNodeFlags
@@ -496,7 +499,7 @@ end:
 		return YES ;
 	}
 	
-	NSError* error ;
+	NSError* error = nil  ;
 	BOOL ok = [[NSFileManager defaultManager] removeItemAtPath:path
 														 error:&error] ;
 	if (!ok && error_p) {

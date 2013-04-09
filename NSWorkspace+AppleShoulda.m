@@ -36,7 +36,7 @@
 - (NSArray*)mountedLocalVolumeNames {
 	NSString* path = @"/Volumes" ;
 	SSYSuperFileManager* fileManager = [SSYSuperFileManager defaultManager] ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1050) 
 	NSArray* volumes = [fileManager directoryContentsAtPath:path] ;
 #else
 	NSArray* volumes = [fileManager contentsOfDirectoryAtPath:path

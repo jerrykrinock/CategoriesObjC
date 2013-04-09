@@ -25,6 +25,14 @@
 
 /*!
  @brief    Returns a new dictionary, equal to the receiver
+ except with a single key/value removed.
+ 
+ @details  Invokes dictionaryBySettingValue:forKey: with value = nil
+ */
+- (NSDictionary*)dictionaryByRemovingObjectForKey:(id)key ;
+
+/*!
+ @brief    Returns a new dictionary, equal to the receiver
  except with additional entries from another dictionary.
  
  @details  Convenience method combining two dictionaries.

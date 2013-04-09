@@ -138,8 +138,6 @@ extern NSString* const SSYManagedObjectContextPathExtensionForSqliteStores ;
 */
 - (BOOL)addMetadata1:(NSDictionary*)moreMetadata ;
 
-- (BOOL)trashStore1Error_p:(NSError**)error_p  ;
-
 /*!
  @brief    Returns an object currently existing in the receiver with
  a give object URI, or nil if no such object exists

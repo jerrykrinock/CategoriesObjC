@@ -50,6 +50,9 @@
 		array = self ;
 	}
 	
+    if (!key) {
+        key = @"description" ;
+    }
 	NSInteger nItems = [array count] ;
 	NSMutableString* string = [[NSMutableString alloc] init] ;
 	NSInteger i ;

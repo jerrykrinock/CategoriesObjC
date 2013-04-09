@@ -47,7 +47,9 @@
  want to give a conjunction and vice versa.
  @param    key  The key for which the value will be extracted
  and inserted into the list for each item, or nil to use the
- default key of 'description'.
+ default key of 'description'.  Note that -[NSString description] is documented
+ to return the receiver, so if the objects in the receiver are NSString
+ instances, pass nil.
  @param    conjunction  If non-nil, and there are more than two
  items, inserts this word before the last item.  Typically this
  is a localized "&", "and" or "or"

@@ -52,7 +52,10 @@ extern SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable ;
 /*!
  @brief    Returns a deep, mutable copy of the receiver
  
- @details  If an object responds to -mutableCopyWithZone and 
+ @details  WARNING: This method will probably result in an infinite loop if
+ the receiver is in an object graph that contains circular references!
+ 
+ If an object responds to -mutableCopyWithZone and
  -count, it is treated as a container node.&nbsp; and processed
  in a subclass category under the hood.
  

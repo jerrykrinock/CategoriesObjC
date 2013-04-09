@@ -174,11 +174,6 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 #endif
 		if (!ok) {
 			errorCode = 157165 ;
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
-			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-										 code:errorCode
-									 userInfo:nil] ;
-#else
 			NSDictionary* userInfo ;
 			if (error_) {
 				userInfo = [NSDictionary dictionaryWithObject:error_
@@ -190,7 +185,6 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
 										 code:errorCode
 									 userInfo:userInfo] ;
-#endif
 			
 			goto end ;
 		}
@@ -266,7 +260,7 @@ end:;
 }
 
 - (void)saveMoveToNewUrl:(NSURL*)newUrl {
-	NSError* error ;
+	NSError* error = nil  ;
 	BOOL ok = [self saveMoveToNewUrl:newUrl
 							 error_p:&error] ;
 	if (!ok) {
@@ -280,7 +274,7 @@ end:;
 }	
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
-#define NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END 1
+#define NEEDS_CALLBACK_FOR_SAVE_MOVE_PANEL_DID_END 1
 #endif
 
 - (void)saveAsMoveToDirectory:(NSString*)parentPath
@@ -318,7 +312,7 @@ end:;
 	if ([windowControllers count] > 0) {
 		window = [[windowControllers objectAtIndex:0] window] ;
 	}
-#if NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END
+#if NEEDS_CALLBACK_FOR_SAVE_MOVE_PANEL_DID_END
 	NSDocumentController* dc = [NSDocumentController sharedDocumentController] ;
 	selector = @selector(nextDefaultDocumentUrl) ;
 	NSURL* suggestedURL = nil ;
@@ -349,7 +343,7 @@ end:;
 	// this sheet.
 }
 
-#if NEED_CALLBACK_SAVE_MOVE_PANEL_DID_END
+#if NEEDS_CALLBACK_FOR_SAVE_MOVE_PANEL_DID_END
 - (void)saveMovePanelDidEnd:(NSSavePanel *)sheet
 				 returnCode:(NSInteger)returnCode
 				contextInfo:(void*)contextInfo {

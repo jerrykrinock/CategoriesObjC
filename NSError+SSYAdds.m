@@ -20,11 +20,7 @@ NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailBu
 NSString* const SSYIsOnlyInformationalErrorKey = @"isOnlyInformational" ;
 NSString* const SSYIsLoggedErrorKey = @"isLogged" ;
 NSString* const SSYDidRecoverInvocationErrorKey = @"didRecoverInvocation" ;
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
-NSString* const SSYHelpAnchorErrorKey = @"helpAnchor" ;
-#else
-#define SSYHelpAnchorErrorKey NSHelpAnchorErrorKey
-#endif
+
 
 NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That error description was truncated! ***" ;
 
@@ -188,17 +184,23 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	return answer ;
 }
 
-- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)newFailureReason {
-	NSError* answer ;
-	if (newFailureReason) {
-		NSString* oldFailureReason = [self localizedFailureReason] ;
-		if (oldFailureReason) {
-			newFailureReason = [NSString stringWithFormat:
-								@"%@  %@",
-								oldFailureReason,
-								newFailureReason] ;
+- (NSError*)errorByAppendingText:(NSString*)moreText
+                   toValueForKey:(NSString*)key {
+    NSError* answer ;
+	if (moreText) {
+		NSString* text = [[self userInfo] objectForKey:key] ;
+		if (text) {
+			text = [NSString stringWithFormat:
+                    @"%@  %@",
+                    text,
+                    moreText] ;
 		}
-		answer = [self errorByAddingLocalizedFailureReason:newFailureReason] ;
+        else {
+            text = moreText ;
+        }
+        
+		answer = [self errorByOverwritingUserInfoObject:text
+                                                 forKey:key] ;
 	}
 	else {
 		answer = self ;
@@ -207,8 +209,23 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	return answer ;
 }
 
+- (NSError*)errorByAppendingLocalizedDescription:(NSString*)moreText {
+    return [self errorByAppendingText:moreText
+                        toValueForKey:NSLocalizedDescriptionKey] ;
+}
+
+- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)moreText {
+    return [self errorByAppendingText:moreText
+                        toValueForKey:NSLocalizedFailureReasonErrorKey] ;
+}
+
+- (NSError*)errorByAppendingLocalizedRecoverySuggestion:(NSString*)moreText {
+    return [self errorByAppendingText:moreText
+                        toValueForKey:NSLocalizedRecoverySuggestionErrorKey] ;
+}
+
 - (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction {
-	NSError* error ;
+	NSError* error = nil  ;
 	if (prettyFunction != NULL) {
 		error = [self errorByAddingUserInfoObject:[NSString stringWithCString:prettyFunction
 																	 encoding:NSUTF8StringEncoding]
@@ -257,14 +274,8 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 
 - (NSError*)errorByAddingHelpAnchor:(NSString*)helpAnchor {
 	return [self errorByAddingUserInfoObject:helpAnchor
-									  forKey:SSYHelpAnchorErrorKey] ;
+									  forKey:NSHelpAnchorErrorKey] ;
 }
-
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
-- (NSString*)helpAnchor {
-	return [[self userInfo] objectForKey:SSYHelpAnchorErrorKey] ;
-}
-#endif
 
 - (NSError*)underlyingError {
 	return [[self userInfo] objectForKey:NSUnderlyingErrorKey] ;
@@ -698,15 +709,18 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 }
 
 - (BOOL)isNotFileNotFoundError {
-	if ([self code] != NSFileReadNoSuchFileError) {
-		return YES ;
+    if ([self code] == NSFileReadNoSuchFileError) {  // ==260
+		if ([[self domain] isEqualToString:NSCocoaErrorDomain]) {
+            return NO ;
+        }
 	}
-	if (![[self domain] isEqualToString:NSCocoaErrorDomain]) {
-		return YES ;
+    if ([self code] == ENOENT) {  // == 2
+		if ([[self domain] isEqualToString:NSPOSIXErrorDomain]) {
+            return NO ;
+        }
 	}
 	
-	// Error is NSFileReadNoSuchFileError in NSCocoaErrorDomain.
-	return NO ;
+	return YES ;
 }
 
 - (BOOL)isUserCancelledCocoaError {

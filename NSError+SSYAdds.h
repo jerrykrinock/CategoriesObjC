@@ -1,10 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "NSError+SSYAdds.h"
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED > 1060
-#define SSYHelpAnchorErrorKey NSHelpAnchorErrorKey
-#endif
-
 // Macros for making NSErrors
 
 /*
@@ -113,48 +109,49 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 									 code:(NSInteger)code
 						   prettyFunction:(const char*)prettyFunction ;
 
-#pragma mark * Methods for adding userInfo keys to errors already created
+#pragma mark * Methods for adding or appending userInfo keys to existing errors
 
 /*!
- @brief    Adds or changes a string value for string key NSLocalizedDescriptionKey to userInfo 
- of a copy of the receiver and returns the copy, unless the parameter is nil, then
- returns the receiver.
- @details  This may be used to change an error's localized description.
- @param    newText  The string value to be added for key NSLocalizedDescriptionKey
+ @brief    Adds object for key into the userInfo of a copy of the receiver and
+ returns the copy, unless the parameter is nil, then returns the receiver.
+ 
+ @details  If proposedKey already has a value in the receiver's userInfo,
+ then the description (in case it is not a string) of the proposedKey is
+ extracted and a sequence number is appended to make a unique key, and the
+ existing value is set under this new key.  If a value already exists for
+ that key, then it too is changed to have a key constructed with a higher
+ sequence number.
+ 
+ Example:
+ 
+ Before this method is invoked, userInfo has:
+ *   key="Foo"    object="Fred"
+ *   key="Foo-01  object="Barney"
+ 
+ Now say we invoke this method with key="Foo" and object="Wilma".
+ The result in userInfo will be:
+ *   key="Foo"    object="Wilma"
+ *   key="Foo-01  object="Fred"
+ *   key="Foo-02  object="Barney"
+ 
+ If the 'object' parameter is nil, this method is a no-op.
+ 
+ @param    object  of the pair to be added
+ @param    key  of the pair to be added
  */
-- (NSError*)errorByAddingLocalizedDescription:(NSString*)newText ;
+- (NSError*)errorByAddingUserInfoObject:(id)object
+								 forKey:(NSString*)proposedKey ;
 
 /*!
- @brief    Adds or overwrites a string value for string key NSLocalizedFailureReasonErrorKey
- to userInfo a copy of the receiver and returns the copy, unless the parameter is nil, then
- returns the receiver.
- @details  If you want to append a reason instead of overwriting, use
- -errorByAppendingLocalizedFailureReason: instead.
- @param    newText  The string value to be added for key NSLocalizedFailureReasonErrorKey
+ @brief    Same as errorByAddingUserInfoObject:forKey: except overwrites
+ any existing key instead of modifying proposedKey to be unique
  */
+- (NSError*)errorByOverwritingUserInfoObject:(id)object
+									  forKey:(NSString*)key ;
+
 - (NSError*)errorByAddingLocalizedFailureReason:(NSString*)newText ;
 
-/*!
- @brief    Adds or appends a string value for string key NSLocalizedFailureReasonErrorKey
- to userInfo a copy of the receiver and returns the copy, unless the parameter is nil, then
- returns the receiver.
- @details  If you want to overwrite any existing failure reason instead of appending, use
- -errorByAddingLocalizedFailureReason: instead.
- @param    newText  The string value to be added for key NSLocalizedFailureReasonErrorKey
- */
-- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)newText ;
-
-/*!
- @brief    Adds a string value for string key SSYMethodNameErrorKey to userInfo 
- a copy of the receiver and returns the copy, unless the parameter is NULL, then
- returns the receiver.
- 
- @details  Invokes -errorByAddingUserInfoObject:forKey:, so that if such a string
- key already exists, it is not overwritten.  See errorByAddingUserInfoObject:forKey:.
- 
- @param    newText  The C string to be added for key SSYprettyFunctionErrorKey
- */
-- (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction ;
+- (NSError*)errorByAddingLocalizedDescription:(NSString*)newText ;
 
 /*!
  @brief    Adds a string value for string key NSLocalizedRecoverySuggestionErrorKey to userInfo of a copy of
@@ -171,6 +168,18 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  informal protocol
  */
 - (NSError*)errorByAddingRecoveryAttempter:(id)recoveryAttempter ;
+
+/*!
+ @brief    Adds a string value for string key SSYMethodNameErrorKey to userInfo 
+ a copy of the receiver and returns the copy, unless the parameter is NULL, then
+ returns the receiver.
+ 
+ @details  Invokes -errorByAddingUserInfoObject:forKey:, so that if such a string
+ key already exists, it is not overwritten.  See errorByAddingUserInfoObject:forKey:.
+ 
+ @param    newText  The C string to be added for key SSYprettyFunctionErrorKey
+ */
+- (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction ;
 
 /*!
  @brief    Adds a string value for string key SSYRecoveryAttempterUrlErrorKey to userInfo of a copy of
@@ -203,12 +212,6 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 - (NSError*)errorByAddingDidRecoverInvocation:(NSInvocation*)didRecoverInvocation ;
 
 /*!
- @brief    Returns the invocation which was added to the receiver's userInfo by
- -errorByAddingDidRecoverInvocation:, or nil if no such invocation has been added.
-*/
-- (NSInvocation*)didRecoverInvocation ;
-
-/*!
  @brief    Adds an string which can be retrieved by -helpAnchor to the receiver's userInfo
  and returns an autoreleased copy of the receiver, unless the parameter is nil, then returns the receiver.
  @details  This can be used to encapsulate in the error a string which your presentError:
@@ -216,15 +219,45 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  */
 - (NSError*)errorByAddingHelpAnchor:(NSString*)helpAnchor ;
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 /*!
- @brief    Returns the string which was added to the receiver's userInfo by
- -errorByAddingHelpAnchor:, or nil if no such invocation has been added.
+ @brief    Appends a new string to a given key in a copy of the receiver,
+ and usually returns the copy, autoreleased
+ 
+ @details  If the receiver already has text for the given key, two
+ ASCII space characters are appended before appending the moreText.
+ Otherwise, the moreText becomes the localized description in the result.
+ If the moreText parameter is nil, this method simply returns the
+ receiver (self) instead of an autoreleased copy.
  */
-- (NSString*)helpAnchor ;
-#else
-// Apple implemented this method starting with the 10.6 SDK
-#endif
+- (NSError*)errorByAppendingText:(NSString*)moreText
+                   toValueForKey:(NSString*)key ;
+
+/*!
+ @brief    Invokes -errorByAppendingText:toValueForKey:, passing the receiver's
+ NSLocalizedDescriptionErrorKey as the key, effectively appending to the
+ receiver's localized description, and returns the result
+ */
+- (NSError*)errorByAppendingLocalizedDescription:(NSString*)moreText ;
+
+/*!
+ @brief    Invokes -errorByAppendingText:toValueForKey:, passing the receiver's
+ NSLocalizedFailureReasonErrorKey as the key, effectively appending to the
+ receiver's localized failure reason, and returns the result
+ */
+- (NSError*)errorByAppendingLocalizedFailureReason:(NSString*)moreText ;
+
+/*!
+ @brief    Invokes -errorByAppendingText:toValueForKey:, passing the receiver's
+ NSLocalizedRecoverySuggestionErrorKey as the key, effectively appending to the
+ receiver's localized recovery suggestion, and returns the result
+ */
+- (NSError*)errorByAppendingLocalizedRecoverySuggestion:(NSString*)moreText ;
+
+/*!
+ @brief    Returns the invocation which was added to the receiver's userInfo by
+ -errorByAddingDidRecoverInvocation:, or nil if no such invocation has been added.
+ */
+- (NSInvocation*)didRecoverInvocation ;
 
 /*!
  @brief    Returns the object for key NSUnderlyingErrorKey in the receiver's userInfo dictionary
@@ -246,44 +279,6 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  @param    underlyingError  The error value to be added for key NSUnderlyingErrorKey
  */
 - (NSError*)errorByAddingUnderlyingError:(NSError*)underlyingError ;
-
-/*!
- @brief    Adds object for key into the userInfo of a copy of the receiver and
- returns the copy, unless the parameter is nil, then returns the receiver.
-
- @details  If proposedKey already has a value in the receiver's userInfo,
- then the description (in case it is not a string) of the proposedKey is
- extracted and a sequence number is appended to make a unique key, and the
- existing value is set under this new key.  If a value already exists for
- that key, then it too is changed to have a key constructed with a higher
- sequence number.
- 
- Example:
- 
- Before this method is invoked, userInfo has:
- *   key="Foo"    object="Fred"
- *   key="Foo-01  object="Barney"
- 
- Now say we invoke this method with key="Foo" and object="Wilma".
- The result in userInfo will be:
- *   key="Foo"    object="Wilma"
- *   key="Foo-01  object="Fred"
- *   key="Foo-02  object="Barney"
-
- If the 'object' parameter is nil, this method is a no-op.
- 
- @param    object  of the pair to be added
- @param    key  of the pair to be added
- */
-- (NSError*)errorByAddingUserInfoObject:(id)object
-								 forKey:(NSString*)proposedKey ;
-
-/*!
- @brief    Same as errorByAddingUserInfoObject:forKey: except overwrites
- any existing key instead of modifying proposedKey to be unique
- */
-- (NSError*)errorByOverwritingUserInfoObject:(id)object
-									  forKey:(NSString*)key ;
 
 /*!
  @brief    Adds keys and values explaining a given exception to the userInfo
@@ -514,17 +509,22 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 - (BOOL)involvesMyDomainAndCode:(NSInteger)code ;
 
 /*!
- @brief    Returns NO if the receiver's domain is NSCocoaErrorDomain and code
- is NSFileReadNoSuchFileError, YES otherwise
+ @brief    Returns NO if the receiver is not a known "file not found"
+ type of error
  
- @details  NSFileReadNoSuchFileError in NSCocoaErrorDomain is returned by
- -[NSFileManager contentsOfDirectoryAtPath:error:] if the given path does
- not exist.  Use this method to process only other errors, like this
+ @details  Returns NO if the receiver has code NSFileReadNoSuchFileError=260
+ and domain NSCocoaErrorDomain or ENOENT=2 and NSPOSIXErrorDomain.  (The former
+ is returned by -[NSFileManager contentsOfDirectoryAtPath:error:] if the given
+ path does not exist.)
+ 
+ Use this method to process only other errors, like this
  • if ([error isNotFileNotFoundError]) {
  •     // This is a serious error, do something about it
  •     …
  • }
  
+ The reason we put the *Not* in the name of the method is because this gives
+ the expected result if error is nil :)
  */
 - (BOOL)isNotFileNotFoundError ;
 
