@@ -49,11 +49,13 @@
 			// Then break out of the loop.
 			NSInteger j  ;
 			nextObject = value ;
-			for (j=N-1; j>i; j--) {
-				NSString* aKey = [keyArray objectAtIndex:j] ;
-				nextObject = [NSDictionary dictionaryWithObject:nextObject
-														 forKey:aKey] ;
-			}
+			if (nextObject) {   // if () added as bug fix in BookMacster 1.14.4
+                for (j=N-1; j>i; j--) {
+                    NSString* aKey = [keyArray objectAtIndex:j] ;
+                    nextObject = [NSDictionary dictionaryWithObject:nextObject
+                                                             forKey:aKey] ;
+                }
+            }
 			
 			break ;
 		}
@@ -74,8 +76,10 @@
 		i-- ;
 	}
 	
-	[self setObject:nextObject
-			 forKey:[keyArray objectAtIndex:0]] ;
+	if (nextObject) {  // if() added as bug fix added in BookMaster 1.14.4
+        [self setObject:nextObject
+                 forKey:[keyArray objectAtIndex:0]] ;
+    }
 }
 
 - (void)setValue:(id)value

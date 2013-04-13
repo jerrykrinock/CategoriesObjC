@@ -283,7 +283,18 @@ end:
 - (NSManagedObject*)objectWithUri:(NSString*)uri {
 	NSPersistentStoreCoordinator* psc = [self persistentStoreCoordinator] ;
 	NSURL* url = [NSURL URLWithString:uri] ;
-	NSManagedObjectID* objectId = [psc managedObjectIDForURIRepresentation:url] ;
+    NSManagedObjectID* objectId = nil ;
+    // Cocoa will terminate app due to uncaught exception if, for one thing
+    // at least, the url passed in the next line is not of the
+    // scheme x-coredata, ("x-coredata://").  So, starting in
+    // BookMacster 1.14.4, we @try…
+    @try {
+        objectId = [psc managedObjectIDForURIRepresentation:url] ;
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Internal Error 213-0594  Bad Core Data URI: %@.  %@", uri, exception) ;
+    }
+
 	NSManagedObject* object ;
 	if (objectId) {
 		// Prior to BookMacster 1.9.3, we just did this here:
