@@ -1,6 +1,7 @@
 #import "NSDictionary+SSYJsonFile.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
 #import "NSDictionary+BSJSONAdditions.h"
+#import "NSError+MyDomain.h"
 
 @implementation NSDictionary (SSYJsonFile)
 

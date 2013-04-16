@@ -1,5 +1,6 @@
 #import "NSData+FileAlias.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
+#import "NSError+MyDomain.h"
 #import "NSError+LowLevel.h"
 #import "SSYShellTasker.h"
 #import "NSBundle+HelperPaths.h"

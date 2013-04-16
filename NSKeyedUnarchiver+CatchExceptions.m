@@ -1,6 +1,8 @@
 #import "NSKeyedUnarchiver+CatchExceptions.h"
 #import <objc/runtime.h>
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
+#import "NSError+MoreDescriptions.h"
+#import "NSError+MyDomain.h"
 
 @implementation NSKeyedUnarchiver (CatchExceptions)
 

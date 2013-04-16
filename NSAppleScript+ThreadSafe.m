@@ -1,6 +1,7 @@
 #import "NSAppleScript+ThreadSafe.h"
 #import "NSInvocation+Quick.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
+#import "NSError+MyDomain.h"
 
 @implementation NSAppleScript (ThreadSafe)
 

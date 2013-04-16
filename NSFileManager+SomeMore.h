@@ -197,7 +197,7 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
 #import <Cocoa/Cocoa.h>
 #import "NSFileManager+SomeMore.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
 
 int main(int argc, const char *argv[]) {
 	

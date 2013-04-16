@@ -1,5 +1,6 @@
 #import "NSString+MorePaths.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+MyDomain.h"
+#import "NSError+InfoAccess.h"
 #import "NSCharacterSet+SSYMoreCS.h"
 #import "NSString+SSYExtraUtils.h"
 #import "NSString+Truncate.h"

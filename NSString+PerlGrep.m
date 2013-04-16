@@ -1,8 +1,10 @@
 #import "NSString+PerlGrep.h"
 #import "SSYShellTasker.h"
 #import "NSString+Truncate.h"
-#import "NSError+SSYAdds.h"
+#import "NSError+InfoAccess.h"
 #import "NSString+SSYExtraUtils.h"
+#import "NSError+MoreDescriptions.h"
+#import "NSError+MyDomain.h"
 
 
 @implementation NSString (PerlGrep)
