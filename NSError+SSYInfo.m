@@ -1,15 +1,10 @@
 #import "NSError+SSYInfo.h"
 #import "NSError+InfoAccess.h"
 
-NSString* const SSYMethodNameErrorKey = @"Method Name" ;
-NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
-NSString* const SSYUnderlyingExceptionErrorKey = @"Underlying Exception" ;
-NSString* const SSYTimestampErrorKey = @"Timestamp" ;
-NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
-NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailButton" ;
 NSString* const SSYIsOnlyInformationalErrorKey = @"isOnlyInformational" ;
 NSString* const SSYIsLoggedErrorKey = @"isLogged" ;
 NSString* const SSYDidRecoverInvocationErrorKey = @"didRecoverInvocation" ;
+NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailButton" ;
 
 @implementation NSError (SSYInfo)
 

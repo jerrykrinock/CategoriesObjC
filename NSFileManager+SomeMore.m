@@ -526,9 +526,11 @@ end:
 	BOOL ok = YES ;
 	if (scriptFinder) {
 		NSString* source = [NSString stringWithFormat:
-							/**/@"tell application \"Finder\"\n"
+							/**/@"with timeout 15 seconds\n"
+							/**/  @"tell application \"Finder\"\n"
 							/**/	@"delete POSIX file \"%@\"\n"
-							/**/@"end tell\n",
+							/**/  @"end tell\n"
+							/**/@"end timeout\n",
 							path] ;
 		NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source];
 		NSDictionary* errorDic = nil ;
@@ -536,7 +538,8 @@ end:
 		[script release] ;
 		if (errorDic) {
 			ok = NO ;
-			error = [NSError errorWithAppleScriptErrorDictionary:errorDic] ;
+			error = SSYMakeError(572286, @"Finder refused to trash path") ;
+			error = [error errorByAddingUnderlyingError:[NSError errorWithAppleScriptErrorDictionary:errorDic]] ;
 		}
 	}
 	else {
@@ -549,8 +552,6 @@ end:
 		if (status != noErr) {
 			ok = NO ;
 			error = SSYMakeError(572287, @"Could not trash path") ;
-			error = [error errorByAddingUserInfoObject:path
-												forKey:@"Path"] ;
 			error = [error errorByAddingUserInfoObject:[NSNumber numberWithLong:status]
 												forKey:@"OSStatus"] ;
 		}

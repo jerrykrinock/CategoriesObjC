@@ -1,8 +1,9 @@
 #import "NSError+Recovery.h"
+#import "NSError+InfoAccess.h"
 
 NSString* const SSYRecoveryAttempterUrlErrorKey = @"RecoveryAttempterUrl" ;
-NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 NSString* const SSYRecoveryAttempterIsAppDelegateErrorKey = @"RecoveryAttempterIsAppDelegate" ;
+NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 
 @implementation NSError (Recovery)
 
@@ -69,6 +70,16 @@ NSString* const SSYRecoveryAttempterIsAppDelegateErrorKey = @"RecoveryAttempterI
 	}
 	
 	return recoveryAttempter ;
+}
+
+- (NSError*)errorByAddingRecoveryAttempterUrl:(NSURL*)url {
+	return [self errorByAddingUserInfoObject:url
+									  forKey:SSYRecoveryAttempterUrlErrorKey] ;
+}
+
+- (NSError*)errorByAddingRecoveryAttempterIsAppDelegate {
+	return [self errorByAddingUserInfoObject:[NSNumber numberWithBool:YES]
+									  forKey:SSYRecoveryAttempterIsAppDelegateErrorKey] ;
 }
 
 @end

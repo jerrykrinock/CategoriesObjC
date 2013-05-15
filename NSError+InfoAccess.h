@@ -25,43 +25,9 @@ extern NSString* const SSYUnderlyingExceptionErrorKey ;
 extern NSString* const SSYTimestampErrorKey ;
 
 /*!
- @brief    Key to the URL of a document which, when opened, will produce
- an NSDocument which conforms to the NSErrorRecoveryAttempting Protocol.
- 
- @details  This is useful when passing NSError objects between processes.
- When presenting the error, you get it back by presenting -openRecoveryAttempterAndDisplay.
-  */
-extern NSString* const SSYRecoveryAttempterUrlErrorKey ;
-
-/*!
- @brief    Key which you may use in error userInfo dictionaries as desired
-
- @details  A suggested use is, for example, if you are making requests
- from a server, and the server throttles you and gives you a suggested
- time to retry your request.
-*/
-extern NSString* const SSYRetryDateErrorKey ;
-
-/*!
- @brief    Key to an NSNumber which indicates that the app presenting the
- receiver has an -[NSApp delegate] which conforms to the
- NSErrorRecoveryAttempting Protocol and should be able to recover for
- the receiver.
- 
- @details  This is useful when passing NSError objects between processes.
- */
-extern NSString* const SSYRecoveryAttempterIsAppDelegateErrorKey ;
-
-/*!
  @brief    Key to an HTTP Status Code returned by a server.
  */
 extern NSString* const SSYHttpStatusCodeErrorKey ;
-
-/*!
- @brief    Text which will appear at the end of a -longDescription or
- -mailableLongDescription if it was truncated to meet length limitations.
-*/
-extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 
 @interface NSError (InfoAccess) 
 
@@ -134,20 +100,6 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  @param    newText  The C string to be added for key SSYprettyFunctionErrorKey
  */
 - (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction ;
-
-/*!
- @brief    Adds a string value for string key SSYRecoveryAttempterUrlErrorKey to userInfo of a copy of
- the receiver and returns the copy, unless the parameter is nil, then returns the receiver.
- @details  If the parameter is nil, this method is a no-op.
- @param    recoveryAttempter  See SSYRecoveryAttempterUrlErrorKey documentation.
- */
-- (NSError*)errorByAddingRecoveryAttempterUrl:(NSURL*)url ;
-
-/*!
- @brief    Adds an NSNumber with -boolValue = YES for string key SSYRecoveryAttempterIsAppDelegateErrorKey
- to userInfo of a copy of the receiver and returns the copy.
- */
-- (NSError*)errorByAddingRecoveryAttempterIsAppDelegate ;
 
 /*!
  @brief    Adds an array value for string key NSLocalizedRecoveryOptionsErrorKey to userInfo of a copy of

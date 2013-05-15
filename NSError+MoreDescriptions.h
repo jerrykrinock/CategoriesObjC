@@ -1,5 +1,11 @@
 #import <Foundation/Foundation.h>
 
+/*!
+ @brief    Text which will appear at the end of a -longDescription or
+ -mailableLongDescription if it was truncated to meet length limitations.
+ */
+extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
+
 @interface NSError (MoreDescriptions)
 
 

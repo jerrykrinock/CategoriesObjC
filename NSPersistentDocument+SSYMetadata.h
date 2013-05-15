@@ -1,16 +1,24 @@
 @interface NSPersistentDocument (SSYMetadata)
 
+
+/*!
+ @brief    Returns an object for a given key from the metadata of an SQLite
+ persistent store at a given path, by cheating, that is, by opening the store
+ with SSYSQLiter and querying "SELECT Z_PLIST FROM Z_METADATA".
+
+ @details  This method does not return an error but instead logs to stderr.
+ */
+
++ (id)metadataObjectForKey:(NSString*)key
+                      path:(NSString*)path ;
+
 /*!
  @brief    Returns an object for a given key from the metadata of the
  receiver's first persistent store
  
  @details  This method uses a little trick.  First, it tries to
- get the metadata from the first of the 
- persistent store of the receiver.  If that
- returns nil, then it cheats by opening the store with SSYSQLiter
- and querying "SELECT Z_PLIST FROM Z_METADATA".
- 
- If an error occurs, logs to stderr.
+ get the metadata from the first of the  persistent store of the receiver.
+ If that returns nil, then it cheats by using +metadataObjectForKey:path:
  */
 - (id)metadataObjectForKey:(NSString*)key ;
 
@@ -18,14 +26,16 @@
  @brief    Adds a given object and key to the metadata of the first
  persistent store of the receiver's managed object context
  
- @details  Also saves the store as described in -saveMetadataOnly.
- Warning: This method will not work in new managed object contexts
+ @details   This method will not work in new managed object contexts
  until after the store has been saved once.
  
  @param    object  A serializable object.  (It will be set as a value in an NSDictionary.)
+ @param    andSave  See -addMetadata:andSave:.
+
  */
 - (void)setMetadataObject:(id)object
-				   forKey:(NSString*)key ;
+				   forKey:(NSString*)key
+                  andSave:(BOOL)doSave ;
 
 /*!
  @brief    Adds a given dictionary to the metadata of the first persistent
@@ -34,8 +44,18 @@
  @details  Also saves the store as described in -saveMetadataOnly.
  To get the existing metadata (which is necesary to mutate it),
  relies on the same trick described in -metadataObjectForKey:
- */
-- (void)addMetadata:(NSDictionary*)moreMetadata ;
+ 
+ @param    andSave  Optionally saves the store as described in -saveMetadataOnly.
+ It is best to pass NO if you know that the document will be saved immediately
+ in some other method, because there are wacky edge cases where this save
+ followed by another save will result in one of those damned "The changes made
+ by the other application will be lost if you save. Save anyway?" because
+ "This document’s file has been changed by another application since you opened
+ or saved it" sheets being presented (Mac OS X 10.7); or NSCocoa ErrorDomain
+ error code 67000 being sent to -willPresentError: (Mac OS X 10.8).
+*/
+- (void)addMetadata:(NSDictionary*)moreMetadata
+            andSave:(BOOL)doSave ;
 
 /*!
  @brief    Workaround for the fact that the only way to save metadata in

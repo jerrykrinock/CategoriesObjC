@@ -1,4 +1,5 @@
 #import "NSDictionary+SimpleMutations.h"
+#import "SSY_ARC_OR_NO_ARC.h"
 
 @implementation NSDictionary (SimpleMutations)
 
@@ -12,8 +13,11 @@
 	[mutant setValue:value
 			  forKey:key] ;
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
+
+#if NO_ARC
 	[mutant release] ;
-	
+#endif
+    
 	return newDic ;
 }
 
@@ -28,8 +32,9 @@
 		[mutant addEntriesFromDictionary:otherDic] ;
 	}
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
+#if NO_ARC
 	[mutant release] ;
-	
+#endif
 	return newDic ;
 }
 
@@ -42,8 +47,9 @@
 		}
 	}
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
+#if NO_ARC
 	[mutant release] ;
-	
+#endif
 	return newDic ;
 }
 
@@ -63,8 +69,10 @@
 			[newDeletions removeObject:member] ;
 		}
 	}
+#if NO_ARC
 	[immuterator release] ;
-	
+#endif
+    
 	// Remove from newAdditions any which cancel out existing deletions,
 	// and do the cancellation
 	immuterator = [[NSSet alloc] initWithArray:[newAdditions allKeys]] ;
@@ -75,7 +83,9 @@
 			[deletions removeObject:member] ;
 		}
 	}
+#if NO_ARC
 	[immuterator release] ;
+#endif
 	// Add surviving new additions to existing additions
 	[additions addEntriesFromDictionary:newAdditions] ;
 	
@@ -89,7 +99,9 @@
 			[additions removeObjectForKey:key] ;
 		}
 	}
+#if NO_ARC
 	[immuterator release] ;
+#endif
 	// Add surviving new deletions to existing deletions
 	[deletions unionSet:newDeletions] ;
 }

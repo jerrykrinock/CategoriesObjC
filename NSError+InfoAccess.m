@@ -1,8 +1,14 @@
 #import "NSError+InfoAccess.h"
 #import "NSDictionary+SimpleMutations.h"
+#import "SSY_ARC_OR_NO_ARC.h"
 
+NSString* const SSYMethodNameErrorKey = @"Method Name" ;
+NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
+NSString* const SSYUnderlyingExceptionErrorKey = @"Underlying Exception" ;
+NSString* const SSYTimestampErrorKey = @"Timestamp" ;
+NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 
-@implementation NSError (InfoAccess) 
+@implementation NSError (InfoAccess)
 
 - (NSString*)uniqueKeyForBaseKey:(NSString*)baseKey
 				  sequenceNumber:(NSInteger)sequenceNumber {
@@ -186,16 +192,6 @@
 									  forKey:NSRecoveryAttempterErrorKey] ;
 }
 
-- (NSError*)errorByAddingRecoveryAttempterUrl:(NSURL*)url {
-	return [self errorByAddingUserInfoObject:url
-									  forKey:SSYRecoveryAttempterUrlErrorKey] ;
-}
-
-- (NSError*)errorByAddingRecoveryAttempterIsAppDelegate {
-	return [self errorByAddingUserInfoObject:[NSNumber numberWithBool:YES]
-									  forKey:SSYRecoveryAttempterIsAppDelegateErrorKey] ;
-}
-
 - (NSError*)errorByAddingLocalizedRecoveryOptions:(NSArray*)recoveryOptions {
 	return [self errorByAddingUserInfoObject:recoveryOptions
 									  forKey:NSLocalizedRecoveryOptionsErrorKey] ;
@@ -249,8 +245,9 @@
 	}
 	
 	NSDictionary* info = [NSDictionary dictionaryWithDictionary:exceptionInfo] ;
+#if NO_ARC
 	[exceptionInfo release] ;
-	
+#endif
 	return [self errorByAddingUserInfoObject:info
 									  forKey:SSYUnderlyingExceptionErrorKey] ;
 }
@@ -273,8 +270,9 @@
 	NSError* error = [NSError errorWithDomain:[self domain]
 										 code:[self code]
 									 userInfo:userInfo] ;
+#if NO_ARC
 	[userInfo release] ;
-	
+#endif
 	return error ;
 }
 

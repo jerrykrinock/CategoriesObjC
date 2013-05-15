@@ -282,7 +282,7 @@
 	return n ;
 }
 
-NSString* const const aNewline = @"\n" ;
+NSString* const aNewline = @"\n" ;
 
 - (NSInteger)numberOfLinesCountTrailer:(BOOL)countTrailer {
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;

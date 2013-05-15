@@ -88,7 +88,7 @@
 					// The argument is a selector
 					argDesc = [NSString stringWithFormat:
 							   @"type=SEL value=%@",
-							   NSStringFromSelector((SEL)arg)] ;
+							   NSStringFromSelector(arg)] ;
 				}
 				else if (!strcmp(argType, "#")) {
 					// The argument is a Class object

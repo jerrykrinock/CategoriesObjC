@@ -1,5 +1,35 @@
 #import <Foundation/Foundation.h>
 
+
+/*!
+ @brief    Key to the URL of a document which, when opened, will produce
+ an NSDocument which conforms to the NSErrorRecoveryAttempting Protocol.
+ 
+ @details  This is useful when passing NSError objects between processes.
+ When presenting the error, you get it back by presenting -openRecoveryAttempterAndDisplay.
+ */
+extern NSString* const SSYRecoveryAttempterUrlErrorKey ;
+
+/*!
+ @brief    Key to an NSNumber which indicates that the app presenting the
+ receiver has an -[NSApp delegate] which conforms to the
+ NSErrorRecoveryAttempting Protocol and should be able to recover for
+ the receiver.
+ 
+ @details  This is useful when passing NSError objects between processes.
+ */
+extern NSString* const SSYRecoveryAttempterIsAppDelegateErrorKey ;
+
+/*!
+ @brief    Key which you may use in error userInfo dictionaries as desired
+ 
+ @details  A suggested use is, for example, if you are making requests
+ from a server, and the server throttles you and gives you a suggested
+ time to retry your request.
+ */
+extern NSString* const SSYRetryDateErrorKey ;
+
+
 @interface NSError (Recovery)
 
 /*!
@@ -74,5 +104,19 @@
  */
 - (id)openRecoveryAttempterForRecoveryOption:(NSInteger)recoveryOption
 									 error_p:(NSError**)error_p ;
+
+/*!
+ @brief    Adds a string value for string key SSYRecoveryAttempterUrlErrorKey to userInfo of a copy of
+ the receiver and returns the copy, unless the parameter is nil, then returns the receiver.
+ @details  If the parameter is nil, this method is a no-op.
+ @param    recoveryAttempter  See SSYRecoveryAttempterUrlErrorKey documentation.
+ */
+- (NSError*)errorByAddingRecoveryAttempterUrl:(NSURL*)url ;
+
+/*!
+ @brief    Adds an NSNumber with -boolValue = YES for string key SSYRecoveryAttempterIsAppDelegateErrorKey
+ to userInfo of a copy of the receiver and returns the copy.
+ */
+- (NSError*)errorByAddingRecoveryAttempterIsAppDelegate ;
 
 @end

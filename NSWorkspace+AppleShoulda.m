@@ -1,6 +1,5 @@
 #import "NSWorkspace+AppleShoulda.h"
 #import "SSYUserInfo.h"
-#import "SSYSuperFileManager.h"
 
 @implementation NSWorkspace (AppleShoulda)
 
@@ -35,7 +34,7 @@
 
 - (NSArray*)mountedLocalVolumeNames {
 	NSString* path = @"/Volumes" ;
-	SSYSuperFileManager* fileManager = [SSYSuperFileManager defaultManager] ;
+	NSFileManager* fileManager = [NSFileManager defaultManager] ;
 #if (MAC_OS_X_VERSION_MIN_REQUIRED < 1050) 
 	NSArray* volumes = [fileManager directoryContentsAtPath:path] ;
 #else
@@ -51,11 +50,8 @@
 								   gid_p:&groupID] ;
 	for (NSString* volume in volumes) {
 		if (![volume hasPrefix:@"."]) {
-			NSString* fullPath = [path stringByAppendingPathComponent:volume] ;
 			BOOL canX;
-			canX = [fileManager canExecutePath:fullPath
-									   groupID:groupID
-										userID:userID] ;
+			canX = YES ;
 			
 			if (canX) {
 				[filteredVolumes addObject:volume] ;
