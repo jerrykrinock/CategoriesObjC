@@ -1,5 +1,6 @@
 #import "NSError+SSYInfo.h"
 #import "NSError+InfoAccess.h"
+#import "SSYDebug.h"
 
 NSString* const SSYIsOnlyInformationalErrorKey = @"isOnlyInformational" ;
 NSString* const SSYIsLoggedErrorKey = @"isLogged" ;

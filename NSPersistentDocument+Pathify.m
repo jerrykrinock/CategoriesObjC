@@ -6,6 +6,9 @@ NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotificatio
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;
 NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 
+NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumentPathifyErrorDomain" ;
+
+
 @implementation NSPersistentDocument (Pathify)
 
 - (BOOL)saveCopyToNewURL:(NSURL*)newURL
@@ -19,17 +22,14 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 	// This section was added in BookMacster 1.9.9.
 	if ([[self fileURL] isEqual:newURL]) {
 		ok = NO ;
-		error_ =  [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-									  code:157159
+		error_ =  [NSError errorWithDomain:SSYPersistentDocumentPathifyErrorDomain
+									  code:SSYPersistentDocumentPathifyErrorDestinationSameAsSource
 								  userInfo:[NSDictionary dictionaryWithObject:@
 											"You requested to rename this document to the same name it already has, and leave it in the same folder it is already in.\n\n"
 											@"That means to do nothing.  We have therefore done nothing."
 																	   forKey:NSLocalizedDescriptionKey]] ;
 		goto end ;
 	}
-	
-	// I think this statement never has any consequence
-	errorCode = 157160 ;
 	
 	// In case this comes from a dialog, make sure that newPath has the
 	// proper filename extension.
@@ -69,7 +69,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		}
 	}
 	if (!ok) {
-		errorCode = 157161 ;
+		errorCode = SSYPersistentDocumentPathifyErrorCouldNotOpenOldStore ;
 		goto end ;
 	}
 	
@@ -136,7 +136,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		ok = [[self managedObjectContext] save:&error_] ;
 
 		if (!ok) {
-			errorCode = 157162 ;
+			errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveManagedObjectContext ;
 			goto end ;
 		}
 	}
@@ -149,7 +149,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 		ok = [fileManager removeItemAtPath:newPath
 									 error:&error_] ;
 		if (!ok) {
-			errorCode = 157163 ;
+			errorCode = SSYPersistentDocumentPathifyErrorCouldNotDeleteOldStore ;
 			goto end ;
 		}
 	}		
@@ -158,7 +158,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 								  toPath:newPath
 								   error:&error_] ;
 		if (!ok) {
-			errorCode = 157164 ;
+			errorCode = SSYPersistentDocumentPathifyErrorCouldNotMoveStore ;
 			goto end ;
 		}
 	}
@@ -173,7 +173,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 							 error:&error_] ;
 #endif
 		if (!ok) {
-			errorCode = 157165 ;
+			errorCode = SSYPersistentDocumentPathifyErrorCouldNotCopyStore ;
 			NSDictionary* userInfo ;
 			if (error_) {
 				userInfo = [NSDictionary dictionaryWithObject:error_
@@ -182,7 +182,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 			else {
 				userInfo = nil ;
 			}
-			error_ = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
+			error_ = [NSError errorWithDomain:SSYPersistentDocumentPathifyErrorDomain
 										 code:errorCode
 									 userInfo:userInfo] ;
 			
@@ -215,7 +215,7 @@ NSString* const SSYDocumentSaveOperation = @"SSYDocumentSaveOperation" ;
 	if (ok) {
 	}
 	else {
-		errorCode = 157166 ;
+		errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
 		goto end ;
 	}
 	
@@ -231,7 +231,7 @@ end:;
 									  newPath, @"New Path",
 									  oldURL, @"Old URL",
 									  nil] ;
-			*error_p = [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
+			*error_p = [NSError errorWithDomain:SSYPersistentDocumentPathifyErrorDomain
 										   code:errorCode
 									   userInfo:userInfo] ;
 		}

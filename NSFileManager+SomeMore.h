@@ -100,14 +100,10 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
 /*!
  @brief    Returns YES if a file or directory exists at a given
- path and is not in a temporary or Trash folder, or is probably in
- the "Dropbox trash", meaning that it has ".dropbox.cache" as one
- of its path components.  Otherwise, returns NO.
+ path and is not in a temporary or Trash folder.  Otherwise, returns NO.
  
- @details  Until Dropbox version 2, I could look inside the Dropbox
- database, find where the Dropbox folder is, and do this exactly.
- Currently, this method will turn NO for any path which contains
- ".dropbox.cache" as one of its path components.
+ @details  Starting in BookMacster 1.15.3, this method no longer returns YES
+ if a document appears to be in a Dropbox cache/trash.
  */
 - (BOOL)fileIsPermanentAtPath:(NSString*)path ;
 

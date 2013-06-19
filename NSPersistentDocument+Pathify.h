@@ -1,5 +1,16 @@
 #import <Cocoa/Cocoa.h>
 
+extern NSString* const SSYPersistentDocumentPathifyErrorDomain ;
+
+#define SSYPersistentDocumentPathifyErrorDestinationSameAsSource 157159
+#define SSYPersistentDocumentPathifyErrorCouldNotOpenOldStore 157161
+#define SSYPersistentDocumentPathifyErrorCouldNotSaveManagedObjectContext 157162
+#define SSYPersistentDocumentPathifyErrorCouldNotDeleteOldStore 157163
+#define SSYPersistentDocumentPathifyErrorCouldNotMoveStore 157164
+#define SSYPersistentDocumentPathifyErrorCouldNotCopyStore 157165
+#define SSYPersistentDocumentPathifyErrorCouldNotSaveStore 157166
+
+
 @protocol NSPersistentDocumentMoveToStringer
 
 /*!

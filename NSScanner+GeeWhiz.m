@@ -1,5 +1,3 @@
-#import "NSScanner+GeeWhiz.h"
-
 @implementation NSScanner (GeeWhiz)
 
 - (BOOL)tryScanPastString:(NSString*)target {

@@ -31,9 +31,10 @@
 - (BOOL)involvesOneOfMyCodesInSet:(NSSet*)targetCodes ;
 
 /*!
- @brief    Returns whether the receiver or any of its underlying errors is in a given domain
- and has a given code, unless the given domain is nil then it returns whether or
- not the receiver or any of its underlying errors simply has the given code.
+ @brief    Returns whether the receiver or any of its underlying errors is in a
+ given domain and has a given code, unless the given domain is nil then it
+ returns whether or not the receiver or any of its underlying errors simply has
+ the given code.
  */
 - (BOOL)involvesCode:(NSInteger)code
 			  domain:(NSString*)domain ;

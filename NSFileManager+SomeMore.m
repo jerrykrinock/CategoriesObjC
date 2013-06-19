@@ -250,12 +250,6 @@ end:
 		if (result == true) {
 			return NO ;
 		}
-		
-		// See if it's in the "Dropbox trash"
-		NSArray* components = [path pathComponents] ;
-		if ([components indexOfObject:@".dropbox.cache"] != NSNotFound) {
-			return NO ;
-		}
 	}
 	else {
 		return NO ;
@@ -464,7 +458,7 @@ end:
 	BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path] ;
 	if (exists) {
 		const char* pathC = [path UTF8String] ;
-		NSInteger fd = open(
+		int fd = open(
 					  pathC,
 					  FREAD | O_CREAT | O_TRUNC,
 					  S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH) ;

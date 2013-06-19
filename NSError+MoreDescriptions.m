@@ -39,8 +39,8 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	NSInteger userInfoMaxTotalLength;
 	if (truncateForEmail) {
 		userInfoMaxKeyLength = 256 ;
-		userInfoMaxValueLength = 16384 ;
-		userInfoMaxTotalLength = 32768;
+		userInfoMaxValueLength = 35000 ;
+		userInfoMaxTotalLength = 50000 ;
 	}
 	else {
 		userInfoMaxKeyLength = 65536 ;
