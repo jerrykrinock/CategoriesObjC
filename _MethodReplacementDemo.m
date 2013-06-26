@@ -1,7 +1,6 @@
 #import <objc/runtime.h>
 #import <Cocoa/Cocoa.h>
-#import "SSYAlert.h"
-
+// #import "SSYDebug.h" // Comment this out if you don't need it.
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
@@ -389,3 +388,45 @@ error:(NSError**)error {
 @end
 
 #endif
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+#warning I'm not sure if this method works.  Maybe should be __NSDictionaryM ??
+
+@interface NSMutableDictionary (DebugByReplacingMethod)
+@end
+
+@implementation NSMutableDictionary (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(setObject:forKey:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_setObject:forKey:)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_setObject:(id)object
+                     forKey:key {
+    if (object == nil) {
+        NSLog(@"Whoops!  object is nil for key %@.  Backtrace:\n%@",
+              key,
+              SSYDebugBacktrace()) ;
+        NSLog(@"Terminating!") ;
+        exit(EXIT_FAILURE) ;
+    }
+    
+	// Due to the swap, this calls the original method
+	return [self replacement_setObject:object
+						        forKey:key] ;
+}
+
+@end
+
+#endif
+
