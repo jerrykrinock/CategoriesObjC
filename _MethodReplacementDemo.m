@@ -1,6 +1,6 @@
 #import <objc/runtime.h>
 #import <Cocoa/Cocoa.h>
-// #import "SSYDebug.h" // Comment this out if you don't need it.
+#import "SSYDebug.h" // Comment this out if you don't need it.
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
@@ -430,3 +430,38 @@ error:(NSError**)error {
 
 #endif
 
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+/* Now, here's one done in a category.  Do this to log a backtrace when a managed object is deleted */
+
+@interface NSMenuItem (DebugByReplacingMethod)
+@end
+
+@implementation NSMenuItem (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(init)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_init)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_init {
+	// Due to the swap, this calls the original method
+	id answer = [self replacement_init] ;
+
+    NSLog(@"93114: initted menu item %p Backtrace: %@", self, SSYDebugBacktraceDepth(8)) ;
+    
+    return answer ;
+}
+
+@end
+
+#endif

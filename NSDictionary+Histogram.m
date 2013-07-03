@@ -1,23 +1,23 @@
 #import "NSDictionary+Histogram.h"
 
 
-#if 0
 @implementation NSMutableDictionary (Histogram)
 
-- (void)incrementIntegerValueForKey:(NSString*)key {
-	id currentObject = [self objectForKey:key] ;
-	NSInteger newValue ;
-	if ([currentObject respondsToSelector:@selector(integerValue)]) {
-		newValue = [(NSNumber*)currentObject integerValue] + 1 ;
-	}
-	else {
-		newValue = 1 ;
-	}
-	
-	[self setObject:[NSNumber numberWithInteger:newValue]
-			 forKey:key] ;
+- (void)addInteger:(NSInteger)value
+             toKey:(NSString*)key {
+    if (value != 0) {
+        id currentObject = [self objectForKey:key] ;
+        NSInteger newValue ;
+        if ([currentObject respondsToSelector:@selector(integerValue)]) {
+            newValue = [(NSNumber*)currentObject integerValue] + value ;
+        }
+        else {
+            newValue = value ;
+        }
+        
+        [self setObject:[NSNumber numberWithInteger:newValue]
+                 forKey:key] ;
+    }
 }
 
-
 @end
-#endif
