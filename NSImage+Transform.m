@@ -11,7 +11,8 @@
 	[transform rotateByDegrees:degrees];
 	[boundsPath transformUsingAffineTransform:transform];
 	NSRect rotatedBounds = {NSZeroPoint, [boundsPath bounds].size};
-	NSImage* rotatedImage = [[[NSImage alloc] initWithSize:rotatedBounds.size] autorelease];
+	NSImage* rotatedImage = [[NSImage alloc] initWithSize:rotatedBounds.size] ;
+    [rotatedImage autorelease] ;
 	
 	// Center the image within the rotated bounds
 	imageBounds.origin.x = NSMidX(rotatedBounds) - (NSWidth(imageBounds) / 2);
