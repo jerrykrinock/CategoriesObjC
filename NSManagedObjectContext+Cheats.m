@@ -2,9 +2,6 @@
 #import "NSArray+SafeGetters.h"
 #import "NSManagedObjectModel+Versions.h"
 #import "NSString+MorePaths.h"
-#import "NSObject+MoreDescriptions.h"
-#import "NSObject+DoNil.h"
-#import "NSFileManager+SomeMore.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
 NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;

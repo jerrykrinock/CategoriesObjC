@@ -1,6 +1,4 @@
 #import "GCUndoManager+Debug.h"
-#import <objc/runtime.h>
-#import "NSObject+MoreDescriptions.h"
 
 #if GCUNDOMANAGER_DEBUG
 

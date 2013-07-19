@@ -1,6 +1,4 @@
-#import <objc/runtime.h>
-#import <Cocoa/Cocoa.h>
-#import "SSYDebug.h" // Comment this out if you don't need it.
+#import <objc/runtime.h> // Comment this out if you don't need it.
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
@@ -37,7 +35,6 @@
  You can access ivars
  
  just 
- #include "objc/objc-class.h"
  
  and then use
  static Ivar theIvar;  //create a static to cache the ivar information
