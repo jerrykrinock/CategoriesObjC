@@ -462,3 +462,43 @@ error:(NSError**)error {
 @end
 
 #endif
+
+
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+
+@interface NSURL (DebugByReplacingMethod)
+@end
+
+@implementation NSURL (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(initWithString:relativeToURL:)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_initWithString:relativeToURL:)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_initWithString:(NSString*)aString relativeToURL:(NSURL*)baseUrl {
+	// Due to the swap, this calls the original method
+	id answer = [self replacement_initWithString:aString relativeToURL:baseUrl] ;
+   
+    /*SSYDBL*/ NSLog(@"URL string: %@", aString) ;
+    /*SSYDBL*/ NSLog(@"base url: %@", baseUrl) ;
+    if ([aString hasSuffix:@"Applications/Safari.app/"]) {
+        SSYDebugLogBacktrace() ;
+    }
+    
+    return answer ;
+}
+
+@end
+
+#endif
