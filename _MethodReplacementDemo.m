@@ -490,8 +490,8 @@ error:(NSError**)error {
 	// Due to the swap, this calls the original method
 	id answer = [self replacement_initWithString:aString relativeToURL:baseUrl] ;
    
-    /*SSYDBL*/ NSLog(@"URL string: %@", aString) ;
-    /*SSYDBL*/ NSLog(@"base url: %@", baseUrl) ;
+    NSLog(@"URL string: %@", aString) ;
+    NSLog(@"base url: %@", baseUrl) ;
     if ([aString hasSuffix:@"Applications/Safari.app/"]) {
         SSYDebugLogBacktrace() ;
     }
