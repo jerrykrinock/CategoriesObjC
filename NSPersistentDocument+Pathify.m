@@ -90,7 +90,7 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 		//                      ofType:[self fileType]
         //            forSaveOperation:NSSaveOperation
         //                       error:&error_] ;
-		// However, for BookMacster's Bkmslf, its override of
+		// However, for BookMacster's BkmxDoc, its override of
 		// writeSafelyToURL:ofType:forSaveOperation:error: posts an
 		// SSYDocumentDidSaveNotification which will -doHousekeepingAfterSaveNotification,
 		// which will check cloudability, which will find an error if

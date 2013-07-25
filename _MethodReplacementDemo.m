@@ -197,7 +197,7 @@
 
 - (id)replacement_save:(NSError**)error {
 	NSString* path = [self path1] ;
-	if ([[[path lastPathComponent] pathExtension] isEqualToString:@"bkmslf"]) {
+	if ([[[path lastPathComponent] pathExtension] isEqualToString:@"bkmxDoc"]) {
 		NSLog(@"8573: Saving %@", [path lastPathComponent]) ;
 		NSLog(@"7467: callers:\n%@", SSYDebugBacktraceDepth(6)) ;
 	}

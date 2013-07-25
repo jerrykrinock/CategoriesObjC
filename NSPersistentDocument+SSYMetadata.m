@@ -119,8 +119,8 @@
 	 #4	0x971205cd in -[NSDocument saveDocumentWithDelegate:didSaveSelector:contextInfo:]
 	 #5	0x971201e0 in -[NSDocument saveDocument:]
 	 #6	0x0022801c in -[NSPersistentDocument(SSYMetadata) saveMetadataOnly] at NSPersistentDocument+SSYMetadata.m:81
-	 #7	0x0017c570 in -[Bkmslf upgradeBrowprietaries] at Bkmslf.m:1680
-	 #8	0x0017d9d9 in -[Bkmslf readFromURL:ofType:error:] at Bkmslf.m:1952
+	 #7	0x0017c570 in -[BkmxDoc upgradeBrowprietaries] at BkmxDoc.m:1680
+	 #8	0x0017d9d9 in -[BkmxDoc readFromURL:ofType:error:] at BkmxDoc.m:1952
 	 #9	0x96fb979d in -[NSDocument _initForURL:withContentsOfURL:ofType:error:]
 	 #10	0x96fb9687 in -[NSDocument initForURL:withContentsOfURL:ofType:error:]
 	 #11	0x96fb93fc in -[NSDocumentController makeDocumentForURL:withContentsOfURL:ofType:error:]

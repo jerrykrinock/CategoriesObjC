@@ -23,7 +23,7 @@ NSString* constIndentation = @"   " ;
 	 100.000% _CFXNotificationPostNotification
 	 100.000% __CFXNotificationPost
 	 100.000% _nsnote_callback
-	 100.000% -[Bkmslf objectWillChangeNote:]
+	 100.000% -[BkmxDoc objectWillChangeNote:]
 	 100.000% -[Chaker updateStark:key:oldValue:newValue:]
 	 100.000% -[Stange registerUpdateKey:oldValue:newValue:fromDisplayName:]
 	 100.000% -[NSString(ChangeLogging) localizedUpdateDescriptionsFromValue:toValue:fromDisplayName:]
