@@ -72,4 +72,6 @@
  */
 - (NSString*)defaultDocumentFilenameExtension ;
 
+- (Class)defaultDocumentClass ;
+
 @end

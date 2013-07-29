@@ -43,20 +43,23 @@
 	return displayName ;
 }			
 
-- (NSString*)defaultDocumentUTI {
-	// If this executable is located in Contents/MacOS, then -[NSDocumentController defaultType]
+- (NSDictionary *)defaultDocumentInfo {
+    // If this executable is located in Contents/MacOS, then -[NSDocumentController defaultType]
 	// will return the UTI instead of the "Name" if the document type has a UTI defined.
 	// NSString* uti = [self defaultType] ;
 	
 	// Unfortunately, if this executable is not in Contents/MacOS, as occurs if executing
 	// a helper application, which is located in Contents/Helpers/, for other reasons,
 	// -[NSDocumentController defaultType] will return nil.
-	
-	//  The solution is to to dig into the mainAppBundle ourselves
-		NSArray* docDics = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
-		NSDictionary* docDic = [docDics firstObjectSafely] ;
-		NSArray* utis = [docDic objectForKey:@"LSItemContentTypes"] ;
-		NSString* uti = [utis firstObjectSafely] ;
+//  The solution is to to dig into the mainAppBundle ourselves
+    NSArray* docDics = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
+    return [docDics firstObjectSafely] ;
+}
+
+- (NSString*)defaultDocumentUTI {
+    NSDictionary *docInfo = [self defaultDocumentInfo] ;
+    NSArray* utis = [docInfo objectForKey:@"LSItemContentTypes"] ;
+    NSString* uti = [utis firstObjectSafely] ;
 
 	return uti ;
 }
@@ -70,5 +73,11 @@
 	NSString* uti = [self defaultDocumentUTI] ;
 	return [self displayNameForDocumentUTI:uti] ;
 }
+
+- (Class)defaultDocumentClass {
+    return NSClassFromString([[self defaultDocumentInfo] objectForKey:@"NSDocumentClass"]) ;
+}
+
+
 
 @end

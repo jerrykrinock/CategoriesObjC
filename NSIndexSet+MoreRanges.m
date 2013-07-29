@@ -11,7 +11,7 @@
 		NSInteger index ;
 		// It seems to be an undocumented fact of -indexGreaterThanIndex: that
 		// if the index parameter is < 0, the method returns NSNotFound.
-		// We work around that with the following brancher:
+		// We work around that with the following branch:
 		if (priorIndex < 0) {
 			index = [self firstIndex] ;
 		}
