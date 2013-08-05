@@ -1,3 +1,4 @@
+#import "NSString+Clipboard.h"
 #import <Cocoa/Cocoa.h>
 
 @implementation NSString (Clipboard)
