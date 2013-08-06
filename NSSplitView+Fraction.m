@@ -13,8 +13,7 @@
 // <http://www.omnigroup.com/developer/sourcecode/sourcelicense/>.
 
 
-- (CGFloat)fraction;
-{
+- (CGFloat)fraction {
     NSRect topFrame, bottomFrame;
     
     if ([[self subviews] count] < 2)
@@ -36,8 +35,7 @@
         return bottomFrame.size.width / (bottomFrame.size.width + topFrame.size.width);
 }
 
-- (void)setFraction:(CGFloat)newFract;
-{
+- (void)setFraction:(CGFloat)newFract {
     NSRect                      topFrame, bottomFrame;
     NSView                      *topSubView;
     NSView                      *bottomSubView;
