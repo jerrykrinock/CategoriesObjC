@@ -502,3 +502,47 @@ error:(NSError**)error {
 @end
 
 #endif
+
+#if 11
+
+@interface My__NSCFString : NSObject {
+}
+
+- (void)my_sizeForWidth:(CGFloat)width
+                 height:(CGFloat)height
+                   font:(NSFont*)font ;
+
+@end
+
+@implementation My__NSCFString
+
++ (void)load {
+	NSLog(@"43243 %s", __PRETTY_FUNCTION__) ;
+	Method originalMethod = class_getInstanceMethod(NSClassFromString(@"__NSCFString"), @selector(sizeForWidth:height:font:));
+	Method replacedMethod = class_getInstanceMethod(self, @selector(my_sizeForWidth:height:font:));
+	IMP imp1 = method_getImplementation(originalMethod);
+	IMP imp2 = method_getImplementation(replacedMethod);
+	// Set the implementation of dealloc to mydealloc
+	method_setImplementation(originalMethod, imp2);
+	// Add a my_initWithObjects:count: method to the NSCFArray with the original implementation
+	class_addMethod(NSClassFromString(@"__NSCFString"), @selector(my_sizeForWidth:height:font:), imp1, NULL);
+}
+
+- (void)my_sizeForWidth:(CGFloat)width
+                 height:(CGFloat)height
+                   font:(NSFont*)font {
+	if (!font) {
+        /*SSYDBL*/ NSLog(@"Internal Error 513-3039  w=%g  h=%g\n%@", width, height, SSYDebugBacktrace()) ;
+        usleep(1) ;
+	}
+	
+	// Call the original method, whose implementation was exchanged with our own.
+	// Note:  this ISN'T a recursive call.
+	[self my_sizeForWidth:width
+                   height:height
+                     font:font] ;
+}
+
+@end
+
+#endif

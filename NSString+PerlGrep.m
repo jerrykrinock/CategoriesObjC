@@ -16,6 +16,44 @@
 		return nil ;
 	}
 	
+    /*
+     Bug fixed in BookMacster 1.17.
+     Create a string which will evaluate to TRUE in Perl if all of the requested
+     captures have been captured.
+     Prior to BookMacster 1.17, the condition was hard-coded to expect 3
+     captures ($1, $2 and $3), because, well, the only play I was using this
+     method required 3 captures.  I'm not sure why I need the check that all
+     of the captures were captured.  That is, I'm not sure I why I coded
+     the Perl with "if(%@){print \"%@\";}" instead of just "print \"%@\";".
+     I'm assuming there was a good reason.
+     */
+    NSMutableString* allCapturesCondition ;
+    // The default is to start with a condition that evaluates to TRUE in Perl.
+    allCapturesCondition = [[NSMutableString alloc] initWithString:@"1"] ;
+    NSInteger i = 1 ;
+    while (YES) {
+        NSString* signature = [NSString stringWithFormat:@"$%ld", (long)i] ;
+        NSInteger location = [outPattern rangeOfString:signature].location ;
+        if (location == NSNotFound) {
+            break ;
+        }
+        else {
+            [allCapturesCondition appendFormat:@"&&%@", signature] ;
+        }
+        i++ ;
+    }
+    /*
+     Here is how the above works:
+     
+     If outPattern contains     allCapturesCondition will be
+     -----------------------    ----------------------------
+     No capture placeholders    1
+     Only $1                    1&&$1
+     $1 and $2                  1&&$1&&$2
+     $1, $2 and $3              1&&$1&&$2&&$3
+     ...                        ...
+     */
+     
 	// We want Perl to get the whole thing as one long line of stdin.
 	// So we replace all newlines with spaces.
 	// Another way to do this would be to add the -p option switch
@@ -25,8 +63,9 @@
 													 withString:@" "] ;
 	NSData* stdinToPerl = [s dataUsingEncoding:NSUTF8StringEncoding] ;
 	NSString* perlCode = [NSString stringWithFormat:
-						  @"<STDIN> =~ m/%@/ ; if($1&&$2&&$3){print \"%@\";}",
+						  @"<STDIN> =~ m/%@/ ; if(%@){print \"%@\";}",
 						  matchPattern,
+                          allCapturesCondition,
 						  outPattern] ;	
 	NSData* stdoutFromPerl = nil ;
 	NSData* stderrFromPerl = nil ;
@@ -97,14 +136,17 @@
 	// RFC 1123 specifies the characters that are valid in the hostname labels.
 	// They do not include the underscore, so I don't use \w.
 	// Actually, a double-backslash is used to escape the NSString constant compilation.
-	NSString* hostnameLabelPattern = @"[a-zA-z0-9\\-]+" ;
+	NSString* hostnameLabelPattern = @"[a-zA-z0-9\\-\\.]+" ;
+	// The last item, \\., was added in BookMacster 1.17 to fix the bug that
+	// joe@abc.co.uk was being returned as joe@abc.co.
 
-	NSString* matchPattern = [NSString stringWithFormat:
-							  @"(%@)@(%@).(%@)",
+    NSString* matchPattern = [NSString stringWithFormat:
+							  @"(%@)@(%@)",
 							  localCharacterPattern,
-							  hostnameLabelPattern,
 							  hostnameLabelPattern] ;
-	NSString* outPattern = @"$1\\@$2.$3" ;
+    // $1 will capture the local-part and $2 the host name.
+    // To reconstruct the email, just add the @ in between them.
+    NSString* outPattern = @"$1\\@$2" ;
 	NSError* grepError = nil ;
 	
 	NSString* email = [self stringByGreppingMatchPattern:matchPattern
@@ -114,7 +156,7 @@
 	if (grepError) {
 		NSLog(@"%s: Error grepping for email: %@", __PRETTY_FUNCTION__, [grepError longDescription]) ;
 	}
-	
+
 	return email ;
 }
 

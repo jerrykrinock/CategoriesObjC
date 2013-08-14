@@ -10,7 +10,7 @@
  @details  Spawns a perl process with a timeout of 1.0 seconds and
  waits for it to exit
  @param    matchPattern  A Perl regex string.  If you hard-code this
- as a @"…" NSString constant, remember that, besides \ escaping any
+ as NSString constant using @"whatever", remember that, besides \ escaping any
  quotes, you'll also need to \ escape any \ by typing \\.  Matches
  are captured by (…).  See perlre in the Perl documentation.
  @param    outPattern  The string you want returned, containing

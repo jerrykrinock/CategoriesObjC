@@ -14,12 +14,18 @@
  which will, of course, create a no-op.  The selector must
  take 0 or 1 arguments of type id and return either void or
  an id.
+ @param    prettyFunction  Simply pass the preprocessor macro
+ __PRETTY_FUNCTION__, without quotes.  This param was added in
+ BookMacster 1.17, to fix a serious bug which is that this method
+ would spin into an infinite loop if it was invoked from a class
+ which is not a leaf class.
  @param    firstArg,  The first argument to the selector, or nil
  if the selector does not take any arguments
  @param    ...  varargs list, must end with nil sentinel
  @result   The object returned by the selector
 */
 - (id)safelySendSuperSelector:(SEL)selector
+               prettyFunction:(const char*)prettyFunction
 					arguments:firstArg, ... ;
 
 /*!
