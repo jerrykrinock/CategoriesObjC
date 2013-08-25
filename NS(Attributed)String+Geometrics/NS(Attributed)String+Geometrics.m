@@ -1,5 +1,12 @@
 #import "NS(Attributed)String+Geometrics.h"
 
+/*
+ To use this file in a non-ARC target, #define NO_ARC 1 in a prefix
+ file, or for smart ARC-or-not detection, include our super whiz bang
+ SSY_ARC_OR_NO_ARC.h in your project and #import "SSY_ARC_OR_NO_ARC.h"
+ in your prefix file.
+ */
+
 NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 
 @implementation NSAttributedString (Geometrics) 
@@ -26,13 +33,21 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 		[layoutManager glyphRangeForTextContainer:textContainer] ;
 		
 		answer = [layoutManager usedRectForTextContainer:textContainer].size ;
-		
+#if NO_ARC
+        /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 1") ;
+		[textStorage release] ;
+		[textContainer release] ;
+#endif
 		// Adjust if there is extra height for the cursor
 		NSSize extraLineSize = [layoutManager extraLineFragmentRect].size ;
 		if (extraLineSize.height > 0) {
 			answer.height -= extraLineSize.height ;
 		}
-
+		
+#if NO_ARC
+        /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 2") ;
+		[layoutManager release] ;
+#endif
 		// In case we changed it above, set typesetterBehavior back
 		// to the default value.
 		gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
@@ -67,7 +82,11 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 															   attributes:attributes] ;
 	answer = [astr sizeForWidth:width
 						 height:height] ;
-	
+#if NO_ARC
+    /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 3") ;
+	[astr release] ;
+#endif
+    
 	return answer ;
 }
 
