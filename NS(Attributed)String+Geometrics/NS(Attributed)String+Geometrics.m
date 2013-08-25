@@ -34,7 +34,6 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 		
 		answer = [layoutManager usedRectForTextContainer:textContainer].size ;
 #if NO_ARC
-        /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 1") ;
 		[textStorage release] ;
 		[textContainer release] ;
 #endif
@@ -45,7 +44,6 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 		}
 		
 #if NO_ARC
-        /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 2") ;
 		[layoutManager release] ;
 #endif
 		// In case we changed it above, set typesetterBehavior back
@@ -83,7 +81,6 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 	answer = [astr sizeForWidth:width
 						 height:height] ;
 #if NO_ARC
-    /*SSYDBL*/ NSLog(@"Releasing stuff for non-ARC 3") ;
 	[astr release] ;
 #endif
     
