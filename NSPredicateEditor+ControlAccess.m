@@ -1,4 +1,5 @@
 #import "NSPredicateEditor+ControlAccess.h"
+#import "NSView+Layout.h"
 
 
 @implementation NSPredicateEditor (ControlAccess)

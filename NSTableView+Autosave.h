@@ -23,7 +23,7 @@
  @brief    Returns a dictionary encoding the current autosave state
  of the receiver.
 */
-- (NSDictionary*)autosaveState ;
+- (NSDictionary*)currentState ;
 
 /*!
  @brief    Restores the state of the receiver as decoded from a

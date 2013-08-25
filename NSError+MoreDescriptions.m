@@ -4,7 +4,15 @@
 #import "NSObject+DeepCopy.h"
 #import "NSString+LocalizeSSY.h"
 
+
 NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That error description was truncated! ***" ;
+
+@interface NSError ()
+
++ (NSArray*)additionalKeysInDescriptionForDialog ;
+- (NSError*)underlyingError ;
+
+@end
 
 @implementation NSError (MoreDescriptions)
 

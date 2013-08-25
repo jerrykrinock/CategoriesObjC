@@ -66,7 +66,8 @@
 						  @"<STDIN> =~ m/%@/ ; if(%@){print \"%@\";}",
 						  matchPattern,
                           allCapturesCondition,
-						  outPattern] ;	
+						  outPattern] ;
+    [allCapturesCondition release] ;
 	NSData* stdoutFromPerl = nil ;
 	NSData* stderrFromPerl = nil ;
 	NSError* error = nil ;	

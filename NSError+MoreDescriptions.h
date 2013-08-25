@@ -6,6 +6,7 @@
  */
 extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 
+
 @interface NSError (MoreDescriptions)
 
 

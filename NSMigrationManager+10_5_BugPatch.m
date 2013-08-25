@@ -1,6 +1,13 @@
 #import "NSMigrationManager+10_5_BugPatch.h"
 #import <objc/runtime.h>
 
+@interface NSMigrationManager ()
+
+- (NSArray*)destinationInstancesForSourceRelationshipNamed:(NSString*)srcRelationshipName
+                                           sourceInstances:(id)source ;
+
+@end
+
 @implementation NSMigrationManager (_10_5_BugPatch)
 
 + (void)addRelationshipMigrationMethodIfMissing {
