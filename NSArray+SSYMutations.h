@@ -16,6 +16,17 @@
 - (NSArray*)arrayByRemovingObject:(id)object ;
 
 /*!
+ @brief    Returns a new array, equal to the receiver except with all objects
+ that -isEqual one of the objects in a given set removed
+ 
+ @param    set  The set of objects to be removed.&nbsp; It is
+ ok if this set contains object(s) that do not exist in the array.
+ @result   An autoreleased copy of the receiver, with one
+ or more objects possibly removed.
+ */
+- (NSArray*)arrayByRemovingObjectsFromSet:(NSSet*)set  ;
+
+/*!
  @brief    Returns a new array, equal to the receiver
  except with a single object at a given index removed.
  

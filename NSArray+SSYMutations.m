@@ -12,6 +12,17 @@
 	return newArray ;
 }
 
+- (NSArray*)arrayByRemovingObjectsFromSet:(NSSet*)set  {
+	NSMutableArray* mutant = [self mutableCopy] ;
+	for (id object in set) {
+        [mutant removeObject:object] ;
+    }
+	NSArray* newArray = [NSArray arrayWithArray:mutant] ;
+	[mutant release] ;
+	
+	return newArray ;
+}
+
 - (NSArray*)arrayByInsertingObject:(id)object
 						   atIndex:(NSInteger)index {
 	NSArray* answer ;
