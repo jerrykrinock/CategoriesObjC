@@ -8,9 +8,10 @@
 #define _CHANGE_COUNT_IVAR_OFFSET 0x00000018
 // Unfortunately, the above only works ok Mac OS X 10.6.
 // In 10.7 and and 10.8, NSDocument no longer has a _changeCount.  Kyle Sluder
-// says it was replaced by the "change token" infrastructure, but I can't find
-// any info on that.
-
+// says it was replaced by the "change token infrastructure".  Probably, he
+// means this stuff…
+//    -[NSDocument updateChangeCountWithToken:forSaveOperation:]
+//    -[NSDocument changeCountTokenForSaveOperation:]
 @interface NSDocument (SSYDebugChangeAndUndo)
 @end
 

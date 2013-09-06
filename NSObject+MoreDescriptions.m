@@ -205,3 +205,33 @@ NSString* constIndentation = @"   " ;
 }
 
 @end
+
+
+@implementation NSCountedSet (MoreDescriptions)
+
+- (NSString*)shortDescription {
+	NSMutableString* desc = [[NSMutableString alloc] init] ;
+	for (id object in self) {
+		[desc appendFormat:
+		 @"%@ [%ld],",
+		 [object shortDescription],
+		 (long)[self countForObject:object]] ;
+	}
+    
+	// Delete the trailing comma
+	if ([desc length] > 0) {
+		[desc deleteCharactersInRange:NSMakeRange([desc length] - 1, 1)] ;
+	}
+	else {
+		[desc appendString:@"<Empty Set>"] ;
+	}
+    
+	NSString* answer = [[desc copy] autorelease] ;
+    
+    [desc release] ;
+    
+    return answer ;
+}
+
+@end
+

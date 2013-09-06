@@ -6,9 +6,13 @@
  persistent store at a given path, by cheating, that is, by opening the store
  with SSYSQLiter and querying "SELECT Z_PLIST FROM Z_METADATA".
 
- @details  This method does not return an error but instead logs to stderr.
+ @details  This is a heavyweight method which you should use to get metadata
+ from documents that are not already open.  To get metadata from open documents,
+ use the much simpler instance method, -metadataObjectForKey:.
+ 
+ Notice that this method does not return an error.  If something goes wrong,
+ it is logged to stderr.
  */
-
 + (id)metadataObjectForKey:(NSString*)key
                       path:(NSString*)path ;
 
