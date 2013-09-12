@@ -4,7 +4,7 @@
 @interface NSImage (Transform)
 
 /*!
- @brief    Rotates an image around its center by a given
+ @brief    Rotates an image clockwise around its center by a given
  angle in degrees and returns the new image.
 
  @details  The width and height of the returned image are,
