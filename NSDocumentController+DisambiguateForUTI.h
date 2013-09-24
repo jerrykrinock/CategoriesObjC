@@ -74,4 +74,10 @@
 
 - (Class)defaultDocumentClass ;
 
+/*
+ @brief    Returns the value of CFBundleTypeIconFile given in Info.plist for the
+ application's default document type
+ */
+- (NSString*)defaultDocumentIconName ;
+
 @end

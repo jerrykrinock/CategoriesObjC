@@ -78,6 +78,8 @@
     return NSClassFromString([[self defaultDocumentInfo] objectForKey:@"NSDocumentClass"]) ;
 }
 
-
+- (NSString*)defaultDocumentIconName {
+    return [[self defaultDocumentInfo] objectForKey:@"CFBundleTypeIconFile"] ;
+}
 
 @end
