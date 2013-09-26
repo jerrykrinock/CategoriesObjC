@@ -186,7 +186,8 @@ end:
 }
 
 + (NSString*)applicationSupportFolderForThisApp {
-	return [[self applicationSupportPathForHomePath:nil] stringByAppendingPathComponent:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"]] ;
+    NSString* executableName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"] ;
+	return [[self applicationSupportPathForHomePath:nil] stringByAppendingPathComponent:executableName] ;
 }
 
 + (NSString*)preferencesPathForHomePath:(NSString*)homePath {
