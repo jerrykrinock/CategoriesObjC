@@ -97,14 +97,6 @@
 + (NSString*)applicationSupportPathForHomePath:(NSString*)homePath ;
 
 /*!
- @brief    Returns the path of a subfolder in the current user's
- Application Support folder with the same name as this application.
-
- @details  Example: "/Users/me/Library/Application Support/MyApp"
-*/
-+ (NSString*)applicationSupportFolderForThisApp ;
-
-/*!
  @brief    Returns the POSIX path to the Preferences folder
  for a given homePath
 
@@ -255,6 +247,18 @@
  instead of tildes.
  */
 - (NSString*)hashifiedPath ;
+
+/*!
+ @brief    Returns the full path to a (possibly nonexistent) folder in the
+ current user's Application Support directory whose name is the string value
+ of key "SSYMotherAppName" in the info dictionary of the current application's
+ main bundle
+ 
+ @details  If the key "SSYMotherAppName" does not exist, uses instead the value
+ of "CFBundleName", and if that does not exist, simply returns the path to the
+ user's Application Support directory.
+ */
++ (NSString*)applicationSupportPathForMotherApp ;
 
 @end
 

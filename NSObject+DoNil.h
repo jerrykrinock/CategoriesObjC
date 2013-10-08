@@ -19,7 +19,7 @@
 						 object2:(id)object2 ;
 
 /*!
- @brief    Returns the given objectunless it is nil, then returns
+ @brief    Returns the given object, unless it is nil, then returns
  a short string explaining the nil.
  
  @details  Handy for avoiding exceptions and crashes
