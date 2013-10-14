@@ -63,6 +63,16 @@
 - (void)setValue:(id)value
 	  forKeyPath:(NSString*)keyPath ;
 
+/*!
+ @brief    Same as as setValue:forKeyPath: except allows you to set preferences
+ for an application other than the current application.
+ 
+ @details  Don't try this in the sandbox :(
+ */
+- (void)setValue:(id)value
+ forKeyPathArray:(NSArray*)keyArray
+   applicationId:(NSString*)applicationId ;
+
 -      (void)addObject:(id)object
  toArrayAtKeyPathArray:(NSArray*)keyPathArray ;
 

@@ -185,30 +185,6 @@ end:
 	return path ;
 }
 
-+ (NSString*)applicationSupportPathForMotherApp {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(
-                                                         NSApplicationSupportDirectory,
-                                                         NSUserDomainMask,
-                                                         YES
-                                                         ) ;
-    NSString* userAppSupportPath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil ;
-    // The idea is that we return "BookMacster" for the other three apps too.
-    NSString* motherAppName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SSYMotherAppName"] ;
-    if (!motherAppName) {
-        motherAppName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"] ;
-    }
-
-    NSString* answer ;
-    if (motherAppName) {
-        answer = [userAppSupportPath stringByAppendingPathComponent:motherAppName] ;
-    }
-    else {
-        answer = userAppSupportPath ;
-    }
-
-    return answer ;
-}
-
 + (NSString*)preferencesPathForHomePath:(NSString*)homePath {
 	NSString* path = [[homePath stringByAppendingPathComponent:@"Library"]
 					  stringByAppendingPathComponent:@"Preferences"] ;

@@ -3,6 +3,7 @@
 #import "NSManagedObjectModel+Versions.h"
 #import "NSString+MorePaths.h"
 #import "BkmxBasis.h"
+#import "NSBundle+SSYMotherApp.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
 NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
@@ -52,7 +53,7 @@ NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
 	}
 	
 	sqlFilename = [sqlFilename stringByAppendingPathExtension:SSYManagedObjectContextPathExtensionForSqliteStores] ;
-	NSString* path = [[NSString applicationSupportPathForMotherApp] stringByAppendingPathComponent:sqlFilename] ;
+	NSString* path = [[[NSBundle mainBundle] applicationSupportPathForMotherApp] stringByAppendingPathComponent:sqlFilename] ;
 	NSURL* url = [NSURL fileURLWithPath:path] ;
 	if (!url) {
 		errorDescription = [NSString stringWithFormat:

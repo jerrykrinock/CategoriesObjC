@@ -161,7 +161,7 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
 	}
 	
 	NSDictionary* responseInfo = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:responseData] ;
-	
+
 	if (!responseInfo) {
 		error = SSYMakeError(29170, @"Could not decode response from helper") ;
 		goto end ;

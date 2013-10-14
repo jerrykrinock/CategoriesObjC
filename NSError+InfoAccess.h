@@ -81,11 +81,12 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
 - (NSError*)errorByAddingLocalizedRecoverySuggestion:(NSString*)newText ;
 
 /*!
- @brief    Adds a string value for string key NSRecoveryAttempterErrorKey to userInfo of a copy of
- the receiver and returns the copy, unless the parameter is nil, then returns the receiver.
+ @brief    Adds a string value for string key NSRecoveryAttempterErrorKey to
+ userInfo of a copy of the receiver and returns the copy, unless the parameter
+ is nil, then returns the receiver.
  @details  If the parameter is nil, this method is a no-op.
- @param    recoveryAttempter  An object which conforms to the NSErrorRecoveryAttempting
- informal protocol
+ @param    recoveryAttempter  An object which conforms to the
+ NSErrorRecoveryAttempting informal protocol
  */
 - (NSError*)errorByAddingRecoveryAttempter:(id)recoveryAttempter ;
 
@@ -102,10 +103,12 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
 - (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction ;
 
 /*!
- @brief    Adds an array value for string key NSLocalizedRecoveryOptionsErrorKey to userInfo of a copy of
- the receiver and returns the copy, unless the parameter is nil, then returns the receiver.
+ @brief    Adds an array value for string key NSLocalizedRecoveryOptionsErrorKey
+ to userInfo of a copy of the receiver and returns the copy, unless the
+ parameter is nil, then returns the receiver.
  @details  If the parameter is nil, this method is a no-op.
- @param    options  The array of strings which will be added for key NSLocalizedRecoverySuggestionErrorKey
+ @param    options  The array of strings which will be added for key
+ NSLocalizedRecoverySuggestionErrorKey
  */
 - (NSError*)errorByAddingLocalizedRecoveryOptions:(NSArray*)recoveryOptions ;
 	
