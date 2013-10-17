@@ -8,7 +8,7 @@ extern NSString* const NSDataFileAliasError ;
  @brief    A category on NSData for converting (sometimes "resolving")
  AliasRecord datas to paths, and vice versa, creating AliasRecords
 
- @details  This category requires Mac OS X 10.5 or later.&nbsp;  Test
+ @details  This category requires Mac OS X 10.5 or later.  Test
  code is provided below.
 */
 @interface NSData (FileAlias)

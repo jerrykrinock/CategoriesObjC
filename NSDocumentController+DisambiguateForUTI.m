@@ -1,11 +1,12 @@
 #import "NSDocumentController+DisambiguateForUTI.h"
 #import "NSBundle+MainApp.h"
 #import "NSArray+SafeGetters.h"
+#import "NSBundle+MainApp.h"
 
 @implementation NSDocumentController (DisambiguateForUTI)
 
 - (NSString*)filenameExtensionForDocumentUTI:(NSString*)uti {
-	NSArray* docDics = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
+	NSArray* docDics = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
 	NSString* extension = nil ;
 	for (NSDictionary* docDic in docDics) {
 		NSArray* utis = [docDic objectForKey:@"LSItemContentTypes"] ;
@@ -25,7 +26,7 @@
 }			
 
 - (NSString*)displayNameForDocumentUTI:(NSString*)uti {
-	NSArray* docDics = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
+	NSArray* docDics = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
 	NSString* displayName = nil ;
 	for (NSDictionary* docDic in docDics) {
 		NSArray* utis = [docDic objectForKey:@"LSItemContentTypes"] ;
@@ -52,7 +53,7 @@
 	// a helper application, which is located in Contents/Helpers/, for other reasons,
 	// -[NSDocumentController defaultType] will return nil.
 //  The solution is to to dig into the mainAppBundle ourselves
-    NSArray* docDics = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
+    NSArray* docDics = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
     return [docDics firstObjectSafely] ;
 }
 

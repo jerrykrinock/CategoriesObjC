@@ -21,7 +21,7 @@
  by the other error-generating methods in this category.
  
  @details  For applications, this will be the main bundle identifier.&nbsp;
- For processes that don't have an [NSBundle mainBundle], this will be the
+ For processes that don't have an [NSBundle mainAppBundle], this will be the
  executable name, specifically the last path component of the process'
  first command-line argument.
  */

@@ -5,6 +5,7 @@
 #import "SSYShellTasker.h"
 #import "NSBundle+HelperPaths.h"
 #import "NSKeyedUnarchiver+CatchExceptions.h"
+#import "NSBundle+MainApp.h"
 
 //#import "DebugGuy.h"
 //extern id debugGuyObject ;
@@ -135,7 +136,7 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
 	// Thus, we should be OK to do the following:
 	NSData* requestData = [NSKeyedArchiver archivedDataWithRootObject:requestInfo] ;
 	
-	NSString* workerPath = [[NSBundle mainBundle] pathForHelper:NSDataFileAliasWorkerName] ;
+	NSString* workerPath = [[NSBundle mainAppBundle] pathForHelper:NSDataFileAliasWorkerName] ;
 	NSData* responseData = nil ;
 	NSData* stderrData = nil ;
 	NSError* taskError = nil ;

@@ -1,6 +1,7 @@
 #import "NSPersistentDocument+Pathify.h"
 #import "NSDocumentController+DisambiguateForUTI.h"
 #import "NSDocument+SyncModDate.h"
+#import "NSBundle+MainApp.h"
 
 NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotification" ;
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;
@@ -44,7 +45,7 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 	if (!oldURL) {
 		// This will execute for new, never-saved documents
 		NSString* oldPath = NSTemporaryDirectory() ;
-		NSString* bundleID = [[NSBundle mainBundle] bundleIdentifier] ;
+		NSString* bundleID = [[NSBundle mainAppBundle] bundleIdentifier] ;
 		oldPath = [oldPath stringByAppendingPathComponent:bundleID] ;
 		oldPath = [oldPath stringByAppendingString:@"_temp"] ;
 		oldURL = [NSURL fileURLWithPath:oldPath] ;

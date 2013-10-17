@@ -1,11 +1,12 @@
 #import "NSBundle+AppIcon.h"
+#import "NSBundle+MainApp.h"
 
 @implementation NSBundle (AppIcon)
 
 - (NSString*)appIconPath {
 	// Oddly, I can't find a constant for the bundle icon file.
 	// Compare to kCFBundleNameKey, which is apparently "CFBundleName".
-	NSString* iconFilename = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIconFile"] ;
+	NSString* iconFilename = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleIconFile"] ;
 	// I do not use -pathForImageResource, in case the Resources also contains
 	// an image file, for example a png, with the same name.  I want the .icns.
 	NSString* iconBasename = [iconFilename stringByDeletingPathExtension] ;

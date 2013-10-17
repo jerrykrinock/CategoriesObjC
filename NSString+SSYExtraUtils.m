@@ -1,5 +1,6 @@
 #import "NSString+SSYExtraUtils.h"
 #import "NSScanner+GeeWhiz.h"
+#import "NSBundle+MainApp.h"
 
 @implementation NSString (SSYExtraUtils)
 
@@ -555,9 +556,9 @@ NSString* const aNewline = @"\n" ;
 	
 	if (name_p) {
 		if ([name length] == 0) {
-			name = [[NSBundle mainBundle] localizedStringForKey:@"untitled"
-														  value:@"?"
-														  table:@"Localizable"] ;
+			name = [[NSBundle mainAppBundle] localizedStringForKey:@"untitled"
+                                                             value:@"?"
+                                                             table:@"Localizable"] ;
 		}
 
 		*name_p = name ;

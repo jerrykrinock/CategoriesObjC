@@ -10,7 +10,7 @@
  an array of string keys, instead of a key path, which is an 
  equivalent dot-separated string.
  
- WARNING: With power comes danger.&nbsp;  For example, with the 
+ WARNING: With power comes danger.  For example, with the
  "keyPathArray" methods, if your array is terminated by an
  unexpected nil, you could inadvertantly overwrite a parent dictionary
  with an array, for example.&nbsp; This will corrupt the user's
@@ -41,7 +41,7 @@
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray ;
 
 /*!
- @details  This method is a no-op of value is nil.  That could be changed, as
+ @details  This method is a no-op oif value is nil.  That could be changed, as
  I have done in -[NSMutableDictionary(KeyPaths) setValue:forKeyPathArray:].
  However, since I use this method in about 50 places, that would take a lot
  of code review.
@@ -62,16 +62,6 @@
 */
 - (void)setValue:(id)value
 	  forKeyPath:(NSString*)keyPath ;
-
-/*!
- @brief    Same as as setValue:forKeyPath: except allows you to set preferences
- for an application other than the current application.
- 
- @details  Don't try this in the sandbox :(
- */
-- (void)setValue:(id)value
- forKeyPathArray:(NSArray*)keyArray
-   applicationId:(NSString*)applicationId ;
 
 -      (void)addObject:(id)object
  toArrayAtKeyPathArray:(NSArray*)keyPathArray ;

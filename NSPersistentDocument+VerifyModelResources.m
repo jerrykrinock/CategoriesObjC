@@ -1,4 +1,5 @@
 #import "NSPersistentDocument+VerifyModelResources.h"
+#import "NSBundle+MainApp.h"
 
 NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain = @"SSYPersistentDocumentVerifyModelResourcesErrorDomain" ;
 
@@ -7,9 +8,9 @@ NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain = @"SSYPersistent
 - (BOOL)verifyModelResourcesError_p:(NSError**)error_p {
     BOOL ok = YES ;
     NSError* error = nil ;
-    NSArray* modelPaths = [[NSBundle mainBundle] pathsForResourcesOfType:@"mom"
+    NSArray* modelPaths = [[NSBundle mainAppBundle] pathsForResourcesOfType:@"mom"
                                                              inDirectory:nil] ;
-    modelPaths = [modelPaths arrayByAddingObjectsFromArray:[[NSBundle mainBundle] pathsForResourcesOfType:@"momd"
+    modelPaths = [modelPaths arrayByAddingObjectsFromArray:[[NSBundle mainAppBundle] pathsForResourcesOfType:@"momd"
                                                                                               inDirectory:nil]] ;
     for (NSString* modelPath in modelPaths) {
         NSURL *modelURL = [NSURL fileURLWithPath:modelPath];

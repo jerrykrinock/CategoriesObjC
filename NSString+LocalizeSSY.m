@@ -1,13 +1,14 @@
 #import "NSString+LocalizeSSY.h"
 #import "NSScanner+GeeWhiz.h"
 #import "NSString+VarArgs.h"
+#import "NSBundle+MainApp.h"
 
 NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 
 @implementation NSString (LocalizeSSY)
 
 - (NSString*)localizedTableValue {
-	NSBundle* bundle = [NSBundle mainBundle] ;
+	NSBundle* bundle = [NSBundle mainAppBundle] ;
 
 	// To return nil if not found in Localizable.strings.
 	NSString* answer = nil ;

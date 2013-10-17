@@ -1,5 +1,6 @@
 #import "NSError+MyDomain.h"
 #import "NSError+InfoAccess.h"
+#import "NSBundle+MainApp.h"
 
 @implementation NSError (MyDomain)
 
@@ -11,7 +12,7 @@
 		NSString* const CFBundleVersionKey = @"CFBundleVersion" ;
 		userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 					localizedDescription, NSLocalizedDescriptionKey,
-					[[NSBundle mainBundle] objectForInfoDictionaryKey:CFBundleVersionKey], CFBundleVersionKey,
+					[[NSBundle mainAppBundle] objectForInfoDictionaryKey:CFBundleVersionKey], CFBundleVersionKey,
 					// The following gets added in -[SSYAlert support:].  It would be nice to do it here instead.
 					// But then I'd have to #import SSYSystemDescriber into any project using this file.
 					//[SSYSystemDescriber softwareVersionAndArchitecture], @"System Description",
@@ -29,7 +30,7 @@
 }
 
 + (NSString*)myDomain {
-	NSString* domain = [[NSBundle mainBundle] bundleIdentifier] ;
+	NSString* domain = [[NSBundle mainAppBundle] bundleIdentifier] ;
 	// Background/daemon/helper/tools will usually not have a bundle...
 	if (!domain) {
 		NSString* path = [[[NSProcessInfo processInfo] arguments] objectAtIndex:0] ;

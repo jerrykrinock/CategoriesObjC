@@ -1,11 +1,12 @@
 #import "NSManagedObjectModel+Versions.h"
+#import "NSBundle+MainApp.h"
 
 
 @implementation NSManagedObjectModel (Versions)
 
 + (NSManagedObjectModel*)managedObjectModelWithMomdName:(NSString*)momdName
 											versionName:(NSString*)versionName {
-	NSString* momdPath = [[NSBundle mainBundle] pathForResource:momdName
+	NSString* momdPath = [[NSBundle mainAppBundle] pathForResource:momdName
 														 ofType:@"momd"] ;
 	NSBundle* modelBundle = [NSBundle bundleWithPath:momdPath] ;
 	
