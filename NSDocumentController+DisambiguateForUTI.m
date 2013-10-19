@@ -83,4 +83,10 @@
     return [[self defaultDocumentInfo] objectForKey:@"CFBundleTypeIconFile"] ;
 }
 
+- (NSImage*)defaultDocumentImage {
+    NSString* imageName = [self defaultDocumentIconName] ;
+    NSImage* image = [[NSBundle mainBundle] imageForResource:imageName] ;
+    return image ;
+}
+
 @end

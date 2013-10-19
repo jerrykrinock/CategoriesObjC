@@ -80,4 +80,6 @@
  */
 - (NSString*)defaultDocumentIconName ;
 
+- (NSImage*)defaultDocumentImage ;
+
 @end
