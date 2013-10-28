@@ -11,7 +11,6 @@
         NSLog(@"Internal Error 282-1983 %@ %@", name, [entities allKeys] );
     }
     [entities release] ;  // Sorry, ARC users
-    /*SSYDBL*/ NSLog(@"Got ed with %ld attrs for %@", (long)[[entityDescription attributesByName] count], name) ;
     return entityDescription ;
 }
 
