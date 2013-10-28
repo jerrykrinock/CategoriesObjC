@@ -85,7 +85,22 @@
 
 - (NSImage*)defaultDocumentImage {
     NSString* imageName = [self defaultDocumentIconName] ;
-    NSImage* image = [[NSBundle mainBundle] imageForResource:imageName] ;
+    NSBundle* bundle = [NSBundle mainBundle] ;
+    NSImage* image ;
+    if ([bundle respondsToSelector:@selector(imageForResource:)]) {
+        // Mac OS X 10.7 or later can extract an image from a icon (.icns) file.
+        image = [bundle imageForResource:imageName] ;
+    }
+    else {
+        // Mac OS X 10.6
+        // You must provide a png file.  Or maybe you could leave ofType = nil,
+        // but I'm not sure if an .icns would interfere with that.  Definitely,
+        // Mac OS X 10.6 fails to get the image if you only provide a .icns.
+        NSString* imagePath = [bundle pathForResource:imageName
+                                               ofType:@"png"] ;
+        image = [[NSImage alloc] initByReferencingFile:imagePath] ;
+        [image autorelease] ;
+    }
     return image ;
 }
 

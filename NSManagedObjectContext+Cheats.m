@@ -5,6 +5,7 @@
 #import "BkmxBasis.h"
 #import "NSBundle+SSYMotherApp.h"
 #import "NSBundle+MainApp.h"
+#import "NSEntityDescription+SSYMavericksBugFix.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
 NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
@@ -146,8 +147,8 @@ end:
 	NSArray* fetchResults = nil ;
 	
 	@try {
-		NSEntityDescription* entity = [NSEntityDescription entityForName:entityName
-												  inManagedObjectContext:self] ;
+		NSEntityDescription* entity = [NSEntityDescription SSY_entityForName:entityName
+                                                      inManagedObjectContext:self] ;
 		[fetchRequest setEntity:entity] ;
 		if (predicate) {
 			[fetchRequest setPredicate:predicate] ;
