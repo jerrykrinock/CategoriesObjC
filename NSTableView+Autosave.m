@@ -56,6 +56,7 @@ NSString* const constKeyUserDefinedAttributes = @"userDefinedAttributes" ;
 	for (NSString* identifier in attributes) {
 		NSTableColumn* column = [self tableColumnWithIdentifier:identifier] ;
 		if ([column respondsToSelector:@selector(setUserDefinedAttribute:)]) {
+            /*SSYDBL*/ NSLog(@"Set uda of column %p %@ to %@", column, identifier, [attributes objectForKey:identifier]) ;
 			[column performSelector:@selector(setUserDefinedAttribute:)
 						 withObject:[attributes objectForKey:identifier]] ;
 		}

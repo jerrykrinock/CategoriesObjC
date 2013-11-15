@@ -477,7 +477,11 @@ end:
 			NSInteger setlock = fcntl(fd, F_SETLK, &daFlock) ;
 			if (setlock == -1) {
 				// Attempt to lock the file failed
-				if (errno == EAGAIN || errno == EACCES) {
+                
+                // Because errno clears to 0 after you read it, we read
+                // it into a local, so that we can log during development
+                int myErrno = errno ;
+                if (myErrno == EAGAIN || myErrno == EACCES) {
 					isLocked = YES ;
 				}
 			}

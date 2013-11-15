@@ -141,14 +141,16 @@
 		copy = [dic mutableCopy] ;
 		[copy setObject:nextObject
 				 forKey:[keyArray objectAtIndex:i]] ;
-        [self setValue:nextObject
-                forKey:[keyArray objectAtIndex:i]
-         applicationId:applicationId] ;
+// This statement removed in BookMacster 1.19.6.  It was a mistake
+// to put this in here.
+//        [self setValue:nextObject
+//                forKey:[keyArray objectAtIndex:i]
+//         applicationId:applicationId] ;
 		nextObject = [copy autorelease] ;
 		i-- ;
 	}
 	
-	if (nextObject) {  // if() added as bug fix added in BookMaster 1.14.4
+    if (nextObject) {  // if() added as bug fix added in BookMaster 1.14.4
         [self setValue:nextObject
                 forKey:[keyArray objectAtIndex:0]
          applicationId:applicationId] ;
