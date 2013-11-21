@@ -89,7 +89,9 @@
     NSImage* image ;
     if ([bundle respondsToSelector:@selector(imageForResource:)]) {
         // Mac OS X 10.7 or later can extract an image from a icon (.icns) file.
+#pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
         image = [bundle imageForResource:imageName] ;
+#pragma deploymate pop
     }
     else {
         // Mac OS X 10.6

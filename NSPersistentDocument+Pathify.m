@@ -311,7 +311,7 @@ end:;
 	NSWindow* window = nil ;
 	NSArray* windowControllers = [self windowControllers] ;
 	if ([windowControllers count] > 0) {
-		window = [[windowControllers objectAtIndex:0] window] ;
+		window = [(NSWindowController*)[windowControllers objectAtIndex:0] window] ;
 	}
 #if NEEDS_CALLBACK_FOR_SAVE_MOVE_PANEL_DID_END
 	NSDocumentController* dc = [NSDocumentController sharedDocumentController] ;
@@ -321,12 +321,14 @@ end:;
 	if ([dc respondsToSelector:selector]) {
 		suggestedURL = [dc performSelector:selector] ;
 	}
+#pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
 	[panel beginSheetForDirectory:parentPath
 							 file:[[suggestedURL path] lastPathComponent]
 				   modalForWindow:window
 					modalDelegate:self
 				   didEndSelector:@selector(saveMovePanelDidEnd:returnCode:contextInfo:)
 					  contextInfo:[doneInvocation retain]] ;
+#pragma deploymate pop
 	// doneInvocation will be released in -saveMovePanelDidEnd:returnCode:contextInfo:
 #else
     [panel beginSheetModalForWindow:window

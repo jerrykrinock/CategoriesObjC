@@ -116,8 +116,10 @@ end:
 
 - (NSDate*)modificationDateForPath:(NSString*)path {
 #if (MAC_OS_X_VERSION_MIN_REQUIRED < 1050) 
+#pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
 	NSDictionary* fileAttributes = [self fileAttributesAtPath:path
 												 traverseLink:YES] ;
+#pragma deploymate pop
 #else
 	NSDictionary* fileAttributes = [self attributesOfItemAtPath:path
 														  error:NULL] ;

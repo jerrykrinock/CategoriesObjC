@@ -2,24 +2,7 @@
 #import "NSManagedObjectContext+Cheats.h"
 #import "SSYSqliter.h"
 #import "NSObject+MoreDescriptions.h"
-
-// Stuff defined in Mac OS X 10.7 SDK, defined here for compilability with earlier SDKs.
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1070)
-
-/*!
- @brief    Declares symbols that are defined in the 10.7 SDK,
- to eliminate compiler warnings.
- 
- @details  Be careful to only invoke super on these methods after
- you've checked that you are running under Mac OS X 10.7.
- */
-@interface NSPersistentDocument (SSYMetadata_DefinedInMac_OS_X_10_7)
-
-- (BOOL)isInViewingMode ;
-
-@end
-
-#endif
+#import "NSDocument+SSYAutosaveBetter.h"
 
 @implementation NSPersistentDocument (SSYMetadata)
 
@@ -141,7 +124,7 @@
 		if (NSAppKitVersionNumber >= 1115.2) {
 			// We're in OS X Lion 10.7
 			// *By the way*, that means that we respond to -isInViewingMode
-			if (![self isInViewingMode]) {
+			if (![self ssy_isInViewingMode]) {
                 NSError* error = nil ;
 				BOOL ok = [[self managedObjectContext] save:&error] ;
 				if (!ok) {

@@ -36,7 +36,9 @@
 	NSString* path = @"/Volumes" ;
 	NSFileManager* fileManager = [NSFileManager defaultManager] ;
 #if (MAC_OS_X_VERSION_MIN_REQUIRED < 1050) 
+#pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
 	NSArray* volumes = [fileManager directoryContentsAtPath:path] ;
+#pragma deploymate pop
 #else
 	NSArray* volumes = [fileManager contentsOfDirectoryAtPath:path
 														error:NULL] ;
