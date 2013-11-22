@@ -42,6 +42,9 @@
 - (void)setAndSyncMainAppBool:(BOOL)value
                        forKey:(NSString*)key ;
 
+- (void)syncAndIncrementIntValueForMainAppKey:(id)innerKey
+                        inDictionaryAtKeyPath:(NSString*)outerKeyPath ;
+
 - (void)removeAndSyncMainAppKey:(NSString*)innerKey
    fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray ;
 

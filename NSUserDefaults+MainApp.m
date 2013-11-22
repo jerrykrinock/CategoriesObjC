@@ -96,6 +96,7 @@
 	NSInteger i ;
 	for (i=0; i<N-1; i++) {
 		NSString* key = [keyArray objectAtIndex:i] ;
+    
         if (object == self) {
             object = [self valueForKey:key
                          applicationId:applicationId] ;
@@ -131,6 +132,8 @@
 		}
 	}
 	
+    NSString* key ;
+    
 	// Reverse-enumerate through the dictionaries, starting at
 	// the inside and setting little dictionaries as objects
 	// inside the bigger dictionaries
@@ -138,9 +141,10 @@
     [dics release] ;
 	NSMutableDictionary* copy ;
 	for (NSDictionary* dic in e) {
+        key = [keyArray objectAtIndex:i] ;
 		copy = [dic mutableCopy] ;
 		[copy setObject:nextObject
-				 forKey:[keyArray objectAtIndex:i]] ;
+				 forKey:key] ;
 // This statement removed in BookMacster 1.19.6.  It was a mistake
 // to put this in here.
 //        [self setValue:nextObject
@@ -151,8 +155,9 @@
 	}
 	
     if (nextObject) {  // if() added as bug fix added in BookMaster 1.14.4
+        key = [keyArray objectAtIndex:0] ;
         [self setValue:nextObject
-                forKey:[keyArray objectAtIndex:0]
+                forKey:key
          applicationId:applicationId] ;
     }
 
@@ -179,9 +184,53 @@
 - (void)setAndSyncMainAppValue:(id)value
                         forKey:(NSString*)key {
     [self setAndSyncValue:value
-          forKeyPathArray:[NSArray arrayWithObject:value]
+          forKeyPathArray:[NSArray arrayWithObject:key]
             applicationId:[[NSBundle mainAppBundle] bundleIdentifier]] ;
 }
+
+#if 0
+- (void)incrementIntValueForKey:(id)innerKey
+		  inDictionaryAtKeyPath:(id)outerKeyPath {
+	NSString* keyPath = [NSString stringWithFormat:
+						 @"%@.%@",
+						 outerKeyPath,
+						 innerKey] ;
+	NSNumber* number = [self valueForKeyPath:keyPath] ;
+	NSInteger value = 0 ;
+	// We are careful since user defaults may be corrupted.
+	if ([number respondsToSelector:@selector(integerValue)]) {
+		value = [number integerValue] ;
+	}
+    
+	value++ ;
+	
+	number = [NSNumber numberWithInteger:value] ;
+	
+	[self setValue:number
+		forKeyPath:keyPath] ;
+}
+#endif
+
+- (void)syncAndIncrementIntValueForMainAppKey:(id)innerKey
+                        inDictionaryAtKeyPath:(id)outerKeyPath {
+	NSArray* keyPathArray = [outerKeyPath componentsSeparatedByString:@"."] ;
+    keyPathArray = [keyPathArray arrayByAddingObject:[NSString stringWithFormat:@"%ld", (long)[innerKey integerValue]]] ;
+    
+	NSNumber* number = [self syncAndGetMainAppValueForKeyPathArray:keyPathArray] ;
+	NSInteger value = 0 ;
+	// We are careful since user defaults may be corrupted.
+	if ([number respondsToSelector:@selector(integerValue)]) {
+		value = [number integerValue] ;
+	}
+    
+	value++ ;
+	number = [NSNumber numberWithInteger:value] ;
+	
+	[self setAndSyncMainAppValue:number
+                 forKeyPathArray:keyPathArray] ;
+}
+
+
 
 - (void)       removeAndSyncKey:(id)key
                   applicationId:(NSString*)applicationId {
