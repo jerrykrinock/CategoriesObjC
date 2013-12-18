@@ -1,4 +1,4 @@
-// We need the address of nil object which will never go away.
+ // We need the address of nil object which will never go away.
 // But Cocoa cannot retain such an object since [nil retain] is a no-op.
 // So we use a static variable...
 static NSObject* gNil = nil ;
