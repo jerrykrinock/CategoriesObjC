@@ -11,16 +11,21 @@
 
 /*!
  @brief    Returns a string representation of the receiver formatted
- as YYYY-MM-DD HH:mm:ss
+ as "YYYY-MM-DD HH:mm:ss"
  */
 - (NSString*)geekDateTimeString ;
 
 /*!
  @brief    Returns a string representation of the receiver formatted
- as @"YY-MM-DD HH:mm:ss.SSS", where SSS is milliseconds.
+ as @"YYYY-MM-DD HH:mm:ss.SSS", where SSS is milliseconds.
  */
 - (NSString*)geekDateTimeStringMilli ;
 
+/*!
+ @brief    Returns a string representation of the receiver formatted
+ as @"HH:mm:ss".
+ */
+- (NSString*)hourMinuteSecond ;
 
 /*!
  @brief    Returns a string representation of the receiver formatted

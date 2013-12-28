@@ -68,6 +68,10 @@ you've checked that you are running under Mac OS X 10.6.
 	return answer ;
 }
 
+- (NSString*)hourMinuteSecond {
+    return [[self geekDateTimeString] substringFromIndex:11] ;
+}
+
 - (NSString*)geekDateTimeStringMilli {
 	NSString* formatString = @"yyyy-MM-dd HH:mm:ss.SSS" ;
 	
