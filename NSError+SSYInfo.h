@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "NSError+SSYInfo.h"
 
 @interface NSError (SSYInfo)
 
