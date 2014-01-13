@@ -45,6 +45,15 @@
 - (void)syncAndIncrementIntValueForMainAppKey:(id)innerKey
                         inDictionaryAtKeyPath:(NSString*)outerKeyPath ;
 
+- (void)addAndSyncMainAppObject:(id)object
+          toArrayAtKeyPathArray:(NSArray*)keyPathArray ;
+
+- (void)removeAndSyncMainAppObject:(id)object
+           fromArrayAtKeyPathArray:(NSArray*)keyPathArray ;
+
+- (void)removeAndSyncMainAppObject:(id)object
+                    fromArrayAtKey:(NSString*)key ;
+
 - (void)removeAndSyncMainAppKey:(NSString*)innerKey
    fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray ;
 

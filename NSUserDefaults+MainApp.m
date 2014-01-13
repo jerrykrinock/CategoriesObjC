@@ -1,6 +1,7 @@
 #import "NSUserDefaults+MainApp.h"
 #import "NSBundle+MainApp.h"
 #import "NSDictionary+SimpleMutations.h"
+#import "NSArray+SSYMutations.h"
 
 @implementation NSUserDefaults (MainApp)
 
@@ -71,7 +72,7 @@
 }
 
 - (id)syncAndGetValueForKeyPathArray:(NSArray*)keyPathArray
-             applicationId:(NSString*)applicationId {
+                       applicationId:(NSString*)applicationId {
     [self syncApplicationId:applicationId] ;
     return [self valueForKeyPathArray:keyPathArray
                         applicationId:applicationId] ;
@@ -257,6 +258,41 @@
 	else {
 		// The dictionary doesn't exist.  Don't do anything.
 	}
+}
+
+- (void)addAndSyncMainAppObject:(id)object
+          toArrayAtKeyPathArray:(NSArray*)keyPathArray {
+	NSArray* array = [self syncAndGetMainAppValueForKeyPathArray:keyPathArray] ;
+	if (array) {
+		array = [array arrayByAddingObject:object] ;
+	}
+	else {
+		array = [NSArray arrayWithObject:object] ;
+	}
+	
+	[self setAndSyncMainAppValue:array
+                 forKeyPathArray:keyPathArray] ;
+}
+
+
+
+- (void)removeAndSyncMainAppObject:(id)object
+           fromArrayAtKeyPathArray:(NSArray*)keyPathArray {
+	NSArray* array = [self syncAndGetMainAppValueForKeyPathArray:keyPathArray] ;
+	if (array) {
+		array = [array arrayByRemovingObject:object] ;
+		[self setAndSyncMainAppValue:array
+                     forKeyPathArray:keyPathArray] ;
+	}
+	else {
+		// The array doesn't exist.  Don't do anything.
+	}
+}
+
+- (void)removeAndSyncMainAppObject:(id)object
+                    fromArrayAtKey:(NSString*)key {
+    [self removeAndSyncMainAppObject:object
+             fromArrayAtKeyPathArray:[NSArray arrayWithObject:key]] ;
 }
 
 - (void)removeAndSyncMainAppKey:(NSString*)innerKey
