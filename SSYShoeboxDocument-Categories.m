@@ -1,4 +1,5 @@
 #import "SSYShoeboxDocument-Categories.h"
+#import "NSObject+SuperUtils.h"
 
 
 @implementation NSMenuItem (SSYShoeboxDocument)
@@ -83,10 +84,12 @@
 @end
 
 
-@implementation BkmxDoc (SSYShoeboxDocument)
+@implementation NSDocument (SSYShoeboxDocument)
 
 - (void)menuNeedsUpdate:(NSMenu*)menu {
-    [super menuNeedsUpdate:menu] ;
+    [self safelySendSuperSelector:@selector(menuNeedsUpdate:)
+                   prettyFunction:__PRETTY_FUNCTION__
+                        arguments:menu] ;
     
     NSMutableIndexSet* indexesToRemove = [[NSMutableIndexSet alloc] init] ;
     NSInteger i = 0 ;

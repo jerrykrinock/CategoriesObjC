@@ -52,7 +52,7 @@
 	// Unfortunately, if this executable is not in Contents/MacOS, as occurs if executing
 	// a helper application, which is located in Contents/Helpers/, for other reasons,
 	// -[NSDocumentController defaultType] will return nil.
-//  The solution is to to dig into the mainAppBundle ourselves
+    //  The solution is to to dig into the mainAppBundle ourselves
     NSArray* docDics = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] ;
     return [docDics firstObjectSafely] ;
 }
@@ -76,7 +76,8 @@
 }
 
 - (Class)defaultDocumentClass {
-    return NSClassFromString([[self defaultDocumentInfo] objectForKey:@"NSDocumentClass"]) ;
+    NSString* string = [[self defaultDocumentInfo] objectForKey:@"NSDocumentClass"] ;
+    return NSClassFromString(string) ;
 }
 
 - (NSString*)defaultDocumentIconName {
