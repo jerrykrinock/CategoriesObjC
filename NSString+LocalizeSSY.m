@@ -18,7 +18,6 @@ NSString* SSStringNotFoundAnnouncer = @" <NOT FOUND>" ;
 										  table:@"Localizable"] ;
 	// I would have preferred to use @"" for value, but that doesn't work.
 	// I'd call this a bug in localizedStringForKey:value:table:
-	
 	if (![s isEqualToString:SSStringNotFoundAnnouncer]) {
 		// This is the normal case
 		answer = s ;
