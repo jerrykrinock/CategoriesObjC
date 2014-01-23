@@ -2,6 +2,8 @@
 
 @interface NSUserDefaults (SSYOtherApps)
 
+- (void)syncApplicationId:(NSString*)applicationId ;
+
 - (void)setValue:(id)value
           forKey:(NSString*)key
    applicationId:(NSString*)applicationId ;
