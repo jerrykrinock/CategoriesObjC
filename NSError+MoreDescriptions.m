@@ -3,6 +3,7 @@
 #import "NSString+Truncate.h"
 #import "NSObject+DeepCopy.h"
 #import "NSString+LocalizeSSY.h"
+#import "NSError+InfoAccess.h"
 
 
 NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That error description was truncated! ***" ;
@@ -156,6 +157,15 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	[self appendIfExistsUserInfoValueForKey:NSLocalizedRecoverySuggestionErrorKey
 								  withLabel:[NSString localize:@"errorRecoveryLabel"]
 							  toDescription:dialogDescription] ;
+	
+	NSDate* timestamp = [[self userInfo] objectForKey:SSYTimestampErrorKey] ;
+    if ([timestamp respondsToSelector:@selector(timeIntervalSinceNow)]) {
+        if ([timestamp timeIntervalSinceNow] < -10.0) {
+            [self appendIfExistsUserInfoValueForKey:SSYTimestampErrorKey
+                                          withLabel:@"Date/time this error occurred:"
+                                      toDescription:dialogDescription] ;
+        }
+    }
 	
 	if ([NSError respondsToSelector:@selector(additionalKeysInDescriptionForDialog)]) {
 		NSArray* additionalKeys = [NSError performSelector:@selector(additionalKeysInDescriptionForDialog)] ;

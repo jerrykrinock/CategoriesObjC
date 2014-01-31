@@ -57,6 +57,8 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  label followed by the value of localizedFailureReason.
  Then if there is a localizedRecoverySuggestion, appends two line feeds, and a localized
  label followed by the value of localizedRecoverySuggestion.
+ Then, if there is a SSYTimestampErrorKey, and if that timestamp is older than
+ 10 seconds, appends to line feeds, and then two lines giving the timestamp.
  Then if the class object NSError responds to selector additionalKeysInDescriptionForDialog
  (which must return an array of strings), will iterate through each of these
  strings and, for each which has a value in the receiver's userInfo dictionary,

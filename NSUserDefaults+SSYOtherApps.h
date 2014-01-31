@@ -28,4 +28,11 @@
         forKeyPathArray:(NSArray*)keyArray
           applicationId:(NSString*)applicationId ;
 
+- (void)       removeAndSyncKey:(id)key
+                  applicationId:(NSString*)applicationId ;
+
+- (void)       removeAndSyncKey:(id)key
+   fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
+                  applicationId:(NSString*)applicationId ;
+
 @end

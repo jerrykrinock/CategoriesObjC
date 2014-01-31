@@ -1,4 +1,5 @@
 #import "NSUserDefaults+SSYOtherApps.h"
+#import "NSDictionary+SimpleMutations.h"
 
 @implementation NSUserDefaults (SSYOtherApps)
 
@@ -12,12 +13,14 @@
 - (void)setValue:(id)value
           forKey:(NSString*)key
    applicationId:(NSString*)applicationId {
-    // Passing NULL/nil value to this method is OK.  It removes the key/value.
-    CFPreferencesSetAppValue(
-                             (CFStringRef)key,
-                             (CFPropertyListRef)value,
-                             (CFStringRef)applicationId
-                             ) ;
+    if (key && applicationId) {
+        // Passing NULL/nil to *value* is OK.  It removes the key/value.
+        CFPreferencesSetAppValue(
+                                 (CFStringRef)key,
+                                 (CFPropertyListRef)value,
+                                 (CFStringRef)applicationId
+                                 ) ;
+    }
 }
 
 - (void)setAndSyncValue:(id)value
@@ -32,6 +35,9 @@
 
 - (NSObject*)valueForKey:(NSString*)key
            applicationId:(NSString*)applicationId {
+    if (!key || !applicationId) {
+        return nil ;
+    }
     NSObject* value = CFPreferencesCopyAppValue(
                                                 (CFStringRef)key,
                                                 (CFStringRef)applicationId
@@ -41,6 +47,10 @@
 
 - (NSObject*)syncAndGetValueForKey:(NSString*)key
                      applicationId:(NSString*)applicationId {
+    if (!applicationId) {
+        return nil ;
+    }
+
     [self syncApplicationId:applicationId] ;
     return [self valueForKey:key
                applicationId:applicationId] ;
@@ -160,6 +170,34 @@
     }
     
     [self syncApplicationId:applicationId] ;
+}
+
+- (void)       removeAndSyncKey:(id)key
+                  applicationId:(NSString*)applicationId {
+    CFPreferencesSetAppValue(
+                             (CFStringRef)key,
+                             NULL,  // indicator to remove the given key
+                             (CFStringRef)applicationId
+                             ) ;
+    CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
+}
+
+- (void)       removeAndSyncKey:(id)key
+   fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
+                  applicationId:(NSString*)applicationId {
+    [self syncApplicationId:applicationId] ;
+	NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
+                                            applicationId:applicationId] ;
+	if (dictionary) {
+		dictionary = [dictionary dictionaryBySettingValue:nil
+												   forKey:key] ;
+		[self setAndSyncValue:dictionary
+              forKeyPathArray:keyPathArray
+                applicationId:applicationId] ;
+	}
+	else {
+		// The dictionary doesn't exist.  Don't do anything.
+	}
 }
 
 @end

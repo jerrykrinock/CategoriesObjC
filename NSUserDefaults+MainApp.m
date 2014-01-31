@@ -74,33 +74,6 @@
 
 
 
-- (void)       removeAndSyncKey:(id)key
-                  applicationId:(NSString*)applicationId {
-    CFPreferencesSetAppValue(
-                             (CFStringRef)key,
-                             NULL,  // indicator to remove the given key
-                             (CFStringRef)applicationId
-                             ) ;
-}
-
-- (void)       removeAndSyncKey:(id)key
-   fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
-                  applicationId:(NSString*)applicationId {
-    [self syncApplicationId:applicationId] ;
-	NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
-                                            applicationId:applicationId] ;
-	if (dictionary) {
-		dictionary = [dictionary dictionaryBySettingValue:nil
-												   forKey:key] ;
-		[self setAndSyncValue:dictionary
-              forKeyPathArray:keyPathArray
-                applicationId:applicationId] ;
-	}
-	else {
-		// The dictionary doesn't exist.  Don't do anything.
-	}
-}
-
 - (void)addAndSyncMainAppObject:(id)object
           toArrayAtKeyPathArray:(NSArray*)keyPathArray {
 	NSArray* array = [self syncAndGetMainAppValueForKeyPathArray:keyPathArray] ;
