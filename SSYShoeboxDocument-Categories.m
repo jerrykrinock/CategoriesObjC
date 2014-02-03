@@ -38,20 +38,18 @@
             || [NSStringFromSelector(action) isEqualToString:@"closeAll:"]  // "Close All" (Note 1)
             || (action == @selector(duplicateDocument:))        // "Duplicate"
             || (action == @selector(renameDocument:))           // "Rename…"
-            // || (action == @selector(moveDocument:))          // "Move To…" (Note 2)
-            || (action == @selector(saveDocumentAs:))        // "Save As…" (Note 3)
-            || (action == @selector(revertDocumentToSaved:)) // "Revert" (Note 3)
+            || (action == @selector(moveDocument:))          // "Move To…"
+            || (action == @selector(saveDocumentAs:))        // "Save As…" (Note 2)
+            || (action == @selector(revertDocumentToSaved:)) // "Revert" (Note 2)
             /*
              * Note 1.  The Apple shoebox app iPhoto has a File > Close menu,
              *    which *quits* the app, which I think is silly.  And if you
              *    remove that menu item, an even more silly item, "Close All",
              *    appears.  But users expect our apps to be silly like Apple's,
-             *    so I have commented out the first one.  For the latter, we
+             *    so I have commented out this line.  For the latter, we
              *    use NSStringFromSelector because apparently closeAll: is not
              *    declared in the SDK.
-             * Note 2.  You could uncomment this line if you want this menu item
-             *    removed.
-             * Note 3.  This item may or may not be removed by Cocoa, depending
+             * Note 2.  This item may or may not be removed by Cocoa, depending
              *    on the Mac OS X version and on what other items are present.
              *    We leave it in for robustness.
              */
