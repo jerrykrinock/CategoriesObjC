@@ -6,6 +6,7 @@
 #import "NSBundle+SSYMotherApp.h"
 #import "NSBundle+MainApp.h"
 #import "NSEntityDescription+SSYMavericksBugFix.h"
+#import "NSPersistentStoreCoordinator+RollbackJournaling.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
 NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
@@ -71,6 +72,8 @@ NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
 							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
 							 nil] ;
 	}
+    options = [NSPersistentStoreCoordinator dictionaryByAddingSqliteRollbackToDictionary:options] ;
+    
 	NSPersistentStore* persistentStore = [coordinator addPersistentStoreWithType:NSSQLiteStoreType
 																   configuration:nil
 																			 URL:url

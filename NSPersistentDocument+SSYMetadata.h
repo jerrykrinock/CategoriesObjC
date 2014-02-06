@@ -1,17 +1,25 @@
 @interface NSPersistentDocument (SSYMetadata)
 
-
 /*!
- @brief    Returns an object for a given key from the metadata of an SQLite
+ @brief    Returns the metadata of an SQLite
  persistent store at a given path, by cheating, that is, by opening the store
  with SSYSQLiter and querying "SELECT Z_PLIST FROM Z_METADATA".
-
+ 
  @details  This is a heavyweight method which you should use to get metadata
  from documents that are not already open.  To get metadata from open documents,
  use the much simpler instance method, -metadataObjectForKey:.
  
  Notice that this method does not return an error.  If something goes wrong,
  it is logged to stderr.
+ */
++ (NSDictionary*)metadataAtPath:(NSString*)path ;
+
+/*!
+ @brief    Returns an object for a given key from the metadata of an SQLite
+ persistent store at a given path, by cheating, that is, by opening the store
+ with SSYSQLiter and querying "SELECT Z_PLIST FROM Z_METADATA".
+
+ @details  Ditto from +metadataAtPath:
  */
 + (id)metadataObjectForKey:(NSString*)key
                       path:(NSString*)path ;

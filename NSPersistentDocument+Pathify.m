@@ -2,6 +2,7 @@
 #import "NSDocumentController+DisambiguateForUTI.h"
 #import "NSDocument+SyncModDate.h"
 #import "NSBundle+MainApp.h"
+#import "NSPersistentStoreCoordinator+RollbackJournaling.h"
 
 NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotification" ;
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;
@@ -59,12 +60,13 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 		NSManagedObjectContext* moc = [self managedObjectContext] ;
 		NSPersistentStoreCoordinator* psc = [moc persistentStoreCoordinator] ;
 		NSArray* stores = [psc persistentStores] ;
+        NSDictionary* options = [NSPersistentStoreCoordinator dictionaryByAddingSqliteRollbackToDictionary:nil] ;
 		if ([stores count] < 1) {
 			// This will execute for new, never-saved documents
 			NSPersistentStore* oldStore = [psc addPersistentStoreWithType:NSSQLiteStoreType
 															configuration:nil
 																	  URL:oldURL
-																  options:0
+																  options:options
 																	error:&error_] ;
 			ok = (oldStore != nil) ;
 		}

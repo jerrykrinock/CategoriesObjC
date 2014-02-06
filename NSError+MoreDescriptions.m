@@ -162,7 +162,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
     if ([timestamp respondsToSelector:@selector(timeIntervalSinceNow)]) {
         if ([timestamp timeIntervalSinceNow] < -10.0) {
             [self appendIfExistsUserInfoValueForKey:SSYTimestampErrorKey
-                                          withLabel:@"Date/time this error occurred:"
+                                          withLabel:@"When this error occurred:"
                                       toDescription:dialogDescription] ;
         }
     }
@@ -256,6 +256,23 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	}
     
 	return code ;
+}
+
+- (NSString*)deepSummary {
+    NSMutableString* summary = [[NSMutableString alloc] init] ;
+    NSError* error = self ;
+    while (error) {
+        [summary appendFormat:
+         @"(%@:%ld)",
+         [error domain],
+         (long)[error code]] ;
+        error = [[error userInfo] objectForKey:NSUnderlyingErrorKey] ;
+    }
+    
+    NSString* answer = [[summary copy] autorelease] ;
+    [summary release] ;
+
+    return answer ;
 }
 
 @end

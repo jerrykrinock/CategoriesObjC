@@ -90,4 +90,13 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  */
 - (NSInteger)mostUnderlyingErrorCode ;
 
+/*!
+ @brief    Returns a string giving only the code and the domain of the receiver
+ and all of its underlying errors.
+ 
+ @result   The format is (domain:code)(domain:code)…, where the first
+ (domain,code) pair is the topmost, and later pairs are underlying errors.
+ */
+- (NSString*)deepSummary ;
+
 @end
