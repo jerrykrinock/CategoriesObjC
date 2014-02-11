@@ -2,7 +2,7 @@
 #import "NSDocumentController+DisambiguateForUTI.h"
 #import "NSDocument+SyncModDate.h"
 #import "NSBundle+MainApp.h"
-#import "NSPersistentStoreCoordinator+RollbackJournaling.h"
+#import "NSPersistentStoreCoordinator+PatchRollback.h"
 
 NSString* const SSYDocumentDidSaveNotification = @"SSYDocumentDidSaveNotification" ;
 NSString* const SSYDocumentDidSucceed = @"SSYDocumentDidSucceed" ;

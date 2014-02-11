@@ -6,7 +6,7 @@
 #import "NSBundle+SSYMotherApp.h"
 #import "NSBundle+MainApp.h"
 #import "NSEntityDescription+SSYMavericksBugFix.h"
-#import "NSPersistentStoreCoordinator+RollbackJournaling.h"
+#import "NSPersistentStoreCoordinator+PatchRollback.h"
 
 NSString* const SSYManagedObjectContextCheatsErrorDomain = @"SSYManagedObjectContextCheatsErrorDomain" ;
 NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;

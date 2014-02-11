@@ -1,6 +1,5 @@
-#import "NSPersistentStoreCoordinator+RollbackJournaling.h"
+#import "NSPersistentStoreCoordinator+PatchRollback.h"
 #import <objc/runtime.h>
-#import <objc/message.h>
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
 #define NO_ARC 1
@@ -13,47 +12,73 @@
 #endif
 
 
-@implementation NSPersistentStoreCoordinator (RollbackJournaling)
+@implementation NSPersistentStoreCoordinator (PatchRollback)
+
++ (NSDictionary*)sqlitePragmasForRollback {
+    NSDictionary* sqlitePragmas = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                   @"DELETE", @"journal_mode",
+                                   nil] ;
+#if NO_ARC
+    [sqlitePragmas autorelease] ;
+#endif
+    return sqlitePragmas ;
+}
 
 + (NSDictionary*)dictionaryByAddingSqliteRollbackToDictionary:(NSDictionary*)optionsIn {
     NSMutableDictionary* mutant = [[NSMutableDictionary alloc] init] ;
     if (optionsIn) {
         [mutant addEntriesFromDictionary:optionsIn] ;
     }
-    NSDictionary* sqlitePragmas = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                   @"DELETE", @"journal_mode",
-                                   nil] ;
-    [mutant setObject:sqlitePragmas
+    [mutant setObject:[self sqlitePragmasForRollback]
                forKey:NSSQLitePragmasOption] ;
     NSDictionary* optionsOut = [mutant copy] ;
     
 #if NO_ARC
     [mutant release] ;
-    [sqlitePragmas release] ;
     [optionsOut autorelease] ;
 #endif
     
     return optionsOut ;
 }
 
-
+- (NSDictionary*)patchOptions:(NSDictionary*)options
+                     storeURL:(NSURL*)storeURL
+                       caller:(const char*)caller {
+    NSDictionary* actualSqlitePragmas = [options objectForKey:NSSQLitePragmasOption] ;
+    NSDictionary* expectedSqlitePragmas = [[self class] sqlitePragmasForRollback] ;
+    if (![actualSqlitePragmas isEqualToDictionary:expectedSqlitePragmas]) {
 #if DEBUG
+        NSLog(@"Patched options in %s while opening:\n%@\nNSSQLitePragmasOption was:\n%@\n"
+              @"This can be caused either by your not adding the "
+              @"NSSQLitePragmasOption for rollback journaling at some point "
+              @"(Put a breakpoint in that method to debug), "
+              @"or, during non-lightweight migrations, by Apple Bug .",
+              __PRETTY_FUNCTION__,
+              storeURL,
+              actualSqlitePragmas) ;
+#endif
+        options = [[self class] dictionaryByAddingSqliteRollbackToDictionary:options] ;
+    }
+    
+    return options ;
+}
+
 
 - (NSPersistentStore *)swizzledMigratePersistentStore:(NSPersistentStore *)store
-                                                toURL:(NSURL *)URL
+                                                toURL:(NSURL *)storeURL
                                               options:(NSDictionary *)options
                                              withType:(NSString *)storeType
                                                 error:(NSError **)error {
-    NSString* journalMode = [[options objectForKey:NSSQLitePragmasOption] objectForKey:@"journal_mode"] ;
     if ([storeType isEqualToString:NSSQLiteStoreType]) {
-        if (!journalMode || ![journalMode isEqualToString:@"DELETE"]) {
-            NSLog(@"ERROR: You have not set legacy rollback journaling.  "
-                  @"To debug, set a breakpoint at %s:%d.", __FILE__, __LINE__+1) ;
-            NSLog(@"Thank you.") ;
-        }
+        options = [self patchOptions:options
+                            storeURL:storeURL
+                              caller:__PRETTY_FUNCTION__] ;
     }
     
-    return [self swizzledMigratePersistentStore:store toURL:(NSURL *)URL options:options withType:storeType error:error];
+    return [self swizzledMigratePersistentStore:store
+                                          toURL:storeURL
+                                        options:options
+                                       withType:storeType error:error] ;
 }
 
 - (NSPersistentStore *)swizzledAddPersistentStoreWithType:(NSString *)storeType
@@ -61,15 +86,17 @@
                                                       URL:(NSURL *)storeURL
                                                   options:(NSDictionary *)options
                                                     error:(NSError **)error {
-    NSString* journalMode = [[options objectForKey:NSSQLitePragmasOption] objectForKey:@"journal_mode"] ;
     if ([storeType isEqualToString:NSSQLiteStoreType]) {
-        if (!journalMode || ![journalMode isEqualToString:@"DELETE"]) {
-            NSLog(@"ERROR: You have not set legacy rollback journaling.  "
-                  @"To debug, set a breakpoint at %s:%d.", __FILE__, __LINE__+1) ;
-            NSLog(@"Thank you.") ;
-        }
+        options = [self patchOptions:options
+                            storeURL:storeURL
+                              caller:__PRETTY_FUNCTION__] ;
     }
-    return [self swizzledAddPersistentStoreWithType:storeType configuration:configuration URL:storeURL options:options error:error];
+    
+    return [self swizzledAddPersistentStoreWithType:storeType
+                                      configuration:configuration
+                                                URL:storeURL
+                                            options:options
+                                              error:error] ;
 }
 
 + (void)swizzleMethod:(SEL)origSelector
@@ -93,8 +120,6 @@
     [self swizzleMethod:@selector(migratePersistentStore:toURL:options:withType:error:)
           withNewMethod:@selector(swizzledMigratePersistentStore:toURL:options:withType:error:)] ;
 }
-
-#endif
 
 @end
 

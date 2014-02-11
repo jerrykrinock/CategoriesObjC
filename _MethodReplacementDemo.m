@@ -388,7 +388,7 @@ error:(NSError**)error {
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
-#warning I'm not sure if this method works.  Maybe should be __NSDictionaryM ??
+#warning This does not work.  Maybe should be __NSDictionaryM, but that won't compile
 
 @interface NSMutableDictionary (DebugByReplacingMethod)
 @end
@@ -410,12 +410,10 @@ error:(NSError**)error {
 
 - (id)replacement_setObject:(id)object
                      forKey:key {
-    if (object == nil) {
-        NSLog(@"Whoops!  object is nil for key %@.  Backtrace:\n%@",
+    if (object) {
+        NSLog(@"SOFK: %@ : %@",
               key,
-              SSYDebugBacktrace()) ;
-        NSLog(@"Terminating!") ;
-        exit(EXIT_FAILURE) ;
+              object) ;
     }
     
 	// Due to the swap, this calls the original method

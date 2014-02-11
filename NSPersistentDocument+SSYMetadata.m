@@ -28,14 +28,22 @@
         NSData* data = [sqliter firstRowFromQuery:query
                                             error:&error] ;
         if ([error involvesCode:SQLITE_ERROR domain:SSYSqliterErrorDomain]) {
-            // This will happen if the query "SELECT Z_PLIST FROM Z_METADATA"
-            // returned an error "no such table: Z_METADATA".
-            // Starting with BookMacster 1.20.5, we log it here and then
-            // do not return it up the call chain.
-            NSLog(@"Warning 928-2526 Query %@ from %@ produced error: %@",
+            /* This will happen if the query "SELECT Z_PLIST FROM Z_METADATA"
+             returned an error "no such table: Z_METADATA".  It occurs
+             expectedly when attempting to get metadata from Exids and
+             Settings files when creating a new document.
+            Starting with BookMacster 1.20.5, we log it or ignore it… */
+#if 0
+#if DEBUG
+            NSLog(@"Warning 928-2526 (shown in DEBUG builds only).  Query:\n%@\nfrom %@\nproduced error:\n%@",
                   query,
                   path,
                   [error deepSummary]) ;
+#else
+#warning Ignoring Warning 928-2526 in Release builds.
+#endif
+#endif
+            // Ignore it.
             error = nil ;
         }
         else {
