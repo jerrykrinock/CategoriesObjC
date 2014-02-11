@@ -3,8 +3,8 @@
 /*
  @brief    Aids in building a Core Data project to use "rollback" aka "delete"
  journaling mode in its SQLite stores when building with the OS X 10.9 or iOS 7
- SDK, also patches Apple Bug  which acts during non-lightweight migration
- (when you subclass NSMigrationManager)
+ SDK, also patches Apple Bug 16038419 which acts during non-lightweight
+ migrations (that is, when you subclass NSMigrationManager).
  
  @details  Forcing a Core Data project to use "rollback" aka "delete" journaling
  mode in its sqlite stores when building with the OS X 10.9 or iOS 7 SDK is easy
@@ -26,7 +26,7 @@
  stores.  The swizzled methods in this class will log an error to stderr if
  your product ever creates, opens or migrates an SQLite store without the
  required pragma, or if a patch is made during a migration due to
- Apple Bug
+ Apple Bug 16038419.
  
  Note that the method swizzling and logging only is #if DEBUG, so that it 
  only gets compiled into debug builds.
