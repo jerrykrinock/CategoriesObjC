@@ -127,9 +127,13 @@ static NSObject* gNil = nil ;
 }
 
 + (void)invokeWithAutoreleasePoolInvocation:(NSInvocation*)invocation {
+#if NO_ARC
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init] ;
+#endif
 	[invocation invoke] ;
+#if NO_ARC
 	[pool release] ;
+#endif
 }
 
 - (void)invokeOnNewThread {
