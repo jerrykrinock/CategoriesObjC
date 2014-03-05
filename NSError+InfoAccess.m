@@ -74,6 +74,41 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 	return answer ;
 }
 
+- (NSError*)errorByAddingUserInfoSet:(NSSet*)set
+                              forKey:(NSString*)key
+                          truncateTo:(NSInteger)truncateTo {
+    if ([set count] == 0) {
+        return self ;
+    }
+    
+    if (truncateTo > 0) {
+        if (truncateTo < [set count]) {
+            NSMutableSet* mutaset = [[NSMutableSet alloc] init] ;
+            NSInteger i = 0 ;
+            for (id object in set) {
+                if (i < truncateTo) {
+                    [mutaset addObject:object] ;
+                    i++ ;
+                }
+                else {
+                    break ;
+                }
+            }
+            
+            set = [mutaset copy] ;
+            [set autorelease] ;
+            [mutaset release] ;
+            
+            key = [key stringByAppendingFormat:
+                   @" (only first %ld)",
+                   (long)truncateTo] ;
+        }
+    }
+    
+    return [self errorByAddingUserInfoObject:set
+                                      forKey:key] ;
+}
+
 - (NSError*)errorByOverwritingUserInfoObject:(id)object
 									  forKey:(NSString*)key {
 	NSError* answer ;

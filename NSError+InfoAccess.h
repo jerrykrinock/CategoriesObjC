@@ -69,6 +69,19 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
 - (NSError*)errorByOverwritingUserInfoObject:(id)object
 									  forKey:(NSString*)key ;
 
+/*!
+ @brief    Adds a given set of objects for a given key to the receiver's
+ userInfo
+ @details  If the given set is empty or nil, returns the receiver.  Uses
+ -errorByAddingUserInfoObject:forKey:, so see that method for more details.
+ @param    truncateTo  If greater than 0, the added set will be truncated to
+ this value, and the phrase " (only first <whatever.)" will be appended to the
+ added key.  Which values will be included is undefined.
+ */
+- (NSError*)errorByAddingUserInfoSet:(NSSet*)set
+                              forKey:(NSString*)key
+                          truncateTo:(NSInteger)truncateTo ;
+
 - (NSError*)errorByAddingLocalizedFailureReason:(NSString*)newText ;
 
 - (NSError*)errorByAddingLocalizedDescription:(NSString*)newText ;

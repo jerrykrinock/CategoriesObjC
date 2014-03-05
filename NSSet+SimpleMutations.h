@@ -25,4 +25,11 @@
  */
 - (NSSet*)setByRemovingObjectsFromSet:(NSSet*)objects ;
 
+/*
+ @brief    If the receiver contains more objects than a given count, returns
+ a clone of the receiver with objects arbitrarily removed so that its count is
+ only the given count; otherwise, returns the receiver
+ */
+- (NSSet*)setByTruncatingToCount:(NSInteger)count ;
+
 @end
