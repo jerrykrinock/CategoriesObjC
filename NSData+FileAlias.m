@@ -75,7 +75,8 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
                               relativeToURL:nil
                                       error:&error] ;
         if (error) {
-            NSLog(@"Warning 624-5243 %@", error) ;
+            // This is expected when the path/URL indicates a file which does
+            // not exist.
         }
     }
 	
