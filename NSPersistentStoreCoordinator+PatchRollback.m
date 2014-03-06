@@ -52,7 +52,8 @@
               @"This can be caused either by your not adding the "
               @"NSSQLitePragmasOption for rollback journaling at some point "
               @"(Put a breakpoint in that method to debug), "
-              @"or, during non-lightweight migrations, by Apple Bug 16038419.  "
+              @"or, during non-lightweight migrations, or after move/renaming "
+              @"a document, by Apple Bug 16038419.  "
               @"See http://www.youtube.com/watch?v=daSf7n78NPM.",
               __PRETTY_FUNCTION__,
               storeURL,
@@ -79,7 +80,8 @@
     return [self swizzledMigratePersistentStore:store
                                           toURL:storeURL
                                         options:options
-                                       withType:storeType error:error] ;
+                                       withType:storeType
+                                          error:error] ;
 }
 
 - (NSPersistentStore *)swizzledAddPersistentStoreWithType:(NSString *)storeType
