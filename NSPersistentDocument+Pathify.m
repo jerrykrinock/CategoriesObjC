@@ -55,7 +55,12 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 	
 	NSString* oldPath = [[self fileURL] path] ;
 	
-	// Core Data also needs a store ...
+	/* Here begins code which should be removed for BSManagedDocument to be
+     used, or at least it needs to create a database inside of a file package
+     instead of a bare database file.  Actually, this code is questionable
+     anyhow.  Do I really need to pre-create a store like this? */
+    
+    // Core Data also needs a store ...
 	if (ok) {
 		NSManagedObjectContext* moc = [self managedObjectContext] ;
 		NSPersistentStoreCoordinator* psc = [moc persistentStoreCoordinator] ;
@@ -192,6 +197,8 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 			goto end ;
 		}
 	}
+    
+    /* End of code which should probably be removed for BSManagedDocument. */
 	
 	// Needed for NSDocument to use the new location for
 	// future saves, window title bar, etc. ...
