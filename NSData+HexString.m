@@ -33,7 +33,7 @@ char ASCIIHexCharacterForNibble(short nibble, BOOL uppercaseLetters) {
 		NSData* dataChunk = [self subdataWithRange:NSMakeRange(i, 1)] ;
 		unsigned char oneByte ;
 		[dataChunk getBytes:&oneByte] ;
-		int subscript ;
+		NSInteger subscript ;
 		subscript = 2*i ;
 		hashCString[subscript] = ASCIIHexCharacterForNibble((oneByte & 0xf0) >> 4, NO) ;
 		subscript = 2*i+1 ;

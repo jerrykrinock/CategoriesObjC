@@ -47,7 +47,7 @@
 	}
 	if (timeZoneOffset != NSNotFound) {
 		unichar timeZoneSign = (timeZoneOffset > 0) ? '+': '-' ;
-		NSInteger timeZoneMagnitude = abs(timeZoneOffset) ;
+		NSInteger timeZoneMagnitude = abs((int)timeZoneOffset) ;
 		NSInteger timeZoneHours = timeZoneMagnitude/3600 ;
 		NSInteger timeZoneMinutes = (timeZoneMagnitude - 3600*timeZoneHours)/60 ;
 		substitution = [NSString stringWithFormat:@"%c%02ld%02ld",

@@ -5,7 +5,7 @@
 @implementation NSNumber (ChangeTypesSymbols)
 
 - (NSString*)changeTypeDisplaySymbol {
-	return [SSYModelChangeTypes symbolForAction:[self integerValue]] ;
+	return [SSYModelChangeTypes symbolForAction:(SSYModelChangeAction)[self integerValue]] ;
 }
 
 @end
