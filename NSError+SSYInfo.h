@@ -66,4 +66,10 @@
  */
 - (BOOL)isLogged ;
 
+/*!
+ @brief    Returns an error which is identical to the receiver except the
+ error's code is changed to a different integer
+ */
+- (NSError*)errorByChangingCodeTo:(NSInteger)code ;
+
 @end

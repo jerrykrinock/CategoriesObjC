@@ -50,4 +50,10 @@ NSString* const SSYDontShowSupportEmailButtonErrorKey = @"dontShowSupportEmailBu
 	return ([[[self userInfo] objectForKey:SSYIsLoggedErrorKey] boolValue]) ;
 }
 
+- (NSError*)errorByChangingCodeTo:(NSInteger)code {
+    return [NSError errorWithDomain:[self domain]
+                               code:code
+                           userInfo:[self userInfo]] ;
+}
+
 @end
