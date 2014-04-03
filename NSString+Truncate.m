@@ -18,7 +18,7 @@
 
 - (NSString*)stringByTruncatingMiddleToLength:(NSUInteger)limit
 								   wholeWords:(BOOL)wholeWords {
-	NSUInteger length = [self length] ;
+    NSUInteger length = [self length] ;
     NSString* answer ;
 	if (length <= limit) {
 		answer = self ;
