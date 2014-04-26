@@ -572,7 +572,7 @@ NSString* const aNewline = @"\n" ;
 	while (!done && ![scanner isAtEnd]) {
 		BOOL okSoFar = YES ;
 		
-		NSInteger atLoc ;
+		NSInteger atLoc = 0 ;
 		if (okSoFar) {
 			BOOL scanned = [scanner scanUpToAndThenLeapOverString:@"@" intoString:NULL] ;
 			atLoc = [scanner scanLocation] ;

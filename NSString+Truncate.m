@@ -19,7 +19,7 @@
 - (NSString*)stringByTruncatingMiddleToLength:(NSUInteger)limit
 								   wholeWords:(BOOL)wholeWords {
     NSUInteger length = [self length] ;
-    NSString* answer ;
+    NSString* answer = nil ;
 	if (length <= limit) {
 		answer = self ;
 	}
@@ -91,7 +91,7 @@
 - (NSString*)stringByTruncatingEndToLength:(NSUInteger)limit
 								wholeWords:(BOOL)wholeWords {
 	NSUInteger length = [self length] ;
-    NSString* answer ;
+    NSString* answer = nil ;
 	if (length <= limit) {
 		answer = self ;
 	}
