@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+extern NSString* const SSYAclsErrorDomain ;
+
 @interface NSFileManager (SSYAcls)
 
 - (BOOL)removeAclsFromPath:(NSString*)path

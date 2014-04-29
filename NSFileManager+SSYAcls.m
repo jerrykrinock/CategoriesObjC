@@ -1,110 +1,41 @@
 #import "NSFileManager+SSYAcls.h"
 #import <sys/acl.h>
 
+NSString* const SSYAclsErrorDomain = @"SSYAclsErrorDomain" ;
+
 @implementation NSFileManager (SSYAcls)
 
-- (BOOL)processAcl:(acl_t)acl
-{
-    NSLog(@"      ACL text is:\n%s", acl_to_text(acl, NULL)) ;
-    NSInteger returnCode ;
-    NSInteger entryId = ACL_FIRST_ENTRY ;
-    BOOL didDeleteAnyEntry = NO ;
-    do {
-        NSLog(@"      Requesting next entry") ;
-        acl_entry_t acl_entry = NULL ;
-        returnCode = acl_get_entry(acl, entryId, &acl_entry) ;
-         
-        if (returnCode == 0) {
-            if (acl_entry != NULL) {
-                acl_tag_t tagType = 0 ;
-                acl_get_tag_type(acl_entry, &tagType) ;
-                if (tagType == ACL_EXTENDED_DENY) {                    
-                    NSInteger innerReturnCode ;
-
-#if 0
-                    // This section is just to see what else I can learn
-                    void* qualifier = acl_get_qualifier(acl_entry) ;
-                    acl_permset_t permset = NULL ;
-                    innerReturnCode = acl_get_permset(acl_entry, &permset) ;
-                    
-                    NSLog(@"      Got entry:  tagType=%ld  qualifier=%p(retCode=%ld)  permset=%p",
-                          (long)tagType, qualifier, (long)innerReturnCode, permset) ;
-                    
-                    if (qualifier != NULL) {
-                        acl_free(qualifier) ;
-                    }
-                    // End of Learning section
-#endif                    
-                    innerReturnCode = acl_delete_entry(acl, acl_entry) ;
-                    if (innerReturnCode != 0) {
-                        NSLog(@"      Err Deleting ACL : %ld", (long)errno) ;
-                    }
-                    else {
-                        NSLog(@"      Successfully deleted entry") ;
-                        didDeleteAnyEntry = YES ;
-                    }
-                }
-            }
-            else {
-                NSLog(@"      NULL entry") ;
-            }
-        }
-        else {
-            NSLog(@"      Err getting entry : %ld", (long)errno) ;
-        }
-        
-        entryId = ACL_NEXT_ENTRY ;
-    } while (returnCode == 0) ;
-    
-    NSLog(@"      returnCode = %ld", (long)returnCode) ;
-    
-    return didDeleteAnyEntry ;
-}
-
-- (acl_t)processAclType:(acl_type_t)aclType path:(const char *)pathC
-{
-    NSLog(@"   Testing for ACL type %ld", (long)aclType) ;
-    BOOL didDeleteAnyEntry = NO ;
-    acl_t acl = acl_get_file(pathC, aclType) ;
-    if (acl != NULL) {
-        didDeleteAnyEntry = [self processAcl:acl] ;
-        NSLog(@"didDeleteAnyEntry = %hhd", didDeleteAnyEntry) ;
-        acl_free(acl) ;
-    }
-    else {
-        NSLog(@"      ACL type %ld is NULL", (long)aclType) ;   
-    }
-    
-    if (!didDeleteAnyEntry) {
-        acl = NULL ;
-    }
-    
-    NSLog(@"Returning acl=%p", acl) ;
-    return acl ;
-}
-
 - (BOOL)removeAclsFromPath:(NSString*)path
-                   error_p:(NSError**)error
-{
+                   error_p:(NSError**)error_p {
     BOOL ok = YES ;
+    NSError* error = nil ;
+    // Seems like there should be a better way to do the following, but the
+    // following works (and is indeed necessary)
+    if ([path hasPrefix:@"~"]) {
+        path = [path substringFromIndex:1] ;
+        path = [NSHomeDirectory() stringByAppendingPathComponent:path] ;
+    }
     const char* pathC = [path fileSystemRepresentation] ;
     
-    acl_t acl = [self processAclType:ACL_TYPE_EXTENDED path:pathC] ;
-    if (acl != NULL) {
-        // The 'acl' which we have obtained and altered is not really the
-        // target path's ACL but is in fact an in-memory copy.  We need to
-        // now 'set' it into the file.
-        // Another alternative, suggested by Chris Suter, is to simply
-        // create and 'set' an *empty* ACL.  I haven't tried that but it
-        // seems like it would be a better idea if indeed we want to
-        // remove *all* entries from path's ACL.
-        NSInteger returnCode = acl_set_file(pathC, ACL_TYPE_EXTENDED, acl) ;
-        if (returnCode != 0) {
-            NSLog(@"Setting ACL returned errno %ld", (long)EACCES) ;
-        }
-        else {
-            NSLog(@"Setting ACL returned %ld", (long)returnCode) ;
-        }
+    // Idea from Chris Suter: Rather than mutating the existing ACLs,
+    // because we want them to be all gone, just create a new empty ACL
+    // and set it to the desired path.
+    acl_t acl = acl_init(0) ;
+    NSInteger returnCode = acl_set_file(pathC, ACL_TYPE_EXTENDED, acl) ;
+    ok = (returnCode == 0) ;
+    acl_free(acl) ;
+
+    if ((returnCode != 0) && (error_p != NULL)) {
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [NSNumber numberWithInteger:returnCode], @"Return Code",
+                                  [NSNumber numberWithInteger:errno], @"errno",
+                                  @"Failed to clear ACLs", NSLocalizedDescriptionKey,
+                                  path, @"Path",
+                                  nil] ;
+        error = [NSError errorWithDomain:SSYAclsErrorDomain
+                                    code:292701
+                                userInfo:userInfo] ;
+        *error_p = error ;
     }
     
     return ok ;
