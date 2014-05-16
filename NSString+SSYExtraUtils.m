@@ -29,7 +29,7 @@ CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocato
     
     CFStringInitInlineBuffer(string, &inlineBuf, CFRangeMake(0, length));
     // The above range was length-1, but that misses the ';' in case the
-    // subject string ends in a numeric HTML entity.  So I removed the "-1"
+    // subject string ends in a numeric HTML entity.  So I removed the "-1".
     CFMutableStringRef newString = CFStringCreateMutable(allocator, 0);
     
     lastChunkStart = 0;
@@ -77,6 +77,7 @@ CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocato
                 }
             }
             
+            // Scan up to the next semicolon, into inlineBuf
             while(uc != ';' && i < length) {
                 uc = CFStringGetCharacterFromInlineBuffer(&inlineBuf, i); i++;
             }
@@ -107,7 +108,12 @@ CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocato
             else {
                 // Trailing semicolon was missing.  This was not an html entity.
                 // Back out of it.
-                CFStringRef sub1 =  CFStringCreateWithSubstring(allocator, string, CFRangeMake(entityStart, (i - entityStart)));
+                CFIndex lengthToAppend = (i - entityStart) ;
+                if (uc == 0) {
+                    // The '&' must have been the last character in the input string.
+                    lengthToAppend-- ;
+                }
+                CFStringRef sub1 =  CFStringCreateWithSubstring(allocator, string, CFRangeMake(entityStart, lengthToAppend));
                 CFStringAppend(newString, sub1) ;
                 if (sub1 != NULL) {
                     CFRelease(sub1) ;

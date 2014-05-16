@@ -295,3 +295,73 @@ Testing -majorVersion
 "App4U 5" returns 5
 
 #endif
+
+#if 0
+// Test code for CFXMLCreateStringByUnescapingEntities and
+// PatchedCFXMLCreateStringByUnescapingEntities
+
+NSString* ValidateString(NSString* s) {
+    const char* cString = [s UTF8String] ;
+    return (cString != NULL) ? s : nil ;
+}
+
+void TestString(NSString* s, NSString* expected) {
+    NSLog(@"Testing:        (len=%03ld): %@", (long)[s length], s) ;
+    NSLog(@"     Expected Result (len=%03ld): '%@'", [expected length], expected) ;
+    
+    // Try Apple's function
+    NSString* result1 = (__bridge NSString*)CFXMLCreateStringByUnescapingEntities(NULL, (__bridge CFStringRef)s, NULL) ;
+    NSString* result1a = ValidateString(result1) ;
+    if (result1 != NULL) {
+        CFRelease((CFStringRef)result1) ;
+    }
+    NSString* passFail1 = [expected isEqualToString:result1] ? @"PASS" : @"FAIL" ;
+    NSLog(@"   Apple Result %@ (len=%03ld): '%@'", passFail1, [result1 length], result1a) ;
+    
+    // Try patched function
+    NSString* result2 = (__bridge NSString*)PatchedCFXMLCreateStringByUnescapingEntities(NULL, (__bridge CFStringRef)s, NULL) ;
+    NSString* result2a = ValidateString(result2) ;
+    NSString* passFail2 = [expected isEqualToString:result2] ? @"PASS" : @"FAIL" ;
+    NSLog(@" Patched Result %@ (len=%03ld): '%@'", passFail2, [result2 length], result2a) ;
+    if (result2 != NULL) {
+        CFRelease((CFStringRef)result2) ;
+    }
+}
+
+int main(int argc, const char * argv[])
+{
+    
+    @autoreleasepool {
+        TestString(
+                   @"Hello&#160;World",
+                   @"Hello\u00A0World"
+                   ) ;
+        TestString(
+                   @"&apos;Hello&amp;World&apos;",
+                   @"'Hello&World'"
+                   ) ;
+        TestString(
+                   @"Here is a gamma: &#915;.  Here is a dagger: &#8224;",
+                   @"Here is a gamma: \u0393.  Here is a dagger: \u2020"
+                   ) ;
+        TestString(
+                   @"Hello&#8224World",
+                   @"Hello&#8224World"
+                   ) ;
+        TestString(
+                   @"&#13207494",
+                   @"&#13207494"
+                   ) ;
+        TestString(
+                   @"Hello&",
+                   @"Hello&"
+                   ) ;
+        TestString(
+                   @"&Hello&",
+                   @"&Hello&"
+                   ) ;
+    }
+    return 0;
+}
+
+#endif
