@@ -43,14 +43,26 @@
 - (NSString*)yearString ;
 
 /*!
- @brief    Returns the month of the receiver as a string.
+ @brief    Returns the month of the receiver as a string, padded with a leading
+ zero if necessary to make two characters
  */
 - (NSString*)monthString ;
 
 /*!
- @brief    Returns the day of the receiver as a string.
+ @brief    Returns the month of the receiver as a string, as one or two characters
+ */
+- (NSString*)monthStringWithoutLeadingZero ;
+
+/*!
+ @brief    Returns the day of the receiver as a string, padded with a leading
+ zero if necessary to make two characters
  */
 - (NSString*)dayString ;
+
+/*!
+ @brief    Returns the day of the receiver as a string, as one or two characters
+ */
+- (NSString*)dayStringWithoutLeadingZero ;
 
 /*!
  @brief    Returns the hour of the receiver as a string.

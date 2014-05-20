@@ -74,25 +74,39 @@
 }
 
 
-- (NSString*)monthString {
+- (NSString*)monthStringWithLeadingZero:(BOOL)leadingZero {
+    NSString* formatString = leadingZero ? @"MM" : @"M" ;
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:@"MM"];
+	[dateFormatter setDateFormat:formatString];
 	NSString* string = [dateFormatter stringFromDate:self] ;
 	[dateFormatter release] ;
 	return string ;
 }
 
+- (NSString*)monthString {
+    return [self monthStringWithLeadingZero:YES] ;
+}
 
+- (NSString*)monthStringWithoutLeadingZero {
+    return [self monthStringWithLeadingZero:NO] ;
+}
+
+- (NSString*)dayStringWithLeadingZero:(BOOL)leadingZero {
+    NSString* formatString = leadingZero ? @"dd" : @"d" ;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:formatString];
+	NSString* string = [dateFormatter stringFromDate:self] ;
+	[dateFormatter release] ;
+	return string ;
+}
 
 - (NSString*)dayString {
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:@"dd"];
-	NSString* string = [dateFormatter stringFromDate:self] ;
-	[dateFormatter release] ;
-	return string ;
+    return [self dayStringWithLeadingZero:YES] ;
 }
 
-
+- (NSString*)dayStringWithoutLeadingZero {
+    return [self dayStringWithLeadingZero:NO] ;
+}
 
 - (NSString*)hourString {
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
