@@ -138,22 +138,31 @@ end:
 									isDirectory:&isDirectory] ;
 	
 	BOOL ok = YES ;
-    // Next line has bug fixed in BookMacster 1.13.6.  Prior to this, it was
-    // simply if(!isDirectory), which passed and created an error if neither
-    // file nor directory existed at path.
 	if (exists && !isDirectory) {
 		ok = [fileManager removeItemAtPath:path
 									 error:&error] ;
-		if (!ok) {
+		if (ok) {
+            exists = NO ;
+        }
+        else {
 			error = [SSYMakeError(35261, @"Could not remove file") errorByAddingUnderlyingError:error] ;
 			[error errorByAddingUserInfoObject:path
 										forKey:@"path"] ;
 		}
-	}
+ 	}
+
 	if (!exists) {
+		NSNumber* octal755 = [NSNumber numberWithUnsignedLong:0755] ;
+		// Note that, in 0755, the 0 is a prefix which says to interpret the
+		// remainder of the digits as octal, just as 0x is a prefix which says to
+		// interpret the remainder of the digits as hexidecimal.  It's in the C
+		// language standard!
+		NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+									octal755, NSFilePosixPermissions,
+									nil] ;
 		ok = [fileManager createDirectoryAtPath:path
 					withIntermediateDirectories:YES
-									 attributes:nil
+									 attributes:attributes
 										  error:&error] ;
 	}
 	
