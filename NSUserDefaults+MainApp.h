@@ -28,6 +28,9 @@
 
 - (BOOL)syncAndGetMainAppBoolForKey:(NSString*)key ;
 
+- (BOOL)syncAndGetMainAppIntegerForKey:(NSString*)key ;
+
+
 /*!
  @brief    Same as as setValue:forKeyPath: except allows you to set preferences
  for an application other than the current application.
@@ -41,6 +44,8 @@
 
 - (void)setAndSyncMainAppBool:(BOOL)value
                        forKey:(NSString*)key ;
+
+- (void)setAndSyncMainAppInteger:(NSInteger)aInteger ;
 
 - (void)syncAndIncrementIntValueForMainAppKey:(id)innerKey
                         inDictionaryAtKeyPath:(NSString*)outerKeyPath ;

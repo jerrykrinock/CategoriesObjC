@@ -142,6 +142,26 @@
                           forKey:key] ;    
 }
 
+- (BOOL)syncAndGetMainAppIntegerForKey:(NSString*)key {
+    NSNumber* integerObject = [self syncAndGetMainAppValueForKey:key] ;
+    BOOL answer ;
+    if ([integerObject respondsToSelector:@selector(integerValue)]) {
+        answer = [integerObject integerValue] ;
+    }
+    else {
+        answer = NO ;
+    }
+    
+    return answer ;
+}
+
+- (void)setAndSyncMainAppInteger:(NSInteger)aInteger
+                       forKey:(NSString*)key {
+    NSNumber* value = [NSNumber numberWithInteger:aInteger] ;
+    [self setAndSyncMainAppValue:value
+                          forKey:key] ;
+}
+
 - (void)removeAndSyncMainAppKey:(NSString*)key {
     [self removeAndSyncKey:key
              applicationId:[[NSBundle mainAppBundle] bundleIdentifier]] ;
