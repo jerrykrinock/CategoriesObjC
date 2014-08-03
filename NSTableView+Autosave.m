@@ -1,10 +1,15 @@
 #import "NSTableView+Autosave.h"
 #import "NSTableView+MoreSizing.h"
-#import "StarkTableColumn.h"
 
 NSString* const constKeyWidths = @"widths" ;
 NSString* const constKeyUserDefinedAttributes = @"userDefinedAttributes" ;
 
+@interface NSTableColumn (AutosaveAdditions)
+
+- (NSDictionary*)userDefinedAttribute ;
+- (void)setUserDefinedAttribute:(id)attribute ;
+
+@end
 
 @implementation NSTableView (Autosave)
 

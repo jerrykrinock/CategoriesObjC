@@ -4,7 +4,7 @@
 /*!
  @brief    Alternative if you don't like the way that NSTableView's
  setAutosaveTableColumns:YES and setAutosaveName: make a mess of your
- app's preferences file.&nbsp;  Has methods for encoding and decoding
+ app's preferences file.  Has methods for encoding and decoding
  the state of an NSTableView into a dictionary.
 
  @details  This is the equivalent of NSWindow methods
