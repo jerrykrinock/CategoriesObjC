@@ -218,6 +218,13 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
 - (NSError*)errorByRemovingRecoveryAttempter ;
 
 /*!
+ @brief    Returns a replica of the receiver, with English text appended to
+ the localized failure reason and localized recovery suggestion,
+ the returned replica will not.
+*/
+- (NSError*)errorByAddingInfoToExplainMissingAppResource ;
+
+/*
  @brief    Returns the string value in the receiver's userInfo dictionary
  for the key SSYLocalizedTitleErrorKey, or if that is nil, the first
  line of text from the receiver's localizedDescripiton, or if that is nil,

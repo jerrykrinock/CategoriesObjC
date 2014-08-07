@@ -222,6 +222,12 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 									  forKey:NSLocalizedRecoverySuggestionErrorKey] ;
 }
 
+- (NSError*)errorByAddingInfoToExplainMissingAppResource {
+    NSError* error = [self errorByAppendingLocalizedFailureReason:@"This can happen if this application was moved while it was running, or if its package is incomplete."] ;
+    error = [error errorByAppendingLocalizedRecoverySuggestion:@"If you've moved this application, relaunch it.  Otherwise, try reinstalling it."] ;
+    return error ;
+}
+
 - (NSError*)errorByAddingRecoveryAttempter:(id)recoveryAttempter {
 	return [self errorByAddingUserInfoObject:recoveryAttempter
 									  forKey:NSRecoveryAttempterErrorKey] ;
