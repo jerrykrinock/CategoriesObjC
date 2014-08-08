@@ -547,3 +547,34 @@ error:(NSError**)error {
 @end
 
 #endif
+
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+
+@interface NSException (DebugByReplacingMethod)
+@end
+
+@implementation NSException (DebugByReplacingMethod)
+
++ (void)load {
+	// Swap the implementations of one method with another.
+	// When the message Xxx is sent to the object (either instance or class),
+	// replacement_Xxx will be invoked instead.  Conversely,
+	// replacement_Xxx will invoke Xxx.
+	
+	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+	NSLog(@"Replacing methods in %@", [self class]) ;
+	Method originalMethod = class_getInstanceMethod(self, @selector(init)) ;
+	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_init)) ;
+	method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_init {
+    NSLog(@"Created exception at:\n%@", SSYDebugBacktrace()) ;
+    return [super replacement_init] ;
+}
+
+@end
+
+#endif
