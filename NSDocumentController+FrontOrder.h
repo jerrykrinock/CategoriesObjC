@@ -15,4 +15,15 @@
  */
 - (NSArray*)frontOrderDocuments ;
 
+/*
+ @brief    Returns the frontmost of the receiver's open documents which is of
+ the receiver's default types, more aggressively than Cocoa's -currentDocument
+ 
+ @details  -[NSDocumntController currentDocument] will return nil, for example,
+ during for the brief period between the time that a first document is added to
+ the document controller the time that it opens any windows, or something like
+ that.
+ */
+- (NSDocument*)currentDefaultDocumentAggressively ;
+
 @end
