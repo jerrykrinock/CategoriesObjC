@@ -143,21 +143,84 @@
 - (void)removeObject:(id)object
       fromArrayAtKey:(NSString*)key {
 	NSArray* keyPathArray = [NSArray arrayWithObject:key] ;
-	[self removeObject:object fromArrayAtKeyPathArray:keyPathArray] ;
+	[self         removeObject:object
+       fromArrayAtKeyPathArray:keyPathArray] ;
 }
+
+- (void)removeValueForKeyPathArray:(NSArray*)keyArray {
+	NSInteger N = [keyArray count] ;
+	if (N < 1) {
+		return ;
+	}
+	
+	NSMutableArray* dics = [[NSMutableArray alloc] init] ;
+	id object = self ;
+	id nextObject = nil ;
+	NSInteger i ;
+	for (i=0; i<N-1; i++) {
+		NSString* key = [keyArray objectAtIndex:i] ;
+		object = [object objectForKey:key] ;
+		if (object) {
+			// Required dictionary already exists.  Stash it for later.
+			[dics addObject:object] ;
+		}
+		else {
+			break ;
+		}
+	}
+	
+	if ([dics count] > 0) {
+        // Reverse-enumerate through the dictionaries, starting at
+        // the inside and setting little dictionaries as objects
+        // inside the bigger dictionaries
+        NSEnumerator* e = [dics reverseObjectEnumerator] ;
+        NSMutableDictionary* copy ;
+        for (NSDictionary* dic in e) {
+            copy = [dic mutableCopy] ;
+            NSString* key = [keyArray objectAtIndex:i] ;
+            if (nextObject) {
+                [copy setObject:nextObject
+                         forKey:key] ;
+            }
+            else {
+                [copy removeObjectForKey:key] ;
+            }
+            nextObject = [copy autorelease] ;
+            i-- ;
+        }
+    }
+    else if ([keyArray count] > 0) {
+        [self removeObjectForKey:[keyArray firstObject]] ;
+    }
+    
+	[dics release] ;
+	
+	// if () added as bug fix in BookMacster 1.14.4.  I think this occurs if the
+    // first key in the given keyPathArray is absent from the dictionary,
+    // *and* the given value is nil.
+    if (nextObject) {
+        [self setObject:nextObject
+                 forKey:[keyArray objectAtIndex:0]] ;
+    }
+}
+
 
 -             (void)removeKey:(id)key
  fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray {
 	NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray] ;
-	if (dictionary) {
+	if ([dictionary respondsToSelector:@selector(dictionaryBySettingValue:forKey:)]) {
 		dictionary = [dictionary dictionaryBySettingValue:nil
 												   forKey:key] ;
 		[self setValue:dictionary
-		forKeyPathArray:keyPathArray] ;
+       forKeyPathArray:keyPathArray] ;
 	}
-	else {
-		// The dictionary doesn't exist.  Don't do anything.
+	else if (dictionary) {
+        NSLog(@"Warning 593-8372.  Corrupt prefs.  Expected dictionary, found and removed %@ %@", [dictionary class], dictionary) ;
+        [self removeValueForKeyPathArray:keyPathArray] ;
 	}
+    else {
+        // Nothing to remove, do nothing
+    }
 }
 
 -     (void)removeKey:(id)innerKey

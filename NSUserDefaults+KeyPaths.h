@@ -75,6 +75,11 @@
 - (void)addUniqueObject:(id)object
            toArrayAtKey:(NSString*)key ;
 
+/*!
+ @details  This method has not been tested very much.
+ */
+- (void)removeValueForKeyPathArray:(NSArray*)keyArray ;
+
 -      (void)removeObject:(id)object
   fromArrayAtKeyPathArray:(NSArray*)keyPathArray ;
 
