@@ -248,7 +248,7 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 }
 
 - (NSError*)bottomError {
-	NSError* bottomError ;
+	NSError* bottomError = nil ;
 	NSError* nextError = self ;
 	while (nextError) {
 		bottomError = nextError ;

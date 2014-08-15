@@ -22,7 +22,6 @@ static NSBundle* mainAppBundle = nil ;
 			}
 			if ([mainAppBundlePath length] < 2) {
                 // mainAppBundlePath is probably "/"
-				NSLog(@"Warning 263-1857  Program apparently not in a .app") ;
 				mainAppBundlePath = nil ;
 				break ;
 			}
