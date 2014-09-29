@@ -18,8 +18,8 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 				deleteOld:(BOOL)deleteOld
 				  error_p:(NSError**)error_p {
 	BOOL ok = YES ;
-	NSError* error_ = nil ;
-	NSInteger errorCode = 0 ;
+	NSError* __block error_ = nil ;
+	NSInteger __block errorCode = 0 ;
 	
 	// This section was added in BookMacster 1.9.9.
 	if ([[self fileURL] isEqual:newURL]) {
@@ -217,17 +217,15 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 	// during creation.  The third time is when @"saveDocument" is 
 	// invoked after @"expandAllContent" in the operation queue.
 	// See -saveAndClearUndo.	
-	ok = [self saveToURL:newURL
+	[self saveToURL:newURL
 				  ofType:[self fileType]
 		forSaveOperation:NSSaveOperation
-				   error:&error_] ;
-	
-	if (ok) {
-	}
-	else {
-		errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
-		goto end ;
-	}
+				   completionHandler:^(NSError* errorOrNil) {
+                       if (errorOrNil) {
+                           errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
+                           error_ = errorOrNil ;
+                       }
+                   }] ;
 	
 end:;
 	if (error_p && error_) {

@@ -54,7 +54,8 @@
         Class superclass = [NSClassFromString(className) superclass] ;
 		if ([superclass instancesRespondToSelector:selector]) {
 			struct objc_super superStruct = {self, superclass} ;
-            returnValue = objc_msgSendSuper(&superStruct, selector, firstArg) ;
+            id (*typed_objc_msgSendSuper)(struct objc_super *, SEL, ...) = (void *)objc_msgSendSuper ;
+            returnValue = typed_objc_msgSendSuper(&superStruct, selector, firstArg) ;
 		}
 	}
 	return returnValue ;
