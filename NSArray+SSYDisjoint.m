@@ -49,5 +49,12 @@
     }
 }
 
+- (void)cleanObject:(id)object {
+    NSInteger index = [self indexOfObject:object] ;
+    if (index != NSNotFound) {
+        [self cleanObjectAtIndex:index] ;
+    }
+}
+
 @end
 

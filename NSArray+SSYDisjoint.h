@@ -29,6 +29,12 @@
 */
 - (void)cleanObjectAtIndex:(NSInteger)index ;
 
+/*!
+ @brief    Finds the index of a given object within the receiver and, if
+ found, invokes cleanObjectAtIndex: upon it; otherwise, does nothing.
+ */
+- (void)cleanObject:(id)object ;
+
 @end
 
 #if 0
