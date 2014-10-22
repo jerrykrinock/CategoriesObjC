@@ -39,7 +39,7 @@
 			[dics addObject:object] ;
 		}
 		else {
-			// Dictionary does not exist staring at this level,
+			// Dictionary does not exist starting at this level,
 			// (or preferences are corrupt and we didn't get a
 			// dictionary where one was expected.  In this case,
 			// we will, I believe, later, silently overwrite the
