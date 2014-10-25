@@ -244,14 +244,14 @@
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
-@interface NSValueBinder : NSObject {
+@interface NSBinder : NSObject {
 }
 @end
 
-@interface NSValueBinder (DebugByReplacingMethod)
+@interface NSBinder (DebugByReplacingMethod)
 @end
 
-@implementation NSValueBinder (DebugByReplacingMethod)
+@implementation NSBinder (DebugByReplacingMethod)
 
 + (void)load {
 	// Swap the implementations of one method with another.
@@ -268,14 +268,54 @@
 
 - (id)replacement_setValue:(id)value
 				forBinding:binding
-error:(NSError**)error {
-	NSLog(@"989: Setting value: %@", [value shortDescription]) ;
-	NSLog(@"1062:    for binding: %@", binding) ;
+                     error:(NSError**)error {
+	NSLog(@"1062:    Doing binding: %@", binding) ;
 
 	// Due to the swap, this calls the original method
 	return [self replacement_setValue:(id)value
 						   forBinding:binding
 								error:(NSError**)error] ;
+}
+
+@end
+
+#endif
+
+#if 0
+#warning * Doing Method Replacement for Debugging!!!!!!!!
+
+@interface NSValueBinder : NSObject {
+}
+@end
+
+@interface NSValueBinder (DebugByReplacingMethod)
+@end
+
+@implementation NSValueBinder (DebugByReplacingMethod)
+
++ (void)load {
+    // Swap the implementations of one method with another.
+    // When the message Xxx is sent to the object (either instance or class),
+    // replacement_Xxx will be invoked instead.  Conversely,
+    // replacement_Xxx will invoke Xxx.
+    
+    // NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+    NSLog(@"Replacing methods in %@", [self class]) ;
+    Method originalMethod = class_getInstanceMethod(self, @selector(setValue:forBinding:error:)) ;
+    Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_setValue:forBinding:error:)) ;
+    method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (id)replacement_setValue:(id)value
+                forBinding:binding
+                     error:(NSError**)error {
+    NSLog(@"989: Setting value: %@", [value shortDescription]) ;
+    NSLog(@"1062:    for binding: %@", binding) ;
+    
+    // Due to the swap, this calls the original method
+    return [self replacement_setValue:(id)value
+                           forBinding:binding
+                                error:(NSError**)error] ;
 }
 
 @end
