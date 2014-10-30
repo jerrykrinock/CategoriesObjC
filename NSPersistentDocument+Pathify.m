@@ -217,15 +217,34 @@ NSString* const SSYPersistentDocumentPathifyErrorDomain = @"SSYPersistentDocumen
 	// during creation.  The third time is when @"saveDocument" is 
 	// invoked after @"expandAllContent" in the operation queue.
 	// See -saveAndClearUndo.	
-	[self saveToURL:newURL
-				  ofType:[self fileType]
-		forSaveOperation:NSSaveOperation
-				   completionHandler:^(NSError* errorOrNil) {
-                       if (errorOrNil) {
-                           errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
-                           error_ = errorOrNil ;
-                       }
-                   }] ;
+    if ([self respondsToSelector:@selector(saveToURL:ofType:forSaveOperation:completionHandler:)]) {
+        // OS X 10.7 or later
+#pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
+        [self saveToURL:newURL
+                 ofType:[self fileType]
+       forSaveOperation:NSSaveOperation
+      completionHandler:^(NSError* errorOrNil) {
+          if (errorOrNil) {
+              errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
+              error_ = errorOrNil ;
+          }
+      }] ;
+#pragma deploymate pop
+    }
+    else {
+        // OS X 10.6 or earlier
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        ok = [self saveToURL:newURL
+                      ofType:[self fileType]
+            forSaveOperation:NSSaveOperation
+                       error:&error_] ;
+        
+#pragma clang diagnostic pop
+        if (!ok) {
+            errorCode = SSYPersistentDocumentPathifyErrorCouldNotSaveStore ;
+        }
+    }
 	
 end:;
 	if (error_p && error_) {
