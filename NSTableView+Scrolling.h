@@ -2,6 +2,9 @@
 
 @interface NSTableView (Scrolling)
 
-- (void)scrollRowToTop:(NSInteger)row ;
+- (NSRect)visibleRowsRect ;
+
+- (void)scrollRowToTop:(NSInteger)row
+       plusExtraPoints:(CGFloat)extraPoints ;
 
 @end
