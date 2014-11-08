@@ -34,7 +34,6 @@
     CGFloat y = 0 ;
 	if ((row != NSNotFound) && (row >=0)) {
 		CGFloat rowPitch = [self rowHeight] + [self intercellSpacing].height ;
-        y = -[[self headerView] frame].size.height ;
         y += (row) * rowPitch ;
         
         y += extraPoints ;
