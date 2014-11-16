@@ -35,6 +35,17 @@
 */
 - (NSString*)stringByCollapsingConsecutiveSpaces ;
 
+/*!
+ @brief    If receiver contains any of the three newline characters which
+ define -[NSCharacterSet newlineCharacterSet], replaces each such character with
+ an ASCII space (0x20) and returns this modified string; otherwise, returns
+ the receiver
+ 
+ @details  The effect replicates what Google Chrome does to bookmark names
+ (tested with Google Chrome version 40).
+ */
+- (NSString*)stringByReplacingNewlinesWithSpaces ;
+
 /* I don't quite understand these... */
 - (FourCharCode)fourCharCodeValue ;
 // Old code for big endian.  Gives string backwards for little endian:

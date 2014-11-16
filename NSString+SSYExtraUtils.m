@@ -240,6 +240,35 @@ CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocato
 	return [tweakedName autorelease] ;
 }
 
+- (NSString*)stringByReplacingNewlinesWithSpaces {
+    // http://stackoverflow.com/questions/17155210/universal-character-name-error-in-nsstring-when-using-unicode-character
+    NSString* answer ;
+    if ([self rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet]].location != NSNotFound) {
+        NSMutableString* mutant = [self mutableCopy] ;
+        char newlineChars[3] = {0x0A, 0x0D, 0x85} ;
+        for (NSInteger i=0; i<3; i++) {
+            unichar newlineChar = newlineChars[i] ;
+            NSData* newlineData = [[NSData alloc] initWithBytes:&newlineChar
+                                                         length:1] ;
+            NSString* newlineString = [[NSString alloc] initWithData:newlineData
+                                                            encoding:NSASCIIStringEncoding] ;
+            [newlineData release] ;
+            [mutant replaceOccurrencesOfString:newlineString
+                                    withString:@" "] ;
+            [newlineString release] ;
+        }
+        
+        answer = [NSString stringWithString:mutant] ;
+        [mutant release] ;
+    }
+    else {
+        answer = self ;
+    }
+    
+    return answer ;
+}
+
+
 // The following two methods use functions recommended in Universal Binary Programming Guide > Swapping Bytes > Byte-Swapping Strategies > OSType
 // http://developer.apple.com/legacy/mac/library/documentation/MacOSX/Conceptual/universal_binary/universal_binary_byte_swap/universal_binary_swap.html#//apple_ref/doc/uid/TP40002217-CH243-CJBBDIIG
 // But I'm still not sure they work
