@@ -90,7 +90,7 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
  @details  If a regular file is found at the given path, it is deleted
  and replaced with the new directory.
- @param    error_p  A pointer, or nil.&nbsp; If non-nil, on output, if an
+ @param    error_p  A pointer, or nil.  If non-nil, on output, if an
  error occurred, points to the relevant NSError.  
  @result   YES if the directory already exists or was successfully
  created; NO otherwise.

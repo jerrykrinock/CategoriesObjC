@@ -52,11 +52,27 @@
   for this menu, and thus the fact that -menuNeedsUpdate: even gets invoked,
   is probably an implementation detail also.
   
-  Because NSDocument is not declared as conforming to NSMenuDelegate, invoking
-  [super menuNeedsUpdate:menu] in our override causes a compiler warning.
-  We assume that Cocoa would not have sent us -menuNeedsUpdate if NSDocument
-  did not respond to it, and in a document supporting Lion Auto Save, in fact,
-  it does.  This declaration prevents that compiler warning.
+  And, in fact, they did break it, in OS X 10.9, when the menu up there
+  was replaced with a popover.  Fortunately, they made it easier, because the
+  popover contains *only* controls which are not applicable to shoebox
+  documents:
+  
+  • A text field to rename
+  • A token field to add tags
+  • A control to "move" the document
+  • A "Lock" checkbox.
+  
+  So what you want to do is simply disable the showing of this popover.  After
+  a little poking around, I found it is easy to do that, in -awakeFromNib
+  of the window controller.  Just add this line of code:
+  
+  [[[self window] standardWindowButton:NSWindowDocumentVersionsButton] setHidden:YES] ;
+  
+  (The symbol name NSWindowDocumentVersionsButton is apparently a holdover from
+  the prior usage.)
+
+  For apps targetting 10.9 or later, that's all you need to do.  You do NOT
+  need this category.
   
   Note that the menu may not appear in versions of Mac OS X later than
   Mac OS X 10.8.  Therefore, this override may not be necessary in the future.
@@ -69,6 +85,12 @@
  which are not sensible for a shoebox document from the Auto Save / Versions
  menu which appears when the user clicks the disclosure triangle in the title
  bar of a document in Mac OS X 10.8 and earlier.
+
+ @details  Because NSDocument is not declared as conforming to NSMenuDelegate,
+ invoking [super menuNeedsUpdate:menu] in as we do in our override causes a
+ compiler warning.  We assume that Cocoa would not have sent us -menuNeedsUpdate
+ if NSDocument  did not respond to it, and in a document supporting Lion Auto
+ Save, in fact, it does.  This declaration prevents that compiler warning.
  */
 - (void)menuNeedsUpdate:(NSMenu*)menu ;
 
