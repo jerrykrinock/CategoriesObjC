@@ -7,6 +7,8 @@
  fixes Apple Bug ID 16424156
  @details  See http://lists.apple.com/archives/cocoa-dev/2014/Mar/msg00343.html
  */
+CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocator, CFStringRef string, CFDictionaryRef entitiesDictionary) ;
+
 CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocator, CFStringRef string, CFDictionaryRef entitiesDictionary) {
     if (string == NULL) {
         return NULL ;
