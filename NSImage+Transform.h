@@ -22,4 +22,6 @@
 */
 - (NSImage*)imageRotatedByDegrees:(CGFloat)degrees ;
 
+- (void)darken ;
+
 @end

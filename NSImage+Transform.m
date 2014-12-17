@@ -41,5 +41,18 @@
 	return rotatedImage;
 }
 
+- (void)darken {
+    NSSize imageSize = [self size] ;
+    NSRect rect = NSMakeRect(0.0, 0.0, imageSize.width, imageSize.height) ;
+    [self lockFocus] ;
+    [[NSColor colorWithCalibratedWhite:0.35 alpha:0.33] set] ;
+    NSRectFillUsingOperation(rect, NSCompositeSourceOver) ;
+    [self unlockFocus] ;
+    [self drawInRect:rect
+            fromRect:rect
+           operation:NSCompositeSourceOver
+            fraction:0.75] ;
+}
+
 @end
 
