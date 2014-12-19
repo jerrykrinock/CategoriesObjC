@@ -33,10 +33,13 @@
 	
 	// Draw the original image, rotated, into the new image
 	// Note: This "drawing" is done off-screen.
-	[rotatedImage lockFocus];
-	[transform concat];
-	[self drawInRect:imageBounds fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0] ;
-	[rotatedImage unlockFocus];
+	[rotatedImage lockFocus] ;
+	[transform concat] ;
+	[self drawInRect:imageBounds
+            fromRect:NSZeroRect
+           operation:NSCompositeCopy
+            fraction:1.0] ;
+	[rotatedImage unlockFocus] ;
 	
 	return rotatedImage;
 }
