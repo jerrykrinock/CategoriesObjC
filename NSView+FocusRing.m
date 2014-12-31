@@ -16,7 +16,6 @@
 }
 
 - (void)drawFocusRing {
-	[self lockFocus] ; // Needed in case we were not invoked from within drawRect:
 	[[NSColor keyboardFocusIndicatorColor] set];
 	NSRect rect = [self visibleRect] ;
 	[NSGraphicsContext saveGraphicsState];
@@ -27,7 +26,6 @@
 	// http://www.cocoabuilder.com/archive/message/cocoa/2003/4/7/88648
 	// The remainder of that message applies to pre-Leopard only
 	// and is implemented in this class' -patchPreLeopardFocusRingDrawingForScrolling.
-	[self unlockFocus] ; // Balance lockFocus
 }
 
 @end

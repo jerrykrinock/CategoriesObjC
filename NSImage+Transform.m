@@ -11,8 +11,6 @@
 	[transform rotateByDegrees:degrees];
 	[boundsPath transformUsingAffineTransform:transform];
 	NSRect rotatedBounds = {NSZeroPoint, [boundsPath bounds].size};
-	NSImage* rotatedImage = [[NSImage alloc] initWithSize:rotatedBounds.size] ;
-    [rotatedImage autorelease] ;
 	
 	// Center the image within the rotated bounds
 	imageBounds.origin.x = NSMidX(rotatedBounds) - (NSWidth(imageBounds) / 2);
@@ -33,28 +31,37 @@
 	
 	// Draw the original image, rotated, into the new image
 	// Note: This "drawing" is done off-screen.
-	[rotatedImage lockFocus] ;
-	[transform concat] ;
-	[self drawInRect:imageBounds
-            fromRect:NSZeroRect
-           operation:NSCompositeCopy
-            fraction:1.0] ;
-	[rotatedImage unlockFocus] ;
+    NSImage* rotatedImage = [NSImage imageWithSize:rotatedBounds.size
+                                    flipped:NO
+                             drawingHandler:^(NSRect dstRect) {
+                                 [transform concat] ;
+                                 [self drawInRect:imageBounds
+                                         fromRect:NSZeroRect
+                                        operation:NSCompositeCopy
+                                         fraction:1.0] ;
+
+                                 return YES ;
+                             }] ;
 	
 	return rotatedImage;
 }
 
-- (void)darken {
+- (NSImage*)darkenedImage {
     NSSize imageSize = [self size] ;
     NSRect rect = NSMakeRect(0.0, 0.0, imageSize.width, imageSize.height) ;
-    [self lockFocus] ;
-    [[NSColor colorWithCalibratedWhite:0.35 alpha:0.33] set] ;
-    NSRectFillUsingOperation(rect, NSCompositeSourceOver) ;
-    [self unlockFocus] ;
-    [self drawInRect:rect
-            fromRect:rect
-           operation:NSCompositeSourceOver
-            fraction:0.75] ;
+    NSImage* darkerImage = [NSImage imageWithSize:[self size]
+                                           flipped:NO
+                                    drawingHandler:^(NSRect dstRect) {
+                                        [[NSColor colorWithCalibratedWhite:0.35 alpha:0.33] set] ;
+                                        NSRectFillUsingOperation(rect, NSCompositeSourceOver) ;
+                                        [self drawInRect:rect
+                                                fromRect:rect
+                                               operation:NSCompositeSourceOver
+                                                fraction:0.75] ;
+                                        
+                                        return YES ;
+                                    }] ;
+    return darkerImage ;
 }
 
 @end
