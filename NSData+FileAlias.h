@@ -30,18 +30,10 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  modern NSURL file bookmarks and legacy Alias Manager AliasRecord datas to
  paths, and vice versa
  
- @details  This category requires Mac OS X 10.5 or later.  Test
+ @details  This category requires Mac OS X 10.6 or later.  Test
  code is provided below.
- 
- In BookMacster 1.19.2, this category was updated to use NSURL bookmarks
- instead of Alias Manager's alias records, if available.
  */
 @interface NSData (FileAlias)
-
-/*!
- @brief    Returns a handle to the receiver's bytes.
- */
-- (AliasHandle)aliasHandle ;
 
 /*!
  @brief    Returns NSURL bookmarks data for a given path, or in Mac OS X
@@ -101,11 +93,8 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init] ;
  
  NSLog(@"*** Tests which should pass ***") ;
+ TestPath(@"/") ;
  TestPath(@"/Users") ;
- TestPath(@"/Users/Ptolemy") ;
- TestPath(@"/Yousers") ;
- TestPath(@"/Volumes/NoSuchVolume") ;
- TestPath(@"/Users/NoSuchFileButParentExists") ;
  TestPath([NSHomeDirectory() stringByAppendingPathComponent:@".DS_Store"]) ;
  TestPath(@"/Applications/Safari.app/Contents/MacOS/Safari") ;
  
@@ -116,8 +105,11 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  TestPath(@"/Users/") ;
  TestPath(@"/Yousers/") ;
  TestPath(@"/Yousers/Ptolemy") ;
+ TestPath(@"/Users/Ptolemy") ;
+ TestPath(@"/Yousers") ;
+ TestPath(@"/Volumes/NoSuchVolume") ;
+ TestPath(@"/Users/NoSuchFileButParentExists") ;
  TestPath(@"") ;
- TestPath(@"/") ;
  TestPath(@"/No/Such/File/And/Parent/Does/Not/Exist") ;
  TestPath(@"NotEvenAPath") ;
  
