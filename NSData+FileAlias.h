@@ -29,24 +29,24 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  @brief    A category on NSData for converting (sometimes "resolving")
  modern NSURL file bookmarks and legacy Alias Manager AliasRecord datas to
  paths, and vice versa
-
+ 
  @details  This category requires Mac OS X 10.5 or later.  Test
  code is provided below.
  
  In BookMacster 1.19.2, this category was updated to use NSURL bookmarks
  instead of Alias Manager's alias records, if available.
-*/
+ */
 @interface NSData (FileAlias)
 
 /*!
  @brief    Returns a handle to the receiver's bytes.
-*/
+ */
 - (AliasHandle)aliasHandle ;
 
 /*!
  @brief    Returns NSURL bookmarks data for a given path, or in Mac OS X
  10.5 or earlier, returns Alias Manager data.
-
+ 
  @details  Does not require that the file specified by path exists,
  but at least its parent must exist.&nbsp;
  If file does not exist, but its parent exists, returns a minimal
@@ -54,7 +54,7 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  If file parent does not exist, will return nil.&nbsp;
  This method may be non-deterministic.  Try it twice on the same
  path and you may get a few bits different.&nbsp;  Or, you may not.
-*/
+ */
 + (NSData*)aliasRecordFromPath:(NSString*)path ;
 
 /*!
@@ -71,20 +71,20 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  @param    error_p  Pointer which will, upon return, if an error
  occurred and said pointer is not NULL, point to an NSError
  describing said error.
-*/
+ */
 - (NSString*)pathFromAliasRecordWithTimeout:(NSTimeInterval)timeout
-									error_p:(NSError**)error_p ;
+                                    error_p:(NSError**)error_p ;
 
 @end
 
-/*  TEST CODE  
-
+/*  TEST CODE
+ 
  #import "NSData+FileAlias.h"
  
  void TestPath(NSString* path) {
  NSData* alias = [NSData aliasRecordFromPath:path] ;
  NSString* recoveredPath = [alias pathFromAliasRecordWithTimeout:3.0
-error_p:NULL] ;
+ error_p:NULL] ;
  
  if ([path isEqualToString:recoveredPath]) {
  NSLog(@"Passed: %@", path) ;
@@ -127,4 +127,4 @@ error_p:NULL] ;
  }
  
  
-*/
+ */
