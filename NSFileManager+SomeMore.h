@@ -19,48 +19,17 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 - (BOOL)removeIfExistsItemAtPath:(NSString*)path
 						 error_p:(NSError**)error_p ;
 
-
 /*!
- @brief    Gets an FSRef structure defining a given file URL.
+ @brief    Swaps the contents and metadata of the files given by two file URLs
+ so that the first URL ends up with the contents and metadata that was 
+ originally in the second URL and vice versa
 
- @details  A Cocoa wrapper around FSPathMakeRef().
- Warning: FSPathMakeRef may hang for a minute or so if the
- given path is on a mounted server and the connection is
- interrupted.
- @param    url  A file URL whose FSRef is desired
- @param    fsRef_p  On output, if no error occurred, will point
- to an FSRef structure defining the given file URL.
- @param    error_p  Pointer which will, upon return, if an error
- occured and said pointer is not NULL, point to an NSError
- describing said error.
- @result   YES if the operation succeeded in getting an FSRef,
- NO otherwise.
-*/
-- (BOOL)getFromUrl:(NSURL*)url
-		   fsRef_p:(FSRef*)fsRef_p
-		   error_p:(NSError**)error_p ;
-
-/*!
- @brief    Swaps the contents of the files given by two file URLs.
-
- @details  See FSExchangeObjects() since this is a Cocoa wrapper
- around that function and FSPathMakeRef().
- 
- Warning: FSPathMakeRef may hang for a minute or so if the
- given file URL is on a mounted server and the connection is
- interrupted.
-
- According to Chris Parker of Apple, this function is provided by
- -replaceItemAtURL:withItemAtURL:backupItemName:options:resultingItemURL:error:.
- But it requires Mac OS 10.6.
- 
  @param    url1  A file URL whose contents is to be swapped
  @param    url2  A file URL whose contents is to be swapped
  @param    error_p  Pointer which will, upon return, if an error
  occured and said pointer is not NULL, point to an NSError
  describing said error.
- @result   YES if the operation succeeded in getting an FSRef,
- NO otherwise.
+ @result   YES if the operation succeeded, NO otherwise.
  */
 - (BOOL)swapUrl:(NSURL*)url1
 		withUrl:(NSURL*)url2
@@ -108,46 +77,16 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 - (BOOL)fileIsPermanentAtPath:(NSString*)path ;
 
 /*!
- @brief    Tests to see whether or not a file at a given path in
- the filesystem is locked.
+ @brief    Returns the unix advisory lock status for a given path
 
- @details  
- @param    error_p  Pointer which will, upon return, if an error
- occurred and said pointer is not NULL, point to an NSError
- describing said error.
- @result   NSOnState if the path is locked, NSOffState if the path
- is not locked, NSMixedState if the locked/unlocked status could not
- be determined due to an error.
+ @result   Possible values are:
+ -2  Some weird error
+ -1  Could not open path, usually because it does not exist
+ F_RDLCK Found a "Read" aka "Shared" lock
+ F_UNLCK Found no lock
+ F_WRLCK Found a "Write" aka "Exclusive" lock
 */
-- (NSInteger)fileIsLockedAtPath:(NSString*)path
-						error_p:(NSError**)error_p ;
-
-
-/*!
- @brief    Another method to determine if a file is locked, based
- on fcntl(2).
-
- @details  See which one works better for you!
-*/
-- (BOOL)fcntlIsLockedAtPath:(NSString*)path ;
-
-
-/*!
- @brief    Attempts to lock or unlock, as directed, a given path
- in the filesystem.
-
- @details  
- This method ignores the current locked/unlocked status -- it
- simply overwrites it.
- @param    doLock  YES to lock the file, NO to unlock.
- @param    error_p  Pointer which will, upon return, if an error
- occurred and said pointer is not NULL, point to an NSError
- describing said error.
- @result   YES if the operation completed successfully, NO
- otherwise. */
-- (BOOL)setDoLock:(BOOL)doLock
-	   fileAtPath:(NSString*)path
-		  error_p:(NSError**)error_p ;
+- (short)unixAdvisoryLockStatusForPath:(NSString*)path ;
 
 /*!
  @brief    Returns the path a special folder of a given type
@@ -186,74 +125,3 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
 
 @end
-
-
-#if 0
-// TEST CODE FOR FILE LOCK METHODS
-
-#import <Cocoa/Cocoa.h>
-#import "NSFileManager+SomeMore.h"
-#import "NSError+InfoAccess.h"
-
-int main(int argc, const char *argv[]) {
-	
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init] ;
-	
-	if (argc != 2) {
-		NSLog(@"This program requires 1 parameter, a unix path.  Sorry!") ;
-		exit (1) ;
-	}
-	
-	// argv[0] is the command line.  Read the next one.
-	NSString* path = [NSString stringWithUTF8String:argv[1]] ;  
-	NSLog(@"Subject file: %@", path) ;
-	
-	char command = 'r' ;
-	NSInteger intResult ;
-	NSError* error = nil ;
-	
-	while (command != 'q') {
-		BOOL ok = YES ;
-		switch (command) {
-			case 'r':
-				intResult = [[NSFileManager defaultManager] fileIsLockedAtPath:path
-																	   error_p:&error] ;
-				switch (intResult) {
-					case NSMixedState:
-						ok = NO ;
-						break ;
-					case NSOnState:
-						NSLog(@"File is locked.") ;
-						break ;
-					case NSOffState:
-						NSLog(@"File is not locked.") ;
-				}
-				
-				break ;
-				
-			case 'l':
-			case 'u':
-				ok = [[NSFileManager defaultManager] setDoLock:(command == 'l')
-													fileAtPath:path
-													   error_p:&error] ;
-				break ;
-			case 'q':
-				break ;
-		}
-		
-		if (!ok) {
-			NSLog(@"Sorry, error occured:\n%@", [error longDescription]) ;
-		}
-		
-		NSLog(@"Enter one of r=reread, l=lock, u=unlock, q=quit.  Then hit 'return'.") ;
-		command = getchar() ;
-		// Get and discard the 'return' character
-		getchar() ;
-	}
-	
-	[pool release] ;
-	
-	return 0 ;
-}
-
-#endif
