@@ -7,14 +7,9 @@
 
 + (NSAppleEventDescriptor*)unsafeExecuteSource:(NSString*)source
 					error_p:(NSError**)error_p {
-    /*SSYDBL*/ NSLog(@">> %s", __PRETTY_FUNCTION__) ;
-    /*SSYDBL*/ NSLog(@"  Got source:\n%@",source) ;
 	NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source] ;
-    /*SSYDBL*/ NSLog(@"  Script: %@", script) ;
 	NSDictionary* errorDictionary = nil ;
 	NSAppleEventDescriptor* result = [script executeAndReturnError:&errorDictionary] ;
-    /*SSYDBL*/ NSLog(@"  Did execute, got result: %@\nerrorDictionary: %@", result, errorDictionary) ;
-
 	if (errorDictionary && error_p) {
 		*error_p = SSYMakeError(150494, @"AppleScript execution failed") ;
 		*error_p = [*error_p errorByAddingUserInfoObject:source
