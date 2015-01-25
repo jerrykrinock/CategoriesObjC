@@ -426,45 +426,6 @@
 
 #endif
 
-#if 0
-#warning * Doing Method Replacement for Debugging!!!!!!!!
-#warning This does not work.  Maybe should be __NSDictionaryM, but that won't compile
-
-@interface NSMutableDictionary (DebugByReplacingMethod)
-@end
-
-@implementation NSMutableDictionary (DebugByReplacingMethod)
-
-+ (void)load {
-	// Swap the implementations of one method with another.
-	// When the message Xxx is sent to the object (either instance or class),
-	// replacement_Xxx will be invoked instead.  Conversely,
-	// replacement_Xxx will invoke Xxx.
-	
-	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
-	NSLog(@"Replacing methods in %@", [self class]) ;
-	Method originalMethod = class_getInstanceMethod(self, @selector(setObject:forKey:)) ;
-	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_setObject:forKey:)) ;
-	method_exchangeImplementations(originalMethod, replacedMethod) ;
-}
-
-- (id)replacement_setObject:(id)object
-                     forKey:key {
-    if (object) {
-        NSLog(@"SOFK: %@ : %@",
-              key,
-              object) ;
-    }
-    
-	// Due to the swap, this calls the original method
-	return [self replacement_setObject:object
-						        forKey:key] ;
-}
-
-@end
-
-#endif
-
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
@@ -582,6 +543,52 @@
 	return [self my_sizeForWidth:width
                           height:height
                             font:font] ;
+}
+
+@end
+
+#endif
+
+#if 11
+
+@interface My__NSDictionaryM : NSObject {
+}
+
+@end
+
+@implementation My__NSDictionaryM
+
++ (void)load {
+    NSLog(@"43243 %s", __PRETTY_FUNCTION__) ;
+    Class targetClass = NSClassFromString(@"__NSDictionaryM") ;
+    Method originalMethod = class_getInstanceMethod(targetClass, @selector(setObject:forKey:)) ;
+    Method replacedMethod = class_getInstanceMethod(self, @selector(my_setObject:forKey:)) ;
+    IMP originalImplementation = method_getImplementation(originalMethod) ;
+    IMP replacedImplementation = method_getImplementation(replacedMethod) ;
+    // Set the implementation of the original to my implementation
+    method_setImplementation(originalMethod, replacedImplementation) ;
+    // Add a my_initWithObjects:count: method to the NSCFArray with the original implementation
+    class_addMethod(targetClass, @selector(my_setObject:forKey:), originalImplementation, NULL) ;
+}
+
+- (id)my_setObject:(id)object
+            forKey:key {
+    if (!key || !object) {
+        NSMutableString* msg = [[NSMutableString alloc] initWithFormat:
+                                @"Whoops, attempt to set object:\n%@\nfor key: %@\non thread %@\nexisting pairs: %@\nbacktrace:\n%@",
+                                object,
+                                key,
+                                [NSThread currentThread],
+                                self,
+                                
+                                SSYDebugBacktrace()] ;
+        NSLog(@"%@", msg) ;
+        abort() ;
+    }
+    
+    // Due to the swap, this calls the original method
+    return [self my_setObject:object
+                                forKey:key] ;
 }
 
 @end
