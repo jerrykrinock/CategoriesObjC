@@ -16,19 +16,11 @@ __attribute__((visibility("default"))) NSString* const SSYAppleScriptErrorDomain
 	}
 	else if (code < kPOSIXErrorBase) {
 		domain = NSOSStatusErrorDomain ;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040		
-		const char* cString = GetMacOSStatusCommentString(code) ;
-#else
-		const char* cString = NULL ;
-#endif
-		if (cString) {
-			descString = [NSString stringWithUTF8String:cString] ;
-		}
-		else {
-			descString = [NSString stringWithFormat:
-						  @"OSStatus error code %ld.  See MacErrors.h",
-						  (long)code] ;
-		}
+        descString = [[NSError errorWithDomain:NSOSStatusErrorDomain
+                                          code:code
+                                      userInfo:nil] localizedDescription] ;
+        // Unfortunately, the above does not give as much information for
+        // as many codes as the deprecated GetMacOSStatusCommentString()  :(
 	}
 	else if (code <= kPOSIXErrorEOPNOTSUPP) {
 		domain = NSPOSIXErrorDomain ;

@@ -31,7 +31,7 @@
 					[[self mainAppBundle] objectForInfoDictionaryKey:CFBundleVersionKey], CFBundleVersionKey,
 					// The following gets added in -[SSYAlert support:].  It would be nice to do it here instead.
 					// But then I'd have to #import SSYSystemDescriber into any project using this file.
-					//[SSYSystemDescriber softwareVersionAndArchitecture], @"System Description",
+					//[SSYSystemDescriber softwareVersionString], @"System Description",
 					nil] ;
 	}
     
