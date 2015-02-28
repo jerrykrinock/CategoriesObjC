@@ -91,15 +91,13 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 /*!
  @brief    Returns the path a special folder of a given type
 
- @details  This is a Cocoa wrapper around FSFindFolder().
- @param    folderType  The OSType of the desired folder.
- See documentation of Apple's FSFindFolder, 2nd argument.
- Examples: kTrashFolderType, kDesktopFolderType.
+ @param    folderType  A member of the NSSearchPathDirectory enum declared in
+ NSPathUtilities.h.  Example: NSTrashDirectory.
  @result   Path to the desired folder, or nil if it could not
  be found.  This path will NOT have a trailing slash UNLESS
  the path is the root, i.e. @"/".
 */
-- (NSString*)pathToSpecialFolderType:(OSType)folderType ;
+- (NSString*)pathToSpecialFolderType:(NSSearchPathDirectory)folderType ;
 
 /*!
  @brief    A variation on the -removeItemAt…:… methods which (a) does not return

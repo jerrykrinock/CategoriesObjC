@@ -208,28 +208,17 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 	return YES ;
 }
 
-- (NSString*)pathToSpecialFolderType:(OSType)folderType {
-	FSRef foundRef ;
-	OSErr err = FSFindFolder (
-							  kUserDomain,
-							  folderType,
-							  false,
-							  &foundRef ) ;
-	char fullPath[1024];
-  	if (err == noErr) {
-		OSStatus osStatus = FSRefMakePath (&foundRef, (UInt8*)fullPath, sizeof(fullPath)) ;
-		if (osStatus != noErr) {
-			err = 1 ;
-		}
-	}
-	
-	NSString* path = nil ;
-	if (err == noErr) {		
-		path = [NSString stringWithCString:fullPath
-								  encoding:NSUTF8StringEncoding] ;
-	}
-	
-	return path ;
+- (NSString*)pathToSpecialFolderType:(NSSearchPathDirectory)folderType {
+    NSError* error = nil ;
+    NSURL* url = [[NSFileManager defaultManager] URLForDirectory:folderType
+                                                        inDomain:NSUserDomainMask
+                                               appropriateForURL:nil
+                                                          create:NO
+                                                           error:&error] ;
+    if (error) {
+        NSLog(@"Internal Error 290-0349 %@", error) ;
+    }
+	return [url path] ;
 }
 
 - (short)unixAdvisoryLockStatusForPath:(NSString*)path {
