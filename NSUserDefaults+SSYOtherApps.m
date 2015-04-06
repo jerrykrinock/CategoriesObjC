@@ -4,9 +4,11 @@
 @implementation NSUserDefaults (SSYOtherApps)
 
 - (void)syncApplicationId:(NSString*)applicationId {
-    Boolean ok = CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
-    if (!ok) {
-        NSLog(@"Internal Error 624-3849 %@", applicationId) ;
+    if (applicationId) {
+        Boolean ok = CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
+        if (!ok) {
+            NSLog(@"Internal Error 624-3849 %@", applicationId) ;
+        }
     }
 }
 
