@@ -78,7 +78,7 @@
  selector = @selector(installOwnerAddonError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
- class = [ExtoreLocalJson class] ;
+ class = [ExtoreChromy class] ;
  selector = @selector(installOwnerAddonError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
