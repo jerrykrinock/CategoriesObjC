@@ -10,8 +10,8 @@
 	NSString* extension = nil ;
 	for (NSDictionary* docDic in docDics) {
 		NSArray* utis = [docDic objectForKey:@"LSItemContentTypes"] ;
-		for (NSString* uti in utis) {
-			if ([uti isEqualToString:uti]) {
+		for (NSString* aUti in utis) {
+			if ([aUti isEqualToString:uti]) {
 				NSArray* extensions = [docDic objectForKey:@"CFBundleTypeExtensions"] ;
 				extension = [extensions firstObjectSafely] ;
 				break ;
@@ -30,8 +30,8 @@
 	NSString* displayName = nil ;
 	for (NSDictionary* docDic in docDics) {
 		NSArray* utis = [docDic objectForKey:@"LSItemContentTypes"] ;
-		for (NSString* uti in utis) {
-			if ([uti isEqualToString:uti]) {
+		for (NSString* aUti in utis) {
+			if ([aUti isEqualToString:uti]) {
 				displayName = [docDic objectForKey:@"CFBundleTypeName"] ;
 				break ;
 			}
