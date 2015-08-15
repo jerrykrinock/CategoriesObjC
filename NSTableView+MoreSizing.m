@@ -1,4 +1,5 @@
 #import "NSTableView+MoreSizing.h"
+#import "NSWindow+Screening.h"
 
 NSString* const constKeyMinWidthAnyColumn = @"minWidthAnyColumn" ;
 NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
@@ -249,9 +250,10 @@ NSString* const constKeyMinWidthFirstColumn = @"minWidthFirstColumn" ;
 }
 
 - (NSTableColumn*)tableColumnOfCurrentMouseLocationWithInset:(CGFloat)inset {
-	NSPoint point = [[self window] convertScreenToBase:[NSEvent mouseLocation]] ;
-	CGFloat mouseX = [self convertPoint:point
-									fromView:nil].x ;
+    NSPoint screenPoint = [NSEvent mouseLocation] ;
+    NSPoint windowPoint = [[self window] pointFromScreenPoint:screenPoint] ;
+	CGFloat mouseX = [self convertPoint:windowPoint
+                               fromView:nil].x ;
 
 	CGFloat spacing = [self intercellSpacing].width ;
 	
