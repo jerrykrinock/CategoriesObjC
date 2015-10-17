@@ -140,6 +140,10 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 }
 
 - (BOOL)fileIsPermanentAtPath:(NSString*)path {
+    if (!path) {
+        return NO ;
+    }
+
     NSURL* url = [NSURL fileURLWithPath:path] ;
     NSFileManager* fm = [NSFileManager defaultManager] ;
     if (![fm fileExistsAtPath:path]) {

@@ -47,7 +47,7 @@ NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 		*error_p = nil ;
 	}
     
-	id recoveryAttempter = [self recoveryAttempter] ;
+	id __block recoveryAttempter = [self recoveryAttempter] ;
     
 	if (!recoveryAttempter) {
 		NSURL* recoveryAttempterUrl = [[self userInfo] objectForKey:SSYRecoveryAttempterUrlErrorKey] ;
@@ -58,9 +58,16 @@ NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 				return nil ;
 			}
 			
-			recoveryAttempter = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:recoveryAttempterUrl
-																									   display:YES
-																										 error:error_p] ;
+            [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:recoveryAttempterUrl
+                                         display:YES
+                               completionHandler:^(NSDocument *document,
+                                                   BOOL documentWasAlreadyOpen,
+                                                   NSError *error) {
+                                   recoveryAttempter = document ;
+                                   if (error && error_p) {
+                                       *error_p = error ;
+                                   }
+                               }] ;
 		}
 		else if (!recoveryAttempter) {
 			if ([[[self userInfo] objectForKey:SSYRecoveryAttempterIsAppDelegateErrorKey] boolValue]) {

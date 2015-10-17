@@ -3,7 +3,7 @@
 @implementation NSWindow (Screening)
 
 - (NSPoint)pointFromScreenPoint:(NSPoint)screenPoint {
-    NSRect screenRect ;
+    NSRect screenRect = NSZeroRect ;
     screenRect.origin = screenPoint ;
     NSRect pointRect = [self convertRectFromScreen:screenRect] ;
     NSPoint windowPoint = pointRect.origin ;
