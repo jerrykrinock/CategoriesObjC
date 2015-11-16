@@ -48,20 +48,20 @@
         }
         else {
             if ([data isKindOfClass:[NSData class]]) {
-                NSString* plistError = nil ;
-                metadata = [NSPropertyListSerialization propertyListFromData:data
-                                                            mutabilityOption:NSPropertyListImmutable
+                NSError* plistError = nil ;
+                metadata = [NSPropertyListSerialization propertyListWithData:data
+                                                                     options:NSPropertyListImmutable
                                                                       format:NULL
-                                                            errorDescription:&plistError] ;
+                                                                       error:&plistError] ;
                 if (!metadata) {
                     error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
                                                 code:315640
                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                       @"Could not deserialize metadata", NSLocalizedDescriptionKey,
-                                                      plistError, @"Deserializer Error",
+                                                      plistError, NSUnderlyingErrorKey,
                                                       nil]] ;
                 }
-                if (![metadata respondsToSelector:@selector(objectForKey:)]) {
+                else if (![metadata respondsToSelector:@selector(objectForKey:)]) {
                     error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
                                                 code:315641
                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:

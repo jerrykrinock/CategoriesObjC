@@ -1,6 +1,21 @@
 #import "NSDate+Components.h"
 
+static NSDateFormatter* static_standardDateFormatter = nil ;
+
 @implementation NSDate (Components)
+
++ (NSDateFormatter*)standardDateFormatter {
+    if (!static_standardDateFormatter) {
+        static_standardDateFormatter = [[NSDateFormatter alloc] init] ;
+#if 11
+#endif
+//        Get current date in the international format YYYY-MM-DD HH:MM:SS ±HHMM
+        [static_standardDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss "] ;
+    }
+    
+    return static_standardDateFormatter ;
+}
+
 
 + (NSDate*)dateWithYear:(NSInteger)year
 				  month:(NSInteger)month
@@ -9,10 +24,10 @@
 				 minute:(NSInteger)minute
 				 second:(NSInteger)second
 		 timeZoneOffset:(NSInteger)timeZoneOffset {
-	// Get current date in the international format YYYY-MM-DD HH:MM:SS ±HHMM
-	NSMutableString* dateString = [[[NSDate date] descriptionWithCalendarFormat:nil
-															   timeZone:nil
-																 locale:nil] mutableCopy] ;
+	/* There may be a better way to do this.  This method was originally
+     written a long time ago, using deprecated NSDate methods.  I just
+     replaced the deprecations with NSDateFormatter. */
+	NSMutableString* dateString = [[[self standardDateFormatter] stringFromDate:[NSDate date]] mutableCopy] ;
 	NSString* substitution ;
 
 	if (year != NSNotFound) {
@@ -59,7 +74,7 @@
 	}
 	
 	// Create from the mutated string a new date
-	NSDate* date = [NSDate dateWithString:dateString] ;
+	NSDate* date = [[self standardDateFormatter] dateFromString:dateString] ;
 	[dateString release] ;
 	
 	return date ;
@@ -137,12 +152,6 @@
 }
 
 
-
-- (NSString*)timeZoneOffsetString {
-	return [self descriptionWithCalendarFormat:@"%z"
-									  timeZone:nil
-										locale:nil] ;
-}
 
 - (NSInteger)year {
 	return [[self yearString] integerValue] ;

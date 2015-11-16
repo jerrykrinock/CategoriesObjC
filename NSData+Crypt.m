@@ -120,12 +120,14 @@ void rc4_crypt(
 - (NSData*)cryptRC4WithKeyData:(NSData*)keyData {	
 	NSInteger nKeyBytes = [keyData length] ;
 	u_char key[nKeyBytes] ;
-	[keyData getBytes:key] ;	
+	[keyData getBytes:key
+               length:nKeyBytes] ;
 	struct rc4_state state ;
 	rc4_init(&state, key, nKeyBytes) ;
 	NSInteger nPayloadBytes = [self length] ;
 	unsigned char buf[nPayloadBytes] ;
-	[self getBytes:buf] ;
+    [self getBytes:buf
+            length:nPayloadBytes] ;
 	
 	rc4_crypt(&state, buf, buf, nPayloadBytes) ;
 	return [NSData dataWithBytes:buf length:nPayloadBytes] ;

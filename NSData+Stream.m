@@ -26,7 +26,8 @@
 	NSInteger size = [self length] ;
 	if (size > 0) {
 		void* buffer = malloc(size) ;
-		[self getBytes:buffer] ;
+		[self getBytes:buffer
+                length:size] ;
 		fwrite(buffer, 1, size, stream) ;	
 		free(buffer) ;
 	}

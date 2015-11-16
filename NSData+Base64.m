@@ -22,9 +22,10 @@
 	empty property list and then decode the property list. My data is 
 	always very small, so this works for me. */
 	
-	NSData* xmlData = [NSPropertyListSerialization dataFromPropertyList:self 
-																 format: NSPropertyListXMLFormat_v1_0
-													   errorDescription: nil] ;
+	NSData* xmlData = [NSPropertyListSerialization dataWithPropertyList:self
+                                                                 format:NSPropertyListXMLFormat_v1_0
+                                                                options:0
+                                                                  error:NULL] ;
 	
 	
 	NSMutableString* xml = [[NSMutableString alloc] initWithData:xmlData encoding:NSASCIIStringEncoding] ;

@@ -171,9 +171,6 @@
 							excludePaths:(NSArray*)excludePaths
 							excludeNames:(NSArray*)excludeNames ;
 
-- (NSString*)hfsPath ;
-
-
 /*!
  @brief    Returns a unique filename in a given directory based
  on the receiver, truncated as desired, or nil if truncation is

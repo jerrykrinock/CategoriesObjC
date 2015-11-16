@@ -92,9 +92,10 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 	if(
 	   ((style & SSYDeepCopyStyleBitmaskSerializable) != 0) 
 	   &&
-	   ![NSPropertyListSerialization dataFromPropertyList:self
-												   format:NSPropertyListBinaryFormat_v1_0
-										 errorDescription:NULL]
+	   ![NSPropertyListSerialization dataWithPropertyList:self
+                                                   format:NSPropertyListBinaryFormat_v1_0
+                                                  options:0
+                                                    error:NULL]
 	   ) {
 		// Invoker specified serializable but self is not serializable.
 		// Return a description

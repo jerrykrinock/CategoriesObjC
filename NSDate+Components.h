@@ -80,12 +80,6 @@
 - (NSString*)secondString ;
 
 /*!
- @brief    Returns the time zone offset of the receiver
-as a string.
- */
-- (NSString*)timeZoneOffsetString ;
-
-/*!
  @brief    Returns the year of the receiver as an integer.
  */
 - (NSInteger)year ;

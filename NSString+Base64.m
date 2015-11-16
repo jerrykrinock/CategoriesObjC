@@ -37,10 +37,10 @@ DATE : Thu Jun 09 18:43:55 2005
 	Steven Kramer  http://www.sprintteam.nl/  */
 	
 	NSMutableData* data = [[[NSMutableData alloc] init] autorelease];
-	data = [[[NSPropertyListSerialization dataFromPropertyList: data 
-														format: NSPropertyListXMLFormat_v1_0
-											  errorDescription: nil] 
-		mutableCopy] autorelease];
+    data = [[[NSPropertyListSerialization dataWithPropertyList:data
+                                                        format:NSPropertyListXMLFormat_v1_0
+                                                       options:0
+                                                         error:NULL] mutableCopy] autorelease] ;
 	char nul = 0;
 	[data appendBytes:&nul length:1];
 	NSMutableString* plist = [NSMutableString stringWithUTF8String:(const char*)([data bytes])] ;
@@ -49,10 +49,10 @@ DATE : Thu Jun 09 18:43:55 2005
 						      options:0
 						        range: NSMakeRange (0, [plist length])];
 	//NSLog(@"plist =\n%@\n", plist) ;
-	data = [[[NSPropertyListSerialization propertyListFromData:[NSData dataWithBytes:[plist UTF8String] length: [plist length]] 
-											  mutabilityOption:NSPropertyListImmutable
-											            format:nil
-											  errorDescription:nil] mutableCopy] autorelease];
+    data = [[[NSPropertyListSerialization dataWithPropertyList:[NSData dataWithBytes:[plist UTF8String] length: [plist length]]
+                                                        format:NSPropertyListXMLFormat_v1_0
+                                                       options:NSPropertyListImmutable
+                                                         error:NULL] mutableCopy] autorelease] ;
 	//NSLog(@"data =\n%@\n", data) ;
 	return [[data retain] autorelease] ;
 }

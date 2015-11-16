@@ -362,40 +362,6 @@ end:
 	return paths ;
 }	
 
-
-// Convert a slash-delimited POSIX path to a colon-delimited HFS path.
-- (NSString*)hfsPath {
-    // Ripped from Bill Monk, http://www.cocoabuilder.com/archive/message/cocoa/2005/7/13/141777
-	// Bill thanks stone.com for the pointer to CFURLCreateWithFileSystemPath()
-	
-    CFURLRef url;
-    CFStringRef hfsPath = NULL;
-	
-    BOOL isDirectoryPath = [self hasSuffix:@"/"];
-    // Note that for the usual case of absolute paths, isDirectoryPath is
-	// completely ignored by CFURLCreateWithFileSystemPath.
-	// isDirectoryPath is only considered for relative paths.
-	// This code has not really been tested relative paths...
-	
-	url = CFURLCreateWithFileSystemPath(
-										kCFAllocatorDefault,
-										(CFStringRef)self,
-										kCFURLPOSIXPathStyle,
-										isDirectoryPath);
-    
-	if (url) {
-        // Convert URL to a colon-delimited HFS path
-        // represented as Unicode characters in an NSString.
-        hfsPath = CFURLCopyFileSystemPath(url, kCFURLHFSPathStyle) ;
-		
-        CFRelease(url);
-    }
-	
-    return [(NSString*)hfsPath autorelease] ;
-}
-
-
-
 - (NSString*)uniqueFilenameInDirectory:(NSString*)directory
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
 							 maxLength:(NSUInteger)maxLength 
