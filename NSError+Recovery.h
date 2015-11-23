@@ -79,14 +79,14 @@ extern NSString* const SSYRetryDateErrorKey ;
  
  @details  First, this method returns the receiver's -recoveryAttempter, if any.
  Second, if that is nil, and if the receiver has a -recoveryAttempterUrl, it returns
- nil if the given recoveryOption is not NSAlertThirdButtonReturn (*), and otherwise asks
+ nil if the given recoveryOption is not NSAlertSecondButtonReturn (*), and otherwise asks
  the shared document controller to open the document specified by the
  recoveryAttempterUrl and returns whatever results (which may be nil).
  Third, if the receiver's -recoveryAttempterUrl is nil, and if the receiver's
  -userInfo has a value for SSYRecoveryAttempterIsAppDelegateErrorKey whose
  -boolValue is YES, it returns -[NSApp delegate].
  
- (*) The recoveryOption value of NSAlertThirdButtonReturn is assumed to mean "Cancel".
+ (*) The recoveryOption value of NSAlertSecondButtonReturn is assumed to mean "Cancel".
  Now, I don't like the idea of peeking into the recoveryOption in this
  method.  It kind of breaks encapsulation.  But otherwise we'd open
  a document just to have it tell us that the recovery was cancelled,

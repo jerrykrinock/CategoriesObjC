@@ -53,8 +53,8 @@ NSString* const SSYRetryDateErrorKey = @"RetryDate" ;
 		NSURL* recoveryAttempterUrl = [[self userInfo] objectForKey:SSYRecoveryAttempterUrlErrorKey] ;
 		if (recoveryAttempterUrl) {
 			
-			// recoveryOption NSAlertThirdButtonReturn is assumed to mean "Cancel".
-			if (recoveryOption == NSAlertThirdButtonReturn) {
+			// recoveryOption NSAlertSecondButtonReturn is assumed to mean "Cancel".
+			if (recoveryOption == NSAlertSecondButtonReturn) {
 				return nil ;
 			}
 			

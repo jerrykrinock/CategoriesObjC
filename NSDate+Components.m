@@ -7,9 +7,7 @@ static NSDateFormatter* static_standardDateFormatter = nil ;
 + (NSDateFormatter*)standardDateFormatter {
     if (!static_standardDateFormatter) {
         static_standardDateFormatter = [[NSDateFormatter alloc] init] ;
-#if 11
-#endif
-//        Get current date in the international format YYYY-MM-DD HH:MM:SS ±HHMM
+//      Get current date in the international format YYYY-MM-DD HH:MM:SS ±HHMM
         [static_standardDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss "] ;
     }
     
