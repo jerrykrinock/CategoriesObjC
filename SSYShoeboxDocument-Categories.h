@@ -1,5 +1,10 @@
 #import "BkmxDoc.h"
 
+
+/*!
+ @details  This function could also be implemented more directly as a menu
+ delegate.  See SSYFileMenuPruner.
+ */
 @interface NSMenu (SSYShoeboxDocument)
 
 /*
