@@ -133,6 +133,15 @@ extern NSInteger gNSStringGeometricsTypesetterBehavior ;
 - (float)heightForWidth:(float)width ;
 - (float)widthForHeight:(float)height ;
 
+/*!
+ @brief    Returns a replica of the receiver which will fit into a given width,
+ truncating characters from the end and replacing with an ellipsis if necessary
+ @details  If no truncation is necessary, or if the receiver has less than two
+ characters, returns the receiver (self).
+ */
+- (NSAttributedString*)attributedStringTruncatedToWidth:(float)width
+                                                 height:(float)height ;
+
 @end
 
 @interface NSString (Geometrics)

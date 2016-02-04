@@ -65,6 +65,27 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 					   height:height].width ;
 }
 
+- (NSAttributedString*)attributedStringTruncatedToWidth:(float)width
+                                                 height:(float)height {
+    NSAttributedString* answer = self ;
+    if ([self length] > 2) {
+        if (([self widthForHeight:height] > width) || ([self heightForWidth:width] > height)) {
+            NSMutableAttributedString* attributedString = [[self mutableCopy] autorelease] ;
+            [attributedString replaceCharactersInRange:NSMakeRange([attributedString length] - 1, 1)
+                                            withString:@"…"] ;
+            
+            while (([attributedString widthForHeight:height] > width) || ([attributedString heightForWidth:width] > height)) {
+                [attributedString replaceCharactersInRange:NSMakeRange([attributedString length] - 2, 2)
+                                                withString:@"…"] ;
+            }
+            
+            answer = [[attributedString copy] autorelease] ;
+        }
+    }
+
+    return answer ;
+}
+
 @end
 
 
