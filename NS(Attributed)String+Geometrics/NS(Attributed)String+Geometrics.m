@@ -74,7 +74,11 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
             [attributedString replaceCharactersInRange:NSMakeRange([attributedString length] - 1, 1)
                                             withString:@"…"] ;
             
-            while (([attributedString widthForHeight:height] > width) || ([attributedString heightForWidth:width] > height)) {
+            while (
+                   (([attributedString widthForHeight:height] > width) || ([attributedString heightForWidth:width] > height))
+                   &&
+                   ([attributedString length] > 1)
+                   ) {
                 [attributedString replaceCharactersInRange:NSMakeRange([attributedString length] - 2, 2)
                                                 withString:@"…"] ;
             }
