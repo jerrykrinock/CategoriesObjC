@@ -75,19 +75,19 @@
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
  class = [Extore class] ;
- selector = @selector(installOwnerAddonError_p:) ;
+ selector = @selector(installOwnerExtensionError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
  class = [ExtoreChromy class] ;
- selector = @selector(installOwnerAddonError_p:) ;
+ selector = @selector(installOwnerExtensionError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
  class = [ExtoreFirefox class] ;
- selector = @selector(installOwnerAddonError_p:) ;
+ selector = @selector(installOwnerExtensionError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
  class = [ExtoreSafari class] ;
- selector = @selector(installOwnerAddonError_p:) ;
+ selector = @selector(installOwnerExtensionError_p:) ;
  NSLog(@"%@ has%@ overridden %@", NSStringFromClass(class), [class hasOverridden:selector] ? @"" : @" not", NSStringFromSelector(selector)) ;
  
  class = [ExtoreSafari class] ;
