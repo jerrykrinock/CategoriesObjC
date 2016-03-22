@@ -6,12 +6,6 @@
 #import "NSBundle+HelperPaths.h"
 #import "NSKeyedUnarchiver+CatchExceptions.h"
 #import "NSBundle+MainApp.h"
-#import "objc/runtime.h"
-
-//#import "DebugGuy.h"
-//extern id debugGuyObject ;
-
-
 
 __attribute__((visibility("default"))) NSString* const NSDataFileAliasDataKey = @"aliasRecord" ;
 __attribute__((visibility("default"))) NSString* const NSDataFileAliasPathKey = @"path" ;
