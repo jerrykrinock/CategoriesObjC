@@ -321,8 +321,13 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
                                          dispatch_semaphore_signal(sem) ;
                                      }] ;
              }) ;
+        dispatch_async(aSerialQueue, ^{
+            dispatch_release(aSerialQueue) ;
+        }) ;
+        
         // Wait here in case error is set by completionHandler block
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER) ;
+        dispatch_release(sem) ;
 	}
 	
     NSError* error = [kludge firstObject] ;
