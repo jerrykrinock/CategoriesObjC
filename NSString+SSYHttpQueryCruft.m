@@ -1,4 +1,4 @@
-#import "NSString+SSYRemoveHttpQueryCruft.h"
+#import "NSString+SSYHttpQueryCruft.h"
 #import "Stark.h"
 
 @implementation QueryCruftSpec
