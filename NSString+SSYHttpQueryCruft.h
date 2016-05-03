@@ -43,8 +43,10 @@
  
  If the receiver does not parse as a URL string, returns the receiver.
  
- If one of the given query cruft objects is an unparseable regular expression,
- returns nil.  This should be considered to be an error. 
+ If the receiver parses as a URL string, and has a query string, but one of the
+ given query cruft objects is an unparseable regular expression, returns nil.
+ This should be considered to be an error.  In this case, if error_p is not
+ NULL, it will point to an error.
  */
 - (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <QueryCruftSpec*> *)cruftSpecs
                                         error_p:(NSError**)error_p ;

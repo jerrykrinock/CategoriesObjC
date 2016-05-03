@@ -4,10 +4,12 @@
 @implementation QueryCruftSpec
 
 - (void)dealloc {
+#if !__has_feature(objc_arc)
     [_domain release] ;
     [_key release] ;
     
     [super dealloc] ;
+#endif
 }
 
 @end
@@ -49,7 +51,7 @@
                                      intoString:&key] ;
 
                         /* In case the key has percent escapes in it? */
-                        key = [key stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] ;
+                        key = [key stringByRemovingPercentEncoding] ;
                         
                         BOOL removeThisPair = NO ;
                         if (cruftSpec.keyIsRegex) {
@@ -60,7 +62,9 @@
                             removeThisPair = ([regex numberOfMatchesInString:key
                                                                      options:0
                                                                        range:NSMakeRange(0, key.length)] > 0) ;
+#if !__has_feature(objc_arc)
                             [regex release] ;
+#endif                        
                         }
                         else {
                             if ([key isEqualToString:cruftSpec.key]) {
@@ -89,8 +93,9 @@
                         
                     }
                     
+#if !__has_feature(objc_arc)
                     [scanner release] ;
-                    
+#endif
                     if (rangesToRemove.count > 0) {
                         NSMutableString* decruftedQueryString = [queryString mutableCopy] ;
                         /* Must start from the *end* to avoid shifting ranges which
@@ -127,13 +132,16 @@
                         
                         answer = [decruftedUrlString copy] ;
                         
+#if !__has_feature(objc_arc)
                         [decruftedUrlString release] ;
                         [decruftedQueryString release] ;
                         [answer autorelease] ;
+#endif
                     }
                     
+#if !__has_feature(objc_arc)
                     [rangesToRemove release] ;
-                    
+#endif
                     if (error) {
                         break ;
                     }
@@ -142,7 +150,10 @@
         }
     }
     
+#if !__has_feature(objc_arc)
     [url release] ;
+#endif
+    
     if (error && error_p) {
         *error_p = error ;
         answer = nil ;
