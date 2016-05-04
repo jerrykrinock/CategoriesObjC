@@ -4,65 +4,11 @@
 NSString* constKeyCruftDeskription = @"deskription" ;
 NSString* constKeyCruftDomain = @"domain" ;
 NSString* constKeyCruftKey = @"key" ;
-NSString* constKeyCruftIsKeyRegex = @"isKeyRegex" ;
-
-@implementation QueryCruftSpec
-
-- (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:_deskription
-                   forKey:constKeyCruftDeskription] ;
-    [encoder encodeObject:_domain
-                   forKey:constKeyCruftDomain] ;
-    [encoder encodeObject:_key
-                   forKey:constKeyCruftKey] ;
-    [encoder encodeBool:_keyIsRegex
-                 forKey:constKeyCruftIsKeyRegex] ;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-    self = [super init] ;
-    
-    if (self) {
-        _deskription = [decoder decodeObjectForKey:constKeyCruftDeskription] ;
-        _domain = [decoder decodeObjectForKey:constKeyCruftDomain] ;
-        _key = [decoder decodeObjectForKey:constKeyCruftKey] ;
-        _keyIsRegex = [decoder decodeBoolForKey:constKeyCruftIsKeyRegex] ;
-#if !__has_feature(objc_arc)
-        [_deskription retain] ;
-        [_domain retain] ;
-        [_key retain] ;
-#endif
-    }
-    
-    return self ;
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    QueryCruftSpec* copy = [[QueryCruftSpec allocWithZone: zone] init] ;
-    copy.deskription = self.deskription ;
-    copy.domain = self.domain ;
-    copy.key = self.key ;
-    copy.keyIsRegex = self.keyIsRegex ;
-    
-    return copy ;
-}
-
-- (void)dealloc {
-#if !__has_feature(objc_arc)
-    [_deskription release] ;
-    [_domain release] ;
-    [_key release] ;
-    
-    [super dealloc] ;
-#endif
-}
-
-@end
-
+NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
 
 @implementation NSString (SSYRemoveHttpQueryCruft)
 
-- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <QueryCruftSpec*> *)cruftSpecs
+- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
                                         error_p:(NSError**)error_p {
     /* Most URLs use '&' to delimit queries, but ';' is also supported. */
     NSCharacterSet* queryDelimiters = [NSCharacterSet characterSetWithCharactersInString:@"&;"] ;
@@ -79,8 +25,9 @@ NSString* constKeyCruftIsKeyRegex = @"isKeyRegex" ;
         if (rangeOfQuery.location != NSNotFound) {
             NSString* host = url.host ;
             
-            for (QueryCruftSpec* cruftSpec in cruftSpecs) {
-                BOOL hostMatch = ((cruftSpec.domain == nil) || [host hasSuffix:cruftSpec.domain]) ;
+            for (NSDictionary* cruftSpec in cruftSpecs) {
+                NSString* specDomain = [cruftSpec objectForKey:constKeyCruftDomain] ;
+                BOOL hostMatch = ((specDomain == nil) || [host hasSuffix:specDomain]) ;
                 if (hostMatch) {
                     NSString* queryString = url.query ;
                     /* We use a scanner here.  I considered using
@@ -100,8 +47,14 @@ NSString* constKeyCruftIsKeyRegex = @"isKeyRegex" ;
                         key = [key stringByRemovingPercentEncoding] ;
                         
                         BOOL removeThisPair = NO ;
-                        if (cruftSpec.keyIsRegex) {
-                            NSRegularExpression* regex = [[NSRegularExpression alloc] initWithPattern:cruftSpec.key
+                        NSNumber* keyIsRegexNumber = [cruftSpec objectForKey:constKeyCruftKeyIsRegex] ;
+                        BOOL keyIsRegex = NO ;
+                        if ([keyIsRegexNumber respondsToSelector:@selector(boolValue)]) {
+                            keyIsRegex = keyIsRegexNumber.boolValue ;
+                        }
+                        NSString* specKey = [cruftSpec objectForKey:constKeyCruftKey] ;
+                        if (keyIsRegex) {
+                            NSRegularExpression* regex = [[NSRegularExpression alloc] initWithPattern:specKey
                                                                                               options:0
                                                                                                 error:&error] ;
                             
@@ -113,7 +66,7 @@ NSString* constKeyCruftIsKeyRegex = @"isKeyRegex" ;
 #endif                        
                         }
                         else {
-                            if ([key isEqualToString:cruftSpec.key]) {
+                            if ([key isEqualToString:specKey]) {
                                 removeThisPair = YES ;
                             }
                         }

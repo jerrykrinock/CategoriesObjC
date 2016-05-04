@@ -1,14 +1,9 @@
 #import <Foundation/Foundation.h>
 
-@interface QueryCruftSpec : NSObject <NSCoding, NSCopying>
-
-@property (copy) NSString* deskription ;
-@property (copy) NSString* domain ;
-@property (copy) NSString* key ;
-@property (assign) BOOL keyIsRegex ;
-
-@end
-
+extern NSString* constKeyCruftDeskription ;
+extern NSString* constKeyCruftDomain ;
+extern NSString* constKeyCruftKey ;
+extern NSString* constKeyCruftKeyIsRegex ;
 
 /*!
  @brief    Category on NSString which contains a method for surgically 
@@ -54,7 +49,7 @@
  This should be considered to be an error.  In this case, if error_p is not
  NULL, it will point to an error.
  */
-- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <QueryCruftSpec*> *)cruftSpecs
+- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
                                         error_p:(NSError**)error_p ;
 
 @end
