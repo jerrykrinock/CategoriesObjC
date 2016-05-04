@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@interface QueryCruftSpec : NSObject
+@interface QueryCruftSpec : NSObject <NSCoding, NSCopying>
 
+@property (copy) NSString* deskription ;
 @property (copy) NSString* domain ;
 @property (copy) NSString* key ;
 @property (assign) BOOL keyIsRegex ;
@@ -10,8 +11,13 @@
 
 
 /*!
- I also considered doing this by operating on the whole URL with regular
- expressions.  That way, I could use the existing Find/Replace feature.
+ @brief    Category on NSString which contains a method for surgically 
+ removing selected query key/value pairs (deemed to be "cruft")
+ 
+ @details  As an alternative to creating this category, I also considered
+ doing this by operating on the whole URL with regular expressions.  That way,
+ I could use the existing Find/Replace feature.
+
  For example, to remove Google's Urchin Traffic Monitor key/value pairs,
  I tried this Find pattern:
  (.+)([\?\&]utm_(reader|source|medium|term|campaign|content)=[^&#]+)(.*),
