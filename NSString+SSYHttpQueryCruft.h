@@ -32,25 +32,47 @@ extern NSString* constKeyCruftKeyIsRegex ;
 @interface NSString (SSYRemoveHttpQueryCruft)
 
 /*!
- @brief    Returns a replica of the receiver, omitting from the query part of
- the receiver any key/value pairs which match one or more of given 
- QueryCruftSpec objects
+ @brief    Returns an array of strings created by NSRangeFromString(), each of
+ which represents the range of a query key/value pair in the receiver that
+ matches one or more of given QueryCruftSpec objects
  
- @details  We don't return the error from NSRegularExpression because it's not
- very informative.  It only says that the pattern could not be parsed. 
+ @details  If one of the returned ranges represents the first key/value pair in 
+ the receiver, this range does *not* include the preceding '?' delimiter.
+ Otherwise, it *does* include the preceding '&' or ';' delimiter.
  
- @result   If no key/value pairs matched any of the given query cruft specs
- (implying that the receiver does not contain any cruft), returns the receiver.
+ @param    error_p  Pointer which will, upon return, if the receiver parses as
+ a URL string, and has a query string, and one of the given query cruft objects
+ is an unparseable regular expression and error_p is not NULL, point to an
+ NSError indicating the failure to parse.
+
+ @result   Returns nil if any of the following three occurs:
  
- If the receiver does not parse as a URL string, returns the receiver.
+ • No key/value pairs matched any of the given query cruft specs
+ (implying that the receiver does not contain any cruft).
  
- If the receiver parses as a URL string, and has a query string, but one of the
- given query cruft objects is an unparseable regular expression, returns nil.
- This should be considered to be an error.  In this case, if error_p is not
- NULL, it will point to an error.
+ • The receiver does not parse as a URL string.
+ 
+ • An error (which will be returned in error_p) occurs.
  */
-- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
-                                        error_p:(NSError**)error_p ;
+
+- (NSArray <NSString*> *)rangesOfQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
+                                         error_p:(NSError**)error_p ;
+
+
+/*!
+ @brief    Presuming that the receiver is a URL string, and given a set of
+ strings which can be converted to ranges with NSRangeFromString(), and
+ presuming that each of these ranges represents the range of a key/value
+ pair in the receiver, including the preceding '&' or ';' delimiter for
+ non-first key/value pairs but not including the '?' delimiter in the case
+ of a first key/value pair, removes the indicated key/value pairs and adjusts
+ any associated delimiters '?', '&' or ';' required to make the modified
+ string a valid URL string again, and returns the result
+ 
+ @details  If all key/value pairs are removed, the '?' delimiter is removed.
+ If no key/value pairs are removed, returns the receiver itself.
+*/
+- (NSString*)urlStringByRemovingCruftyQueryPairsInRanges:(NSArray <NSString*> *)ranges ;
 
 @end
 

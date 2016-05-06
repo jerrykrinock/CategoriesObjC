@@ -8,20 +8,24 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
 
 @implementation NSString (SSYRemoveHttpQueryCruft)
 
-- (NSString*)urlStringByRemovingQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
-                                        error_p:(NSError**)error_p {
++ (NSCharacterSet*)ssyQueryDelimiters {
+    return  [NSCharacterSet characterSetWithCharactersInString:@"&;"] ;
+}
+
+- (NSArray <NSString*> *)rangesOfQueryCruftSpecs:(NSArray <NSDictionary*> *)cruftSpecs
+                                         error_p:(NSError**)error_p {
     /* Most URLs use '&' to delimit queries, but ';' is also supported. */
-    NSCharacterSet* queryDelimiters = [NSCharacterSet characterSetWithCharactersInString:@"&;"] ;
     NSError* error = nil ;
-    NSString* answer = self ;
+    NSArray* answer = nil ;
     
     NSURL* url = [[NSURL alloc] initWithString:self] ;
+    NSString* queryString = url.query ;
     /* Only proceed if this stark (a) has a non-nil url string and (b) the
      it contains the query string decoded by -[NSURL queryString]  I think
      that this may not be the case for some edge-case URLs.  Just skip any
      such URLs. */
-    if (url.query) {
-        NSRange rangeOfQuery = [self rangeOfString:url.query] ;
+    if (queryString) {
+        NSRange rangeOfQuery = [self rangeOfString:queryString] ;
         if (rangeOfQuery.location != NSNotFound) {
             NSString* host = url.host ;
             
@@ -29,7 +33,6 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                 NSString* specDomain = [cruftSpec objectForKey:constKeyCruftDomain] ;
                 BOOL hostMatch = ((specDomain == nil) || [host hasSuffix:specDomain]) ;
                 if (hostMatch) {
-                    NSString* queryString = url.query ;
                     /* We use a scanner here.  I considered using
                      -[NSString componentsSeparatedByString:@"="], but I think
                      that maybe '=' is a legal character in some values, Base 64
@@ -37,7 +40,7 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                      in a key and never a value when scanning for '='. */
                     NSScanner* scanner = [[NSScanner alloc] initWithString:queryString] ;
                     NSString* key ;
-                    NSMutableArray* rangesToRemove = [NSMutableArray new] ;
+                    NSMutableArray* cruftRanges = [NSMutableArray new] ;
                     while (![scanner isAtEnd] && !error) {
                         NSInteger startOfThisPair = [scanner scanLocation] ;
                         [scanner scanUpToString:@"="
@@ -46,7 +49,7 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                         /* In case the key has percent escapes in it? */
                         key = [key stringByRemovingPercentEncoding] ;
                         
-                        BOOL removeThisPair = NO ;
+                        BOOL thisPairIsCruft = NO ;
                         NSNumber* keyIsRegexNumber = [cruftSpec objectForKey:constKeyCruftKeyIsRegex] ;
                         BOOL keyIsRegex = NO ;
                         if ([keyIsRegexNumber respondsToSelector:@selector(boolValue)]) {
@@ -58,88 +61,49 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                                                                                               options:0
                                                                                                 error:&error] ;
                             
-                            removeThisPair = ([regex numberOfMatchesInString:key
-                                                                     options:0
-                                                                       range:NSMakeRange(0, key.length)] > 0) ;
+                            thisPairIsCruft = ([regex numberOfMatchesInString:key
+                                                                      options:0
+                                                                        range:NSMakeRange(0, key.length)] > 0) ;
 #if !__has_feature(objc_arc)
                             [regex release] ;
 #endif                        
                         }
                         else {
                             if ([key isEqualToString:specKey]) {
-                                removeThisPair = YES ;
+                                thisPairIsCruft = YES ;
                             }
                         }
 
                         if (!error) {
-                            [scanner scanUpToCharactersFromSet:queryDelimiters
+                            [scanner scanUpToCharactersFromSet:[[self class] ssyQueryDelimiters]
                                                     intoString:NULL] ;
                             
-                            if (removeThisPair) {
+                            if (thisPairIsCruft) {
                                 if (startOfThisPair > 0) {
                                     /* Delete the delimiter ('&' or ';')
                                      preceding the key also. */
                                     startOfThisPair-- ;
                                 }
                                 NSInteger length = scanner.scanLocation - startOfThisPair ;
-                                NSString* rangeString = NSStringFromRange(NSMakeRange(startOfThisPair, length)) ;
-                                [rangesToRemove addObject:rangeString] ;
+                                NSRange rangeOfThisPair = NSMakeRange(rangeOfQuery.location + startOfThisPair, length) ;
+                                NSString* rangeString = NSStringFromRange(rangeOfThisPair) ;
+                                [cruftRanges addObject:rangeString] ;
                             }
                             
-                            [scanner scanCharactersFromSet:queryDelimiters
+                            [scanner scanCharactersFromSet:[[self class] ssyQueryDelimiters]
                                                 intoString:NULL] ;
                         }
                         
                     }
                     
-#if !__has_feature(objc_arc)
-                    [scanner release] ;
-#endif
-                    if (rangesToRemove.count > 0) {
-                        NSMutableString* decruftedQueryString = [queryString mutableCopy] ;
-                        /* Must start from the *end* to avoid shifting ranges which
-                         have yet to be removed. */
-                        for (NSString* rangeString in [rangesToRemove reverseObjectEnumerator]) {
-                            NSRange range = NSRangeFromString(rangeString) ;
-                            [decruftedQueryString deleteCharactersInRange:range] ;
-                        }
-                        
-                        if ([queryDelimiters characterIsMember:[decruftedQueryString characterAtIndex:0]]) {
-                            /* A key/value pair has been moved from a later
-                             position to the first position, due to the removal
-                             of the former first key/value pair.  It should
-                             no longer begin with a delimiter. */
-                            [decruftedQueryString deleteCharactersInRange:NSMakeRange(0,1)] ;
-                        }
-                        
-                        NSMutableString* decruftedUrlString = [self mutableCopy] ;
-                        [decruftedUrlString replaceCharactersInRange:rangeOfQuery
-                                                          withString:decruftedQueryString] ;
-                        
-                        if (decruftedQueryString.length == 0) {
-                            /* Query has been entirely removed.  Remove the
-                             question mark character too. */
-                            NSInteger locationOfQuestionMark = (decruftedUrlString.length - 1) ;
-                            if ([decruftedUrlString characterAtIndex:locationOfQuestionMark] == '?') {
-                                [decruftedUrlString replaceCharactersInRange:NSMakeRange(locationOfQuestionMark,1)
-                                                                  withString:@""] ;
-                            }
-                            else {
-                                NSAssert1(NO, @"Internal Error 252-4598", self) ;
-                            }
-                        }
-                        
-                        answer = [decruftedUrlString copy] ;
-                        
-#if !__has_feature(objc_arc)
-                        [decruftedUrlString release] ;
-                        [decruftedQueryString release] ;
-                        [answer autorelease] ;
-#endif
+                    if (cruftRanges.count > 0) {
+                        answer = [cruftRanges copy] ;
                     }
                     
 #if !__has_feature(objc_arc)
-                    [rangesToRemove release] ;
+                    [cruftRanges release] ;
+                    [scanner release] ;
+                    [answer autorelease] ;
 #endif
                     if (error) {
                         break ;
@@ -159,6 +123,69 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
     }
 
 
+    return answer ;
+}
+
+
+- (NSString*)urlStringByRemovingCruftyQueryPairsInRanges:(NSArray <NSString*> *)ranges {
+    NSString* answer ;
+    if ((ranges.count > 0) && (self.length > 2)) {
+        NSMutableString* decruftedSelf = [self mutableCopy] ;
+
+        /* Must start from the *end* to avoid shifting ranges which
+         have yet to be removed. */
+        NSRange range = NSMakeRange(NSNotFound, 0) ;
+        for (NSString* rangeString in [ranges reverseObjectEnumerator]) {
+            range = NSRangeFromString(rangeString) ;
+            [decruftedSelf deleteCharactersInRange:range] ;
+        }
+        
+        /* At this point, range.location indicates the first character where a
+         crufty key/value pair was removed from. */
+        
+        BOOL shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = NO ;
+        if ([decruftedSelf characterAtIndex:(range.location - 1)] == '?') {
+            /* We have a '?' indicating the start of a query string */
+            
+            /* Tweak #1: If the query has been entirely removed, remove the '?'
+             which delimits its beginning. */
+
+            if (range.location >= decruftedSelf.length) {
+                /* We have an empty query (at the end, no fragment). */
+                shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = YES ;
+            }
+            else if ([decruftedSelf characterAtIndex:range.location] == '#') {
+                /* We have an empty query (followed by a fragment). */
+                shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = YES ;
+            }
+
+            if (shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery) {
+                NSRange questionMarkRange = NSMakeRange((range.location - 1), 1) ;
+                [decruftedSelf replaceCharactersInRange:questionMarkRange
+                                             withString:@""] ;
+            }
+            else {
+                /* Tweak #2:  If the first key/value pair (which does not begin with
+                 a '&' or ';') has been removed and its place taken by any other
+                 key/value pair (which does begin with a '&' or ';'), then remove
+                 the '&' or ';'. */
+                
+                if ([[[self class] ssyQueryDelimiters] characterIsMember:[decruftedSelf characterAtIndex:range.location]]) {
+                    [decruftedSelf deleteCharactersInRange:NSMakeRange(range.location,1)] ;
+                }
+            }
+        }
+        
+        answer = [decruftedSelf copy] ;
+#if !__has_feature(objc_arc)
+        [decruftedSelf release] ;
+        [answer autorelease] ;
+#endif
+    }
+    else {
+        answer = self ;
+    }
+    
     return answer ;
 }
 
