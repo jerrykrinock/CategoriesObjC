@@ -99,6 +99,9 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                     if (cruftRanges.count > 0) {
                         answer = [cruftRanges copy] ;
                     }
+                    else {
+                        answer = nil ;
+                    }
                     
 #if !__has_feature(objc_arc)
                     [cruftRanges release] ;
