@@ -32,13 +32,10 @@ extern NSString* constKeyCruftKeyIsRegex ;
 @interface NSString (SSYRemoveHttpQueryCruft)
 
 /*!
- @brief    Returns an array of strings created by NSRangeFromString(), each of
+ @brief    Returns an array of ranges created by NSRangeFromString(), each of
  which represents the range of a query key/value pair in the receiver that
- matches one or more of given QueryCruftSpec objects
- 
- @details  If one of the returned ranges represents the first key/value pair in 
- the receiver, this range does *not* include the preceding '?' delimiter.
- Otherwise, it *does* include the preceding '&' or ';' delimiter.
+ matches one or more of given QueryCruftSpec objects, omitting the delimiter
+ characters '?', '&' and ';'
  
  @param    error_p  Pointer which will, upon return, if the receiver parses as
  a URL string, and has a query string, and one of the given query cruft objects
@@ -63,11 +60,10 @@ extern NSString* constKeyCruftKeyIsRegex ;
  @brief    Presuming that the receiver is a URL string, and given a set of
  strings which can be converted to ranges with NSRangeFromString(), and
  presuming that each of these ranges represents the range of a key/value
- pair in the receiver, including the preceding '&' or ';' delimiter for
- non-first key/value pairs but not including the '?' delimiter in the case
- of a first key/value pair, removes the indicated key/value pairs and adjusts
- any associated delimiters '?', '&' or ';' required to make the modified
- string a valid URL string again, and returns the result
+ pair in the receiver, not including the preceding '?', '&' or ';' delimiter,
+ removes the indicated key/value pairs and any associated '?', '&' or ';'
+ delimiters  required so that the result is a valid URL string again, and
+ returns this result
  
  @details  If all key/value pairs are removed, the '?' delimiter is removed.
  If no key/value pairs are removed, returns the receiver itself.

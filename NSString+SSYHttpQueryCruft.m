@@ -79,11 +79,6 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                                                     intoString:NULL] ;
                             
                             if (thisPairIsCruft) {
-                                if (startOfThisPair > 0) {
-                                    /* Delete the delimiter ('&' or ';')
-                                     preceding the key also. */
-                                    startOfThisPair-- ;
-                                }
                                 NSInteger length = scanner.scanLocation - startOfThisPair ;
                                 NSRange rangeOfThisPair = NSMakeRange(rangeOfQuery.location + startOfThisPair, length) ;
                                 NSString* rangeString = NSStringFromRange(rangeOfThisPair) ;
@@ -132,11 +127,14 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
 
 - (NSString*)urlStringByRemovingCruftyQueryPairsInRanges:(NSArray <NSString*> *)ranges {
     NSString* answer ;
+
     if ((ranges.count > 0) && (self.length > 2)) {
         NSMutableString* decruftedSelf = [self mutableCopy] ;
 
-        /* Must start from the *end* to avoid shifting ranges which
-         have yet to be removed. */
+        /* Firstly, we remove the key/value pairs themselvew.  We start from the
+         *end* to avoid shifting ranges which have yet to be removed. */
+
+        NSInteger beginningOfLastRemovedPair = NSRangeFromString(ranges.lastObject).location ;
         NSRange range = NSMakeRange(NSNotFound, 0) ;
         for (NSString* rangeString in [ranges reverseObjectEnumerator]) {
             range = NSRangeFromString(rangeString) ;
@@ -146,39 +144,84 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
         /* At this point, range.location indicates the first character where a
          crufty key/value pair was removed from. */
         
-        BOOL shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = NO ;
-        if ([decruftedSelf characterAtIndex:(range.location - 1)] == '?') {
-            /* We have a '?' indicating the start of a query string */
-            
-            /* Tweak #1: If the query has been entirely removed, remove the '?'
-             which delimits its beginning. */
+        /* Secondly, we remove delimiters which were orphaned by their
+         adjacent key/value pairs having been removed. */
 
-            if (range.location >= decruftedSelf.length) {
-                /* We have an empty query (at the end, no fragment). */
-                shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = YES ;
-            }
-            else if ([decruftedSelf characterAtIndex:range.location] == '#') {
-                /* We have an empty query (followed by a fragment). */
-                shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery = YES ;
-            }
+        NSScanner* scanner = [[NSScanner alloc] initWithString:decruftedSelf] ;
+        NSMutableIndexSet* indexesOfOrphanedDelimiters = [[NSMutableIndexSet alloc] init] ;
+        /* Fast-forward up to the beginning of the query, but back by 1 because
+         the first delimiter would be 1 character before the beginning of the
+         first key/value pair. */
+        [scanner setScanLocation:(range.location - 1)] ;
+        while (YES) {
+            /* Scan up to the next delimiter */
+            [scanner scanUpToCharactersFromSet:[[self class] ssyQueryDelimiters]
+                                    intoString:NULL] ;
+            NSInteger location1 = scanner.scanLocation ;
+            BOOL isStartOfQuery = [decruftedSelf characterAtIndex:(location1 - 1)] == '?' ;
+            /* Scan up to the next non-delimiter */
+            [scanner scanUpToCharactersFromSet:[[[self class] ssyQueryDelimiters] invertedSet]
+                                    intoString:NULL] ;
+            NSInteger location2 = scanner.scanLocation ;
 
-            if (shouldRemoveOrphanedQuestionMarkBecauseNoMoreQuery) {
-                NSRange questionMarkRange = NSMakeRange((range.location - 1), 1) ;
-                [decruftedSelf replaceCharactersInRange:questionMarkRange
-                                             withString:@""] ;
+            /* The difference between location2 and location1 is the number of
+             consecutive delimiter characters. */
+            NSInteger properCountOfConsecutiveDelimiters ;
+            if (isStartOfQuery) {
+                properCountOfConsecutiveDelimiters = 0 ;
+            }
+            else if ([scanner isAtEnd]) {
+                /* We are at the end of the query, and there is no fragment. */
+                properCountOfConsecutiveDelimiters = 0 ;
+            }
+            else if ([decruftedSelf characterAtIndex:scanner.scanLocation] == '#') {
+                /* We are at the end of the query, before the fragment. */
+                properCountOfConsecutiveDelimiters = 0 ;
             }
             else {
-                /* Tweak #2:  If the first key/value pair (which does not begin with
-                 a '&' or ';') has been removed and its place taken by any other
-                 key/value pair (which does begin with a '&' or ';'), then remove
-                 the '&' or ';'. */
-                
-                if ([[[self class] ssyQueryDelimiters] characterIsMember:[decruftedSelf characterAtIndex:range.location]]) {
-                    [decruftedSelf deleteCharactersInRange:NSMakeRange(range.location,1)] ;
-                }
+                /* We are between two key/value pairs. */
+                properCountOfConsecutiveDelimiters = 1 ;
+            }
+
+            /* Remember the indexes of orphaned delimiters. */
+            while (location2 - location1 > properCountOfConsecutiveDelimiters) {
+                [indexesOfOrphanedDelimiters addIndex:(location2-1)] ;
+                location2-- ;
+            }
+            
+            if (scanner.isAtEnd) {
+                break ;
+            }
+
+            /* Also break when we get to the end of the query (so we
+             don't go into the # fragment portion. */
+            if (scanner.scanLocation > beginningOfLastRemovedPair) {
+                break ;
             }
         }
         
+        /* Actually remove the orphaned delimiters. */
+        NSInteger i = [indexesOfOrphanedDelimiters lastIndex] ;
+        while ((i != NSNotFound)) {
+            [decruftedSelf deleteCharactersInRange:NSMakeRange(i,1)] ;
+            i = [indexesOfOrphanedDelimiters indexLessThanIndex:i] ;
+        }
+
+        /* Thirdly, if all key/value pairs have been removed, we must remove
+         the '?'.  We consider for two possibilities, without a fragment and
+         with a fragment. */
+        if ([decruftedSelf hasSuffix:@"?"]) {
+            [decruftedSelf deleteCharactersInRange:NSMakeRange(decruftedSelf.length - 1, 1)] ;
+        }
+        [decruftedSelf replaceOccurrencesOfString:@"?#"
+                                       withString:@"#"
+                                          options:0
+                                            range:NSMakeRange(0, decruftedSelf.length)] ;
+        
+#if !__has_feature(objc_arc)
+        [scanner release] ;
+        [indexesOfOrphanedDelimiters release] ;
+#endif
         answer = [decruftedSelf copy] ;
 #if !__has_feature(objc_arc)
         [decruftedSelf release] ;

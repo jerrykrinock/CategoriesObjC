@@ -32,8 +32,6 @@
     
     NSString* decruftedUrlString = [urlString urlStringByRemovingCruftyQueryPairsInRanges:ranges] ;
     XCTAssertEqualObjects(decruftedUrlString, expectedUrlString) ;
-    /*SSYDBL*/ NSLog(@"Exp: %@", expectedUrlString) ;
-    /*SSYDBL*/ NSLog(@"Got: %@", decruftedUrlString) ;
 
 }
 
@@ -66,8 +64,8 @@
     
     /* Remove a non-regex pair in middle of query */
     urlIn = @"http://facebook.com/pages?hello=world;fref=DELETEME&foo=bar" ;
-    urlEx = @"http://facebook.com/pages?hello=world&foo=bar" ;
-    ranges = @[@"{37, 14}"] ;
+    urlEx = @"http://facebook.com/pages?hello=world;foo=bar" ;
+    ranges = @[@"{38, 13}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                            urlString:urlIn
                         expectedRanges:ranges
@@ -87,7 +85,7 @@
     /* Remove a non-regex pair at end of query */
     urlIn = @"http://facebook.com/pages?hello=world;foo=bar&fref=DELETEME" ;
     urlEx = @"http://facebook.com/pages?hello=world;foo=bar" ;
-    ranges = @[@"{45, 14}"] ;
+    ranges = @[@"{46, 13}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                            urlString:urlIn
                         expectedRanges:ranges
@@ -97,7 +95,7 @@
     /* Remove regex pairs at beginning, middle, and end of query, but one good one in the middle */
     urlIn = @"http://me.example.com/download.html?utm_source=google&utm_medium=cpc&utm_term=hello&foo=bar&utm_content=JK%2B1142&utm_campaign=Jerry-Stuff" ;
     urlEx = @"http://me.example.com/download.html?foo=bar" ;
-    ranges = @[@"{36, 17}", @"{53, 15}", @"{68, 15}", @"{91, 22}", @"{113, 25}"] ;
+    ranges = @[@"{36, 17}", @"{54, 14}", @"{69, 14}", @"{92, 21}", @"{114, 24}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                            urlString:urlIn
                         expectedRanges:ranges
@@ -107,7 +105,7 @@
     /* Repeat the above with a fragment in the URL */
     urlIn = @"http://me.example.com/download.html?utm_source=google&utm_medium=cpc&utm_term=hello&foo=bar&utm_content=JK%2B1142&utm_campaign=Jerry-Stuff#MyFragment" ;
     urlEx = @"http://me.example.com/download.html?foo=bar#MyFragment" ;
-    ranges = @[@"{36, 17}", @"{53, 15}", @"{68, 15}", @"{91, 22}", @"{113, 25}"] ;
+    ranges = @[@"{36, 17}", @"{54, 14}", @"{69, 14}", @"{92, 21}", @"{114, 24}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                              urlString:urlIn
                         expectedRanges:ranges
@@ -116,8 +114,8 @@
     
     /* Repeat the above with good queries at the beginning and end */
     urlIn = @"http://me.example.com/download.html?goodOne=1;utm_source=google&utm_medium=cpc&utm_term=hello&foo=bar&utm_content=JK%2B1142&utm_campaign=Jerry-Stuff;anotherGoodOne=Bird#MyFragment" ;
-    urlEx = @"http://me.example.com/download.html?goodOne=1&foo=bar;anotherGoodOne=Bird#MyFragment" ;
-    ranges = @[@"{45, 18}", @"{63, 15}", @"{78, 15}", @"{101, 22}", @"{123, 25}"] ;
+    urlEx = @"http://me.example.com/download.html?goodOne=1;foo=bar&anotherGoodOne=Bird#MyFragment" ;
+    ranges = @[@"{46, 17}", @"{64, 14}", @"{79, 14}", @"{102, 21}", @"{124, 24}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                              urlString:urlIn
                         expectedRanges:ranges
@@ -127,7 +125,7 @@
     /* Repeat the above, with no good key/value pairs, so that the entire query string disappears. */
     urlIn = @"http://me.example.com/download.html?utm_source=google&utm_medium=cpc&utm_term=hello&utm_content=JK%2B1142&utm_campaign=Jerry-Stuff#MyFragment" ;
     urlEx = @"http://me.example.com/download.html#MyFragment" ;
-    ranges = @[@"{36, 17}", @"{53, 15}", @"{68, 15}", @"{83, 22}", @"{105, 25}"] ;
+    ranges = @[@"{36, 17}", @"{54, 14}", @"{69, 14}", @"{84, 21}", @"{106, 24}"] ;
     [self tryProcessingQueryCruftSpecs:goodSpecs
                              urlString:urlIn
                         expectedRanges:ranges
