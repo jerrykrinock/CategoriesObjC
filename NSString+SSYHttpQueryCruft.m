@@ -29,6 +29,7 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
         if (rangeOfQuery.location != NSNotFound) {
             NSString* host = url.host ;
             
+            NSMutableArray* cruftRanges = [NSMutableArray new] ;
             for (NSDictionary* cruftSpec in cruftSpecs) {
                 NSString* specDomain = [cruftSpec objectForKey:constKeyCruftDomain] ;
                 BOOL hostMatch = ((specDomain == nil) || [host hasSuffix:specDomain]) ;
@@ -40,7 +41,6 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                      in a key and never a value when scanning for '='. */
                     NSScanner* scanner = [[NSScanner alloc] initWithString:queryString] ;
                     NSString* key ;
-                    NSMutableArray* cruftRanges = [NSMutableArray new] ;
                     while (![scanner isAtEnd] && !error) {
                         NSInteger startOfThisPair = [scanner scanLocation] ;
                         [scanner scanUpToString:@"="
@@ -82,7 +82,9 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                                 NSInteger length = scanner.scanLocation - startOfThisPair ;
                                 NSRange rangeOfThisPair = NSMakeRange(rangeOfQuery.location + startOfThisPair, length) ;
                                 NSString* rangeString = NSStringFromRange(rangeOfThisPair) ;
-                                [cruftRanges addObject:rangeString] ;
+                                if ([cruftRanges indexOfObject:rangeString] == NSNotFound) {
+                                    [cruftRanges addObject:rangeString] ;
+                                }
                             }
                             
                             [scanner scanCharactersFromSet:[[self class] ssyQueryDelimiters]
@@ -91,23 +93,27 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                         
                     }
                     
-                    if (cruftRanges.count > 0) {
-                        answer = [cruftRanges copy] ;
-                    }
-                    else {
-                        answer = nil ;
-                    }
                     
 #if !__has_feature(objc_arc)
-                    [cruftRanges release] ;
                     [scanner release] ;
-                    [answer autorelease] ;
 #endif
                     if (error) {
                         break ;
                     }
                 }
             }
+            
+            if (cruftRanges.count > 0) {
+                answer = [cruftRanges copy] ;
+            }
+            else {
+                answer = nil ;
+            }
+
+#if !__has_feature(objc_arc)
+            [cruftRanges release] ;
+            [answer autorelease] ;
+#endif
         }
     }
     
