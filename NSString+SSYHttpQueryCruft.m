@@ -60,10 +60,11 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
                             NSRegularExpression* regex = [[NSRegularExpression alloc] initWithPattern:specKey
                                                                                               options:0
                                                                                                 error:&error] ;
-                            
-                            thisPairIsCruft = ([regex numberOfMatchesInString:key
-                                                                      options:0
-                                                                        range:NSMakeRange(0, key.length)] > 0) ;
+                            NSRange wholeKey = NSMakeRange(0, key.length) ;
+                            NSInteger countOfMatches = [regex numberOfMatchesInString:key
+                                                                              options:0
+                                                                                range:wholeKey] ;
+                            thisPairIsCruft = (countOfMatches > 0) ;
 #if !__has_feature(objc_arc)
                             [regex release] ;
 #endif                        
