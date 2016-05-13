@@ -26,7 +26,6 @@
     NSError* error = nil ;
     NSArray* ranges = [urlString rangesOfQueryCruftSpecs:specs
                                                  error_p:&error] ;
-//    /*SSYDBL*/ NSLog(@"Ranges: %@", ranges) ;
     XCTAssertEqual(error.code, expectedErrorCode) ;
     XCTAssertEqualObjects(ranges, expectedRanges) ;
     
