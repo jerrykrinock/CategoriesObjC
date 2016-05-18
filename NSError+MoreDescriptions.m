@@ -143,7 +143,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			// It's a date
 			value = [value geekDateTimeString] ;
 		}
-		[string appendFormat:@"\n\n%@\n%@", label, value] ;
+		[string appendFormat:@"\n\n%@\n\n%@", label, value] ;
 	}
 }
 
