@@ -202,7 +202,7 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 - (void)sizeHeightToFitAllowShrinking:(BOOL)allowShrinking {
 	CGFloat oldHeight = [self height] ;
 	CGFloat width = [self width] ;
-	CGFloat height ;
+	CGFloat height = 0.0 ;
 	if ([self isKindOfClass:[NSTextView class]]) {
 		NSAttributedString* attributedString = [(NSTextView*)self textStorage] ;
 		if (attributedString != nil) {
@@ -221,21 +221,67 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 			height = [[(NSTextView*)self string] heightForWidth:width
 														   font:font] ;
 		}
-		NSRect frame = [self frame] ;
-		frame.size.height = allowShrinking ? height : MAX(height, oldHeight) ;
-		[self setFrame:frame] ;
 	}
 	else if ([self isKindOfClass:[NSTextField class]]) {
 		gNSStringGeometricsTypesetterBehavior = NSTypesetterBehavior_10_2_WithCompatibility ;
 		height = [[(NSTextField*)self stringValue] heightForWidth:width
 															 font:[(NSTextView*)self font]] ;
-		NSRect frame = [self frame] ;
-		frame.size.height = allowShrinking ? height : MAX(height, oldHeight) ;
-		[self setFrame:frame] ;
 	}
-	else {
+    else if ([self isKindOfClass:[NSScrollView class]] && [[(NSScrollView*)self documentView] isKindOfClass:[NSTextView class]]) {
+        gNSStringGeometricsTypesetterBehavior = NSTypesetterBehavior_10_2_WithCompatibility ;
+        NSSize textSize = [NSScrollView contentSizeForFrameSize:[self frame].size
+                                        horizontalScrollerClass:[NSScroller class]
+                                          verticalScrollerClass:[NSScroller class]
+                                                     borderType:NSNoBorder
+                                                    controlSize:NSRegularControlSize
+                                                  scrollerStyle:NSScrollerStyleOverlay] ;
+
+        NSTextView* textView = (NSTextView*)[(NSScrollView*)self documentView] ;
+        height = [textView.string heightForWidth:(textSize.width)
+                                            font:textView.font] ;
+        
+        /* I found that OS X 10.11.3 or 10.11.4 is a little too anxious to
+         automatically add the vertical scroller.  That is, it will add the
+         vertical scroller when it is not quite necessary, and the resulting
+         reduction in width will, in a self-fulfilling prophecy, make the
+         scroller necessary.  To avoid that from happening, we manually set
+         hasVerticalScroller to NO when *we* know we don't need it, and to
+         YES when we know we need it.
+         
+         I also switch off the elasticity when the scroller is not necessary,
+         so that it behaves like a regular text view, as opposed to one embedded
+         in a scroll view, which would bounce up and down if the user happens to
+         swipe on it.
+         
+         Scroll view should only get smaller, not bigger. */
+        if (height > oldHeight) {
+            ((NSScrollView*)self).hasVerticalScroller = YES ;
+            ((NSScrollView*)self).verticalScrollElasticity = NSScrollElasticityAutomatic ;
+            height = oldHeight ;
+        }
+        else {
+            ((NSScrollView*)self).hasVerticalScroller = NO ;
+            ((NSScrollView*)self).verticalScrollElasticity = NSScrollElasticityNone ;
+        }
+        
+    }
+    else {
 		// Subclass should have set height to fit
 	}
+    
+    if (height > 0.0) {
+        NSRect frame = [self frame] ;
+        
+        CGFloat frameHeight = height ;
+        if (!allowShrinking) {
+            if (frameHeight < oldHeight) {
+                frameHeight = oldHeight ;
+            }
+        }
+        frame.size.height = frameHeight ;
+
+        [self setFrame:frame] ;
+    }
 
 #if 0
 	// At one point, I clipped if this was taller than the screen.  However, that
@@ -269,7 +315,10 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 - (void)sizeHeightToFit {
 	CGFloat minY = 0.0 ;
 	for (NSView* subview in [self subviews]) {
-		minY = MIN([subview frame].origin.y - BOTTOM_MARGIN, minY) ;
+        CGFloat aMin = [subview frame].origin.y - BOTTOM_MARGIN ;
+        if (minY > aMin) {
+            minY = aMin ;
+        }
 	}
 	
 	// Set height so that minHeight is the normal window edge margin of 20

@@ -40,9 +40,9 @@
  @brief    Resizes the height of the receiver to fit its current content.
  
  @details  The default implementation works properly if the receiver is
- an NSTextField or NSTextView.&nbsp; For any other subclass, all it does
- is clip if the height is not taller than the screen, so subclasses
- may invoke super to get this function.&nbsp; Otherwise, it's a no-op, which
+ an NSTextField, NSTextView, or NSScrollView enclosing an NSTextView.
+ For the latter, the NSScrollView will only shrink, not grow.
+ For any other subclasses, it's a no-op, which
  is appropriate for subclasses that have a constant height,
  independent of their content, for example NSButton or NSPopUpButton.&nbsp;
  Todo: I should move the NSTextField and NSTextView code from
