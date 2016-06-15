@@ -269,32 +269,18 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 		// Subclass should have set height to fit
 	}
     
-    if (height > 0.0) {
-        NSRect frame = [self frame] ;
-        
-        CGFloat frameHeight = height ;
-        if (!allowShrinking) {
-            if (frameHeight < oldHeight) {
-                frameHeight = oldHeight ;
-            }
+    NSRect frame = [self frame] ;
+    
+    CGFloat frameHeight = height ;
+    if (!allowShrinking) {
+        if (frameHeight < oldHeight) {
+            frameHeight = oldHeight ;
         }
-        frame.size.height = frameHeight ;
-
-        [self setFrame:frame] ;
     }
-
-#if 0
-	// At one point, I clipped if this was taller than the screen.  However, that
-	// screwed up downstream clipping in SSYAlert, where the buttons needed to be
-	// placed on the screen.  So, the following code is OUT
-	CGFloat screenHeight = [[NSScreen mainScreen] frame].size.height ;
-	if ([self height] > screenHeight) {
-		NSRect frame = [self frame] ;
-		frame.size.height = screenHeight ;
-		[self setFrame:frame] ;
-	}
-#endif
-}	
+    frame.size.height = frameHeight ;
+    
+    [self setFrame:frame] ;
+}
 
 - (NSComparisonResult)compareLeftEdges:(NSView*)otherView {
 	CGFloat myLeftEdge = [self leftEdge] ;
