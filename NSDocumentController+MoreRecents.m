@@ -27,7 +27,7 @@
 - (NSMenu*)recentDocumentsSubmenuWithTarget:(id)target
 									 action:(SEL)action
 								   fontSize:(CGFloat)fontSize {
-	NSMenu* submenu = [[NSMenu alloc] initWithTitle:@"reecentDox"] ;
+	NSMenu* submenu = [[NSMenu alloc] initWithTitle:NSLocalizedString(@"reecentDox", nil)] ;
 	for (NSURL* url in [self recentDocumentURLs]) {
 		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[url fileDisplayName]
 													  action:action
