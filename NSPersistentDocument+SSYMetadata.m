@@ -140,7 +140,7 @@
 		// different kind of save.  We are *not* asking whether or not
 		// self responds to -isInViewingMode.  Actually, in BookMacster 1.7.2,
 		// we have, for convenience, defined -isInViewingMode in our
-		// NSPersistentDocument subclass, regardless of Mac OS X version !
+		// NSPersistentDocument subclass, regardless of macOS version !
 		// Probably I could use 1100.0 as threshold for Lion.
 		// 10.7.1 is 1138.0.
 		if (NSAppKitVersionNumber >= 1115.2) {
@@ -156,7 +156,7 @@
 		}
 		else {
             /*
-             Mac OS X 10.5 or 10.6
+             macOS 10.5 or 10.6
              I tried using [[self managedObjectContext] save:] instead of 
              [super saveDocument:self], but that resulted in a sheet being
              presented the *next* time I saved, with the dreaded warning that

@@ -63,8 +63,8 @@
  followed by another save will result in one of those damned "The changes made
  by the other application will be lost if you save. Save anyway?" because
  "This document’s file has been changed by another application since you opened
- or saved it" sheets being presented (Mac OS X 10.7); or NSCocoa ErrorDomain
- error code 67000 being sent to -willPresentError: (Mac OS X 10.8).
+ or saved it" sheets being presented (macOS 10.7); or NSCocoa ErrorDomain
+ error code 67000 being sent to -willPresentError: (macOS 10.8).
 */
 - (void)addMetadata:(NSDictionary*)moreMetadata
             andSave:(BOOL)doSave ;

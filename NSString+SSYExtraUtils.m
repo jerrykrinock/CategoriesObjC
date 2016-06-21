@@ -574,7 +574,7 @@ NSString* const aNewline = @"\n" ;
 		NSLog(@"TruncateThemeText failed with error %d", err) ;
 	}
     // XXX Should be able to skip the above by using NSLineBreakByTruncatingMiddle,
-    // XXX but OS X 10.1 doesn't implement it yet.
+    // XXX but macOS 10.1 doesn't implement it yet.
 	if ([ps respondsToSelector:@selector(setLineBreakMode:)]) {  // 10.3 does not
 		[ps setLineBreakMode: NSLineBreakByClipping];
     }

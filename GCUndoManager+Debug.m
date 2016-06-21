@@ -6,7 +6,7 @@
 //    otool -ov  "/System/Library/Frameworks/AppKit.framework/AppKit" > ~/Desktop/AppKitClassDump.txt
 // and searching the result for _changeCount in the NSDocument section.  It gives and "offset".
 #define _CHANGE_COUNT_IVAR_OFFSET 0x00000018
-// Unfortunately, the above only works ok Mac OS X 10.6.
+// Unfortunately, the above only works ok macOS 10.6.
 // In 10.7 and and 10.8, NSDocument no longer has a _changeCount.  Kyle Sluder
 // says it was replaced by the "change token infrastructure".  Probably, he
 // means this stuff…

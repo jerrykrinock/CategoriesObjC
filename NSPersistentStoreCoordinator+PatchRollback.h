@@ -20,7 +20,7 @@
  * Use +dictionaryByAddingSqliteRollbackToDictionary to add the rollback/delete
  entry to the options dictionary wherever you add a persistent store
  coordinator.
- * Build your product in debug configuration using the Mac OS X 10.9
+ * Build your product in debug configuration using the macOS 10.9
  or iOS 7 or later SDK.
  * Run your product through its creation, opening and migrating of SQLite
  stores.  The swizzled methods in this class will log an error to stderr if
@@ -41,7 +41,7 @@
  @brief    Returns a dictionary containing the entries of a given dictionary,
  and also a new entry which tells Core Data to create a persistent store using
  legacy "rollback" aka "delete" journal mode, instead if "write-ahead logging"
- aka "WAL" mode which is the default when building with the Mac OS X 10.9
+ aka "WAL" mode which is the default when building with the macOS 10.9
  or iOS 7 SDK or later.
  
  @param    optionsIn  May be nil, in which case the result contains only the

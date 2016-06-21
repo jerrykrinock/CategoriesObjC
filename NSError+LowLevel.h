@@ -4,8 +4,8 @@ extern NSString* const SSYAppleScriptErrorDomain ;
 
 @interface NSError (LowLevel)
 /*!
- @brief    Given a Mac OS X system error code, tries to return
- an error with one of the Mac OS X system domains and
+ @brief    Given a macOS system error code, tries to return
+ an error with one of the macOS system domains and
  localized description.
  
  @details  If you give it a known combination of domain and code, 

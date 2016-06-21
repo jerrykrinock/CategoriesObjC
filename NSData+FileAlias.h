@@ -30,13 +30,13 @@ typedef enum NSDataFileAliasModernity_enum NSDataFileAliasModernity ;
  modern NSURL file bookmarks and legacy Alias Manager AliasRecord datas to
  paths, and vice versa
  
- @details  This category requires Mac OS X 10.6 or later.  Test
+ @details  This category requires macOS 10.6 or later.  Test
  code is provided below.
  */
 @interface NSData (FileAlias)
 
 /*!
- @brief    Returns NSURL bookmarks data for a given path, or in Mac OS X
+ @brief    Returns NSURL bookmarks data for a given path, or in macOS
  10.5 or earlier, returns Alias Manager data.
  
  @details  Does not require that the file specified by path exists,

@@ -89,16 +89,16 @@
     NSBundle* bundle = [NSBundle mainBundle] ;
     NSImage* image ;
     if ([bundle respondsToSelector:@selector(imageForResource:)]) {
-        // Mac OS X 10.7 or later can extract an image from a icon (.icns) file.
+        // macOS 10.7 or later can extract an image from a icon (.icns) file.
 #pragma deploymate push "ignored-api-availability" // Skip it until next "pop"
         image = [bundle imageForResource:imageName] ;
 #pragma deploymate pop
     }
     else {
-        // Mac OS X 10.6
+        // macOS 10.6
         // You must provide a png file.  Or maybe you could leave ofType = nil,
         // but I'm not sure if an .icns would interfere with that.  Definitely,
-        // Mac OS X 10.6 fails to get the image if you only provide a .icns.
+        // macOS 10.6 fails to get the image if you only provide a .icns.
         NSString* imagePath = [bundle pathForResource:imageName
                                                ofType:@"png"] ;
         image = [[NSImage alloc] initByReferencingFile:imagePath] ;

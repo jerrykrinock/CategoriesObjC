@@ -50,7 +50,7 @@
              *    use NSStringFromSelector because apparently closeAll: is not
              *    declared in the SDK.
              * Note 2.  This item may or may not be removed by Cocoa, depending
-             *    on the Mac OS X version and on what other items are present.
+             *    on the macOS version and on what other items are present.
              *    We leave it in for robustness.
              */
             ) {

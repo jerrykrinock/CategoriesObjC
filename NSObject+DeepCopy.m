@@ -49,19 +49,19 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
                 if (!archive) {
                     /* I've never seen this occur, but testing for it seems
                      reasonable, especially given the change in behavior that
-                     occurred in OS X 10.10. */
+                     occurred in macOS 10.10. */
                     isEncodeable = NO ;
                 }
                 else {
                     id unarchivedSelf = [NSKeyedUnarchiver unarchiveObjectWithData:archive] ;
                     if (!unarchivedSelf) {
-                        /* This can occur in OS X 10.10 and later. */
+                        /* This can occur in macOS 10.10 and later. */
                         isEncodeable = NO ;
                     }
                     else {
                         /* I've never seen this happen, but let's check one
                          more thing, in case Apple does something else weird
-                         in some future OS X.  Actually, this about covers
+                         in some future macOS.  Actually, this about covers
                          all possibilities, because if the unarchived object
                          is equal to the pre-archived object, it is good by
                          definition.  The only thing we haven't covered is if
@@ -75,7 +75,7 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
                 }
             }
 			@catch (id anyException) {
-                /* This can occur in OS X 10.9 and earlier.  Unfortunately,
+                /* This can occur in macOS 10.9 and earlier.  Unfortunately,
                  Cocoa will log an *** exception saying that something bad
                  happened.  So we try to nullify that by logging a friendly
                  follow-on message to explain that this is nothing to worry

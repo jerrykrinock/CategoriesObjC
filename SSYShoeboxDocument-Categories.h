@@ -33,7 +33,7 @@
  @brief     A category of NSDocument which, when added to a document-based
   Cocoa application, will remove items which are not sensible for a shoebox
   document from the Auto Save / Versions menu which appears when the user clicks
-  the disclosure triangle in the title bar of a document, in Mac OS X 10.8 and
+  the disclosure triangle in the title bar of a document, in macOS 10.8 and
   earlier
  
   @details   The Auto Save / Versions menu which appears when the user clicks
@@ -79,8 +79,8 @@
   For apps targetting 10.9 or later, that's all you need to do.  You do NOT
   need this category.
   
-  Note that the menu may not appear in versions of Mac OS X later than
-  Mac OS X 10.8.  Therefore, this override may not be necessary in the future.
+  Note that the menu may not appear in versions of macOS later than
+  macOS 10.8.  Therefore, this override may not be necessary in the future.
   It is never invoked.
  */
 @interface NSDocument (SSYShoeboxDocument)
@@ -89,7 +89,7 @@
  @brief    Override of undeclared NSDocument method which removes menu items
  which are not sensible for a shoebox document from the Auto Save / Versions
  menu which appears when the user clicks the disclosure triangle in the title
- bar of a document in Mac OS X 10.8 and earlier.
+ bar of a document in macOS 10.8 and earlier.
 
  @details  Because NSDocument is not declared as conforming to NSMenuDelegate,
  invoking [super menuNeedsUpdate:menu] in as we do in our override causes a

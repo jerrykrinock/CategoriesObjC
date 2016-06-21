@@ -4,7 +4,7 @@
 
 /*
  @brief    Method to be used in place of -entityForName:inManagedObjectContext:
- which does not work properly in OS X 10.9 if the passed-in name is not a
+ which does not work properly in macOS 10.9 if the passed-in name is not a
  constant string.
  
  @details  See this post for more information:

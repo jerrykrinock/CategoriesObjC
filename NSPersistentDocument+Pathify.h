@@ -53,7 +53,7 @@ extern NSString* const SSYPersistentDocumentPathifyErrorDomain ;
  @details  This constant is not used by this category; it's just provided for
  your use – you should post and observe.
  
- If you have adopted asyncrhonous saving in Mac OS X 10.7 or later, and you
+ If you have adopted asyncrhonous saving in macOS 10.7 or later, and you
  post the notification in writeSafelyToURL::::, remember that it will be posted
  on a non-main thread.  To post it on a main thread, create the notification
  and then do something like this:

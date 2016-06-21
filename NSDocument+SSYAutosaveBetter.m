@@ -14,7 +14,7 @@ NSString* SSYDontAutosaveKey = @"dontAutosave" ;
 		// But Apple's implementation does not always work as I expect,
 		// so I add another possibility…
 		if (!isInViewingMode) {
-			// We're in Mac OS X 10.7+
+			// We're in macOS 10.7+
             NSString* path = [[self fileURL] path] ;
             // A newly-duplicated document will not have a path yet.
 			if (path) {
@@ -29,7 +29,7 @@ NSString* SSYDontAutosaveKey = @"dontAutosave" ;
 		}
 	}
 	else {
-		// We're in Mac OS X 10.6-
+		// We're in macOS 10.6-
 		isInViewingMode = NO ;
 	}
     

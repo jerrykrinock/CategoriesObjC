@@ -3,7 +3,7 @@
 @interface NSMenu (Populating) 
 
 /*!
- @details  Apple added this method in Mac OS X 10.6
+ @details  Apple added this method in macOS 10.6
 */
 - (void)removeAllItems ;
 

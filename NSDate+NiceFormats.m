@@ -8,7 +8,7 @@
 to eliminate compiler warnings.
 
 @details  Be careful to only invoke super on these methods after
-you've checked that you are running under Mac OS X 10.6.
+you've checked that you are running under macOS 10.6.
 */
 @interface NSDate (DefinedInMac_OS_X_10_6)
 
@@ -50,7 +50,7 @@ you've checked that you are running under Mac OS X 10.6.
 	NSString* localTimeString ;
 	NSTimeInterval adjustment = localTzSeconds - tzSeconds ;
 	// We'd rather not make the adjustment, because -dateByAddingTimeInterval:
-	// is not available in Mac OS X 10.5.  And since we're going to ignore the
+	// is not available in macOS 10.5.  And since we're going to ignore the
 	// seconds anyhow, we allow 30 seconds of slop.
 	if (fabs(adjustment) < 30.0) {
 		// This must be Mac OS 10.5 or 10.6.  No adjustment is necessary.

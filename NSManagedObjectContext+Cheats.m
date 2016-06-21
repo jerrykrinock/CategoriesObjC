@@ -305,7 +305,7 @@ end:
 		// object = [self objectWithID:objectId] ;
 		// That sometimes caused Core Data exceptions as explained below.
 #if (MAC_OS_X_VERSION_MIN_REQUIRED < 1060) 
-		// Mac OS X 10.5 or earlier
+		// macOS 10.5 or earlier
 		object = [self objectWithID:objectId] ;
 		// If an object with objectId does not exist in the store, -objectWithID: will
 		// "helpfully" create a bogus object which will raise a "Core Data could not
@@ -331,7 +331,7 @@ end:
 		@finally {
 		}
 #else
-		// Mac OS X 10.6 or later
+		// macOS 10.6 or later
 		NSError* error = nil ;
 		object = [self existingObjectWithID:objectId
 									  error:&error] ;
@@ -348,7 +348,7 @@ end:
 			NSLog(@"Warning 927-4139 (not really an error) : %@ for %@", error, backtrace) ;
             
             if (object != nil) {
-                // I think this indicates a bug in Mac OS X, because
+                // I think this indicates a bug in macOS, because
                 // -existingObjectWithID:error: is documented to return nil
                 // if anything bad happens.
                 NSLog(@"Warning 927-4140  object=%p", object) ;

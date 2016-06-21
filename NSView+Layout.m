@@ -240,7 +240,7 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
         height = [textView.string heightForWidth:(textSize.width)
                                             font:textView.font] ;
         
-        /* I found that OS X 10.11.3 or 10.11.4 is a little too anxious to
+        /* I found that macOS 10.11.3 or 10.11.4 is a little too anxious to
          automatically add the vertical scroller.  That is, it will add the
          vertical scroller when it is not quite necessary, and the resulting
          reduction in width will, in a self-fulfilling prophecy, make the
