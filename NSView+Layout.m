@@ -269,17 +269,19 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 		// Subclass should have set height to fit
 	}
     
-    NSRect frame = [self frame] ;
-    
-    CGFloat frameHeight = height ;
-    if (!allowShrinking) {
-        if (frameHeight < oldHeight) {
-            frameHeight = oldHeight ;
+    if (height > 0.0) {
+        NSRect frame = [self frame] ;
+        
+        CGFloat frameHeight = height ;
+        if (!allowShrinking) {
+            if (frameHeight < oldHeight) {
+                frameHeight = oldHeight ;
+            }
         }
+        frame.size.height = frameHeight ;
+        
+        [self setFrame:frame] ;
     }
-    frame.size.height = frameHeight ;
-    
-    [self setFrame:frame] ;
 }
 
 - (NSComparisonResult)compareLeftEdges:(NSView*)otherView {
