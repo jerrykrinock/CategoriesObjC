@@ -203,6 +203,7 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 	CGFloat oldHeight = [self height] ;
 	CGFloat width = [self width] ;
 	CGFloat height = 0.0 ;
+    BOOL didFix = NO ;
 	if ([self isKindOfClass:[NSTextView class]]) {
 		NSAttributedString* attributedString = [(NSTextView*)self textStorage] ;
 		if (attributedString != nil) {
@@ -221,11 +222,15 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
 			height = [[(NSTextView*)self string] heightForWidth:width
 														   font:font] ;
 		}
+        
+        didFix = YES ;
 	}
 	else if ([self isKindOfClass:[NSTextField class]]) {
 		gNSStringGeometricsTypesetterBehavior = NSTypesetterBehavior_10_2_WithCompatibility ;
 		height = [[(NSTextField*)self stringValue] heightForWidth:width
 															 font:[(NSTextView*)self font]] ;
+        
+        didFix = YES ;
 	}
     else if ([self isKindOfClass:[NSScrollView class]] && [[(NSScrollView*)self documentView] isKindOfClass:[NSTextView class]]) {
         gNSStringGeometricsTypesetterBehavior = NSTypesetterBehavior_10_2_WithCompatibility ;
@@ -264,12 +269,13 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
             ((NSScrollView*)self).verticalScrollElasticity = NSScrollElasticityNone ;
         }
         
+        didFix = YES ;
     }
     else {
 		// Subclass should have set height to fit
 	}
     
-    if (height > 0.0) {
+    if (didFix) {
         NSRect frame = [self frame] ;
         
         CGFloat frameHeight = height ;
