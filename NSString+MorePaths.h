@@ -129,7 +129,8 @@
 - (BOOL)pathIsOrIsAncestorOf:(NSString*)target ;
 
 /*!
- @brief    
+ @brief     Returns whether or not the receiver, interpreted as
+ a filesystem path, is a ancestor of a given target path.
 
  @details   Example: If target is: @"/Users/jk"
  will return YES if self is: @"/Users/jk/Docs"
@@ -211,11 +212,7 @@
  nil.
 */
 - (NSString*)uniqueFilenameInDirectory:(NSString*)path
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050		
-							 maxLength:(NSUInteger)maxLength 
-#else
-							 maxLength:(NSInteger)maxLength 
-#endif
+							 maxLength:(NSUInteger)maxLength
 							truncateOk:(BOOL)truncateOk ;
 
 /*!

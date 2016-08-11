@@ -47,12 +47,20 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 		  error_p:(NSError**)error_p ;
 
 /*!
- @brief    Returns the modification date when the receiver is a
+ @brief    Returns the file modification date when the receiver is a
  filesystem path.
  
- @details  Follows symbolic links.&nbsp;
+ @details  Follows symbolic links
  */
 - (NSDate*)modificationDateForPath:(NSString*)path ;
+
+/*!
+ @brief    Returns the file creation date when the receiver is a
+ filesystem path.
+ 
+ @details  Follows symbolic links
+ */
+- (NSDate*)creationDateForPath:(NSString*)path ;
 
 /*!
  @brief    Creates a directory if none exists at a given path.
