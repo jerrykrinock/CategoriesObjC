@@ -266,6 +266,8 @@
  */
 
 
+extern NSString* SSStringNotFoundAnnouncer ;
+
 @interface NSString (LocalizeSSY)
 
 /* 
