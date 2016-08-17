@@ -8,7 +8,7 @@
         [mutant replaceOccurrencesOfString:@" "
                                 withString:@"_"
                                    options:0
-                                     range:NSMakeRange(0, self.length)] ;
+                                     range:NSMakeRange(0, extension.length)] ;
         extension = [mutant copy] ;
 #if !__has_feature(objc_arc)
         [extension autorelease] ;
