@@ -618,3 +618,58 @@
 @end
 
 #endif
+
+
+#if	0
+#warning * Replacement of -[NSPathStore2 stringByAppendingPathExtension:] to log, crash sted raise if nil arg.
+
+@interface DebugDaNSCFString : NSObject
+@end
+
+@implementation DebugDaNSCFString
+
++ (void)load {
+    // Swap the implementations of one method with another.
+    // When the message Xxx is sent to the object (either instance or class),
+    // replacement_Xxx will be invoked instead.  Conversely,
+    // replacement_Xxx will invoke Xxx.
+    
+    // NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+    Method originalMethod = class_getInstanceMethod(NSClassFromString(@"NSPathStore2"), @selector(stringByAppendingPathExtension:)) ;
+    Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_stringByAppendingPathExtension:)) ;
+    IMP imp1 = method_getImplementation(originalMethod);
+    IMP imp2 = method_getImplementation(replacedMethod);
+    // Set the implementation of appendString: to replacement_appendString:
+    method_setImplementation(originalMethod, imp2);
+    // Add a replacement_appendString: method to the NSCFString with the implementation as per the old dealloc method
+    class_addMethod(NSClassFromString(@"NSPathStore2"), @selector(replacement_stringByAppendingPathExtension:), imp1, NULL);
+    NSLog(@"Replaced -[NSPathStore2 stringByAppendingPathExtension:]") ;
+}
+
+- (void)replacement_stringByAppendingPathExtension:(NSString*)string {
+    if ([string rangeOfString:@" "].location == NSNotFound) {
+        // Due to the swap, this calls the original method
+        [self replacement_stringByAppendingPathExtension:string] ;
+    }
+    else {
+        NSString* logger = [NSString stringWithFormat:@"Attempted to append %@ to '%@'", string, self] ;
+        NSLog(@"%@", logger) ;
+        NSString* path = [NSHomeDirectory() stringByAppendingPathComponent:@"Desktop"] ;
+        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970] ;
+        NSString* filename = [NSString stringWithFormat:@"Important-Message-%f.txt", timeInterval] ;
+        path = [path stringByAppendingPathComponent:filename] ;
+        NSError* error = nil ;
+        [logger writeToFile:path
+                 atomically:NO
+                   encoding:NSUTF8StringEncoding
+                      error:&error] ;
+        
+        // Crash!
+        NSInteger* killer_p = 0x0 ;
+        *killer_p = 0 ;
+    }
+}
+
+@end
+
+#endif
