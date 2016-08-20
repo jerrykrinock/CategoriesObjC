@@ -57,9 +57,9 @@ you've checked that you are running under macOS 10.6.
 		localTimeString = s ;
 	}
 	else {
-		// This must be Mac OS 10.7.  Must adjust.
+		// This must be macOS 10.7 or later.  Must adjust.
 		// Fortunately, starting in Mac OS 10.6 we have -[NSDate dateByAddingTimeInterval]
-		NSDate* localDate = [self dateByAddingTimeInterval:(adjustment)] ;
+		NSDate* localDate = [self dateByAddingTimeInterval:adjustment] ;
 		localTimeString = [localDate description] ;
 	}
 	
@@ -90,9 +90,7 @@ you've checked that you are running under macOS 10.6.
 	//  Remove spaces, dash and colon from YYYY-MM-DD HH:MM:SS
 	NSString* s1 = [[self geekDateTimeString] stringByReplacingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" :-"]
 																	withString:@""] ;
-	// Time zone
-	NSString* tz = [[self description] substringFromIndex:20] ;
-	return [s1 stringByAppendingString:tz] ;
+    return s1 ;
 }
 
 + (NSString*)currentDateFormattedConcisely {	

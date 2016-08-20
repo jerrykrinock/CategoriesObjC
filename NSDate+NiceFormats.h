@@ -30,12 +30,13 @@
 /*!
  @brief    Returns a string representation of the receiver formatted
  as YYYYMMDDHHmmss±HHmm
+ @details  The result may be used in file names.
  */
 - (NSString*)compactDateTimeString ;
 
 /*!
  @brief    Returns the current date as formatted by
- -medDateShortTimeString.
+ -medDateShortTimeString
 */
 + (NSString*)currentDateFormattedConcisely ;
 
