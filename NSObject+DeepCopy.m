@@ -53,24 +53,36 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
                     isEncodeable = NO ;
                 }
                 else {
-                    id unarchivedSelf = [NSKeyedUnarchiver unarchiveObjectWithData:archive] ;
-                    if (!unarchivedSelf) {
-                        /* This can occur in macOS 10.10 and later. */
-                        isEncodeable = NO ;
-                    }
-                    else {
-                        /* I've never seen this happen, but let's check one
-                         more thing, in case Apple does something else weird
-                         in some future macOS.  Actually, this about covers
-                         all possibilities, because if the unarchived object
-                         is equal to the pre-archived object, it is good by
-                         definition.  The only thing we haven't covered is if
-                         Apple decides to make -[[NSKeyedArchiver
-                         archivedDataWithRootObject:] crash when passed an
-                         unencodeable object. */
-                        if (![self isEqual:unarchivedSelf]) {
+                    /* The following condition was added when testing in
+                     macOS 10.12 Sierra Beta 6.  This object was a Client
+                     object.  Exception occurred below, when sending
+                     -unarchiveObjectWithData: to it, due to
+                     "-[Client initWithCoder:]: unrecognized selector".
+                     Indeed, I checked and found that Client respnds to
+                     -encodeWithCoder: but not -initWithCoder. */
+                    if ([self respondsToSelector:@selector(initWithCoder:)]) {
+                        id unarchivedSelf = [NSKeyedUnarchiver unarchiveObjectWithData:archive] ;
+                        if (!unarchivedSelf) {
+                            /* This can occur in macOS 10.10 and later. */
                             isEncodeable = NO ;
                         }
+                        else {
+                            /* I've never seen this happen, but let's check one
+                             more thing, in case Apple does something else weird
+                             in some future macOS.  Actually, this about covers
+                             all possibilities, because if the unarchived object
+                             is equal to the pre-archived object, it is good by
+                             definition.  The only thing we haven't covered is if
+                             Apple decides to make -[[NSKeyedArchiver
+                             archivedDataWithRootObject:] crash when passed an
+                             unencodeable object. */
+                            if (![self isEqual:unarchivedSelf]) {
+                                isEncodeable = NO ;
+                            }
+                        }
+                    }
+                    else {
+                        isEncodeable = NO ;
                     }
                 }
             }
