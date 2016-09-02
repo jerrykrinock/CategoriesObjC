@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "NSString+SSYHttpQueryCruft.h"
+#import "NSString+SSYDotSuffix.h"
 
 @interface CategoriesObjCTests : XCTestCase
 
@@ -150,6 +151,40 @@
                         expectedRanges:ranges
                    expectedUrlString:urlEx
                    expectedErrorCode:2048] ;
+}
+
+- (void)testStringDotSuffix {
+    NSString* sIn ;
+    NSString* sOut ;
+    
+    // Reverse-DNS identifier with spaces
+    sIn = @"com.apple.developer tools" ;
+    sOut = [sIn stringByDeletingDotSuffix] ;
+    XCTAssertEqualObjects(sOut, @"com.apple", @"stringByDeletingDotSuffix Failed on %@", sIn) ;
+    sOut = [sOut stringByAppendingDotSuffix:@"developer tools"] ;
+    XCTAssertEqualObjects(sOut, sIn, @"stringByDeletingDotSuffix Failed on %@", sOut) ;
+
+    // Path with spaces and non-ASCII characters in filename and extension
+    sIn = @"/path/to/what ever––do.my ⌘ extension" ;
+    sOut = [sIn stringByDeletingDotSuffix] ;
+    XCTAssertEqualObjects(sOut, @"/path/to/what ever––do", @"stringByDeletingDotSuffix Failed on %@", sIn) ;
+    sOut = [sOut stringByAppendingDotSuffix:@"my ⌘ extension"] ;
+    XCTAssertEqualObjects(sOut, sIn, @"stringByDeletingDotSuffix Failed on %@", sOut) ;
+
+    // String with no dots
+    sIn = @"hello world" ;
+    sOut = [sIn stringByDeletingDotSuffix] ;
+    XCTAssertEqualObjects(sOut, sIn, @"stringByDeletingDotSuffix Failed on %@", sIn) ;
+    sOut = [sOut stringByAppendingDotSuffix:nil] ;
+    XCTAssertEqualObjects(sOut, sIn, @"stringByDeletingDotSuffix Failed on %@", sOut) ;
+
+    // String with empty dot suffix
+    sIn = @"hello world." ;
+    sOut = [sIn stringByDeletingDotSuffix] ;
+    XCTAssertEqualObjects(sOut, @"hello world", @"stringByDeletingDotSuffix Failed on %@", sIn) ;
+    sOut = [sOut stringByAppendingDotSuffix:@""] ;
+    XCTAssertEqualObjects(sOut, sIn, @"stringByDeletingDotSuffix Failed on %@", sOut) ;
+
 }
 
 #if 0

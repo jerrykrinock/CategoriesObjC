@@ -1,5 +1,6 @@
 #import "NSBundle+SSYMotherApp.h"
 #import "NSBundle+MainApp.h"
+#import "NSString+SSYDotSuffix.h"
 
 @implementation NSBundle (SSYMotherApp)
 
@@ -12,8 +13,8 @@
     NSString* answer = nil ;
     if (motherAppName) {
         NSString* bundleIdentifier = [self bundleIdentifier] ;
-        answer = [bundleIdentifier stringByDeletingPathExtension] ;
-        answer = [answer stringByAppendingPathExtension:motherAppName] ;
+        answer = [bundleIdentifier stringByDeletingDotSuffix] ;
+        answer = [answer stringByAppendingDotSuffix:motherAppName] ;
     }
     
     return answer ;
