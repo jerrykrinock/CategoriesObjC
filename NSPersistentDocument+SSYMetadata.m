@@ -135,36 +135,14 @@
 	 */
 	
 	if (![[self managedObjectContext] hasChanges]) {
-		// This is very tricky.  In this switch, we want to know whether
-		// we are in pre-10.7 or post-10.7, because we're going to do a
-		// different kind of save.  We are *not* asking whether or not
-		// self responds to -isInViewingMode.  Actually, in BookMacster 1.7.2,
-		// we have, for convenience, defined -isInViewingMode in our
-		// NSPersistentDocument subclass, regardless of macOS version !
-		// Probably I could use 1100.0 as threshold for Lion.
-		// 10.7.1 is 1138.0.
-		if (NSAppKitVersionNumber >= 1115.2) {
-			// We're in OS X Lion 10.7
-			// *By the way*, that means that we respond to -isInViewingMode
-			if (![self ssy_isInViewingMode]) {
-                NSError* error = nil ;
-				BOOL ok = [[self managedObjectContext] save:&error] ;
-				if (!ok) {
-				    NSLog(@"Internal Error 624-0393 saving metadata: %@", [error longDescription]) ;
-				}
-			}
-		}
-		else {
-            /*
-             macOS 10.5 or 10.6
-             I tried using [[self managedObjectContext] save:] instead of 
-             [super saveDocument:self], but that resulted in a sheet being
-             presented the *next* time I saved, with the dreaded warning that
-             another app had modified the document.  This doesn't happen in Lion.
-             */
-            [super saveDocument:self] ;
-		}
-	}
+        if (![self ssy_isInViewingMode]) {
+            NSError* error = nil ;
+            BOOL ok = [[self managedObjectContext] save:&error] ;
+            if (!ok) {
+                NSLog(@"Internal Error 624-0393 saving metadata: %@", [error longDescription]) ;
+            }
+        }
+    }
 }
 
 
