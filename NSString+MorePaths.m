@@ -327,7 +327,7 @@ end:
 		NSMutableArray* bucket = [[NSMutableArray alloc] initWithCapacity:[childLastNames count]] ;
 		NSEnumerator* e = [childLastNames objectEnumerator] ;
 		NSString* childLastName ;
-		NSString* childFullPath ;
+		NSString* childFullPath = nil ;
 		while ((childLastName = [e nextObject])) {
 			BOOL ok = YES ;
 			
