@@ -62,6 +62,7 @@ static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
         [zeroWidthAndIllegalCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceAndNewlineCharacterSet] invertedSet]];
         [zeroWidthAndIllegalCharacterSet formUnionWithCharacterSet:[NSCharacterSet illegalCharacterSet]];
         static_zeroWidthAndIllegalCharacterSet = [zeroWidthAndIllegalCharacterSet copy];
+        [zeroWidthAndIllegalCharacterSet release];
     }
 
     return static_zeroWidthAndIllegalCharacterSet;
