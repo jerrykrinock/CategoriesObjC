@@ -1,5 +1,8 @@
 #import "NSCharacterSet+SSYMoreCS.h"
 
+/* TODO: Test and see if the following performance optimization has any effect.
+ If so, consider doing it for the other class methods in here. */
+static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
 
 @implementation NSCharacterSet (SSYMoreCS)
 
@@ -53,4 +56,15 @@
 	return [NSCharacterSet characterSetWithCharactersInString:@"abcdefABCDEF0123456789"] ;
 }
 
++ (NSCharacterSet*)zeroWidthAndIllegalCharacterSet {
+    if (!static_zeroWidthAndIllegalCharacterSet) {
+        NSMutableCharacterSet* zeroWidthAndIllegalCharacterSet = [[NSCharacterSet controlCharacterSet] mutableCopy];
+        [zeroWidthAndIllegalCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceAndNewlineCharacterSet] invertedSet]];
+        [zeroWidthAndIllegalCharacterSet formUnionWithCharacterSet:[NSCharacterSet illegalCharacterSet]];
+        static_zeroWidthAndIllegalCharacterSet = [zeroWidthAndIllegalCharacterSet copy];
+    }
+
+    return static_zeroWidthAndIllegalCharacterSet;
+}
+    
 @end

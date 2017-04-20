@@ -476,8 +476,8 @@ NSString* const aNewline = @"\n" ;
 }
 
 - (NSString *)stringByRemovingCharactersInSet:(NSCharacterSet*)characterSet {
-	NSScanner*			 cleanerScanner = [NSScanner scannerWithString:self];
-	NSMutableString* cleanString		= [NSMutableString stringWithCapacity:[self length]];
+	NSScanner* cleanerScanner = [NSScanner scannerWithString:self];
+	NSMutableString* cleanString = [NSMutableString stringWithCapacity:[self length]];
 	
 	while (![cleanerScanner isAtEnd])
 	{
@@ -485,8 +485,8 @@ NSString* const aNewline = @"\n" ;
 		if ([cleanerScanner scanUpToCharactersFromSet:characterSet intoString:&stringFragment])
 			[cleanString appendString:stringFragment];
 		
-		[cleanerScanner scanCharactersFromSet:characterSet
-								   intoString:nil];
+        [cleanerScanner scanCharactersFromSet:characterSet
+                                   intoString:nil];
 	}
 	
 	return cleanString;

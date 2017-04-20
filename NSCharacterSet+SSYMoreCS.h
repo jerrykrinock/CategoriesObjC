@@ -48,4 +48,14 @@
 
 + (NSCharacterSet*)ssyHexDigitsCharacterSet ;
 
+/*!
+@brief     Returns the set of control characters, except for whitespace and
+newline characters.
+
+@details   A user had 0x03 in a bookmark name.  When encoded to JSON and then
+sent to my Firefox extension, Firefox barfed on it.  Also, see
+http://stackoverflow.com/questions/24803275/how-do-i-remove-hidden-characters-from-a-nsstring
+*/
++ (NSCharacterSet*)zeroWidthAndIllegalCharacterSet;
+
 @end
