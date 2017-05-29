@@ -149,12 +149,4 @@ extern NSString* const SSYDocumentSaveOperation ;
 - (BOOL)saveMoveToNewUrl:(NSURL*)newUrl
 				 error_p:(NSError**)error_p ;
 
-/*!
- @brief    Same as saveMoveToNewUrl:error_p except
- does not perform the save operation and copies the
- old file -- does not delete it.
-*/
-- (BOOL)copyToNewUrl:(NSURL*)newUrl
-			 error_p:(NSError**)error_p ;
-
 @end
