@@ -1,5 +1,4 @@
 #import "NSManagedObjectContext+Cheats.h"
-#import "NSArray+SafeGetters.h"
 #import "NSManagedObjectModel+Versions.h"
 #import "NSString+MorePaths.h"
 #import "BkmxBasis.h"
@@ -15,7 +14,7 @@ NSString* const SSYManagedObjectContextPathExtensionForSqliteStores = @"sql" ;
 
 - (NSPersistentStore*)store1 {
 	NSArray* stores = [[self persistentStoreCoordinator] persistentStores] ;
-	NSPersistentStore* store = [stores firstObjectSafely] ;
+	NSPersistentStore* store = [stores firstObject] ;
 
 	return store ;
 }
