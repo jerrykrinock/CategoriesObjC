@@ -3,7 +3,7 @@
 
 NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain = @"SSYPersistentDocumentVerifyModelResourcesErrorDomain" ;
 
-@implementation NSPersistentDocument (VerifyModelResources)
+@implementation BSManagedDocument (VerifyModelResources)
 
 - (BOOL)verifyModelResourcesError_p:(NSError**)error_p {
     BOOL ok = YES ;

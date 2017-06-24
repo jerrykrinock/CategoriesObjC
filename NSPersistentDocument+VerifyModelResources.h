@@ -1,10 +1,11 @@
 #import <Cocoa/Cocoa.h>
+#import "BSManagedDocument.h"
 
 extern NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain ;
 
 #define SSYPersistentDocumentVerifyModelResourcesErrorBadResource 252856
 
-@interface NSPersistentDocument (VerifyModelResources)
+@interface BSManagedDocument (VerifyModelResources)
 
 /*!
  @brief    Verifies that the data model resources in the app package are

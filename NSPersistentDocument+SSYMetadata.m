@@ -6,11 +6,21 @@
 #import "NSError+DecodeCodes.h"
 #import "NSError+MoreDescriptions.h"
 
-@implementation NSPersistentDocument (SSYMetadata)
+@implementation BSManagedDocument (SSYMetadata)
 
 + (NSDictionary*)metadataAtPath:(NSString*)path {
     NSError* error = nil ;
     NSDictionary* metadata = nil ;
+
+    BOOL isDirectory;
+    [[NSFileManager defaultManager] fileExistsAtPath:path
+                                         isDirectory:&isDirectory];
+    if (isDirectory) {
+        /* It's a file package. */
+        path = [path stringByAppendingPathComponent:[BSManagedDocument storeContentName]];
+        path = [path stringByAppendingPathComponent:[BSManagedDocument persistentStoreName]];
+    }
+
     SSYSqliter* sqliter = [[SSYSqliter alloc] initWithPath:path
                                                    error_p:&error] ;
     if ([error involvesCode:SQLITE_ERROR domain:SSYSqliterErrorDomain]) {

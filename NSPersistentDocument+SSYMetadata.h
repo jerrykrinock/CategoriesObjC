@@ -1,4 +1,6 @@
-@interface NSPersistentDocument (SSYMetadata)
+#import "BSManagedDocument.h"
+
+@interface BSManagedDocument (SSYMetadata)
 
 /*!
  @brief    Returns the metadata of an SQLite
