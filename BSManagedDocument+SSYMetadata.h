@@ -1,4 +1,8 @@
 #import "BSManagedDocument.h"
+/* BSManagedDocument is a open source replacement for NSPersistentDocument.
+ It is recommended for any Core Data document-based app.
+ https://github.com/jerrykrinock/BSManagedDocument
+ */
 
 @interface BSManagedDocument (SSYMetadata)
 

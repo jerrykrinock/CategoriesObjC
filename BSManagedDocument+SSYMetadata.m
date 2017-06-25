@@ -1,4 +1,4 @@
-#import "NSPersistentDocument+SSYMetadata.h"
+#import "BSManagedDocument+SSYMetadata.h"
 #import "NSManagedObjectContext+Cheats.h"
 #import "SSYSqliter.h"
 #import "NSObject+MoreDescriptions.h"

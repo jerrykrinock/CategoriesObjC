@@ -1,4 +1,4 @@
-#import "NSPersistentDocument+VerifyModelResources.h"
+#import "BSManagedDocument+VerifyModelResources.h"
 #import "NSBundle+MainApp.h"
 
 NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain = @"SSYPersistentDocumentVerifyModelResourcesErrorDomain" ;
