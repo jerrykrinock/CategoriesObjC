@@ -12,14 +12,7 @@
     NSError* error = nil ;
     NSDictionary* metadata = nil ;
 
-    BOOL isDirectory;
-    [[NSFileManager defaultManager] fileExistsAtPath:path
-                                         isDirectory:&isDirectory];
-    if (isDirectory) {
-        /* It's a file package. */
-        path = [path stringByAppendingPathComponent:[BSManagedDocument storeContentName]];
-        path = [path stringByAppendingPathComponent:[BSManagedDocument persistentStoreName]];
-    }
+    path = [BSManagedDocument storePathForDocumentPath:path];
 
     SSYSqliter* sqliter = [[SSYSqliter alloc] initWithPath:path
                                                    error_p:&error] ;
