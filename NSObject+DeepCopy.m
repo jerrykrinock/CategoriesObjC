@@ -45,11 +45,18 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
              it and see if an exception is raised, and also test the encoded
              archive and see if it decodes to something which is not nil. */
 			@try {
-				NSData* archive = [NSKeyedArchiver archivedDataWithRootObject:self] ;
+                NSData* archive = nil;
+                /* On 20170711, macOS 10.12.5, we crashed here after modifying
+                 a document in a Dropbox folder on two Macs simultaneously.
+                 simultaneously, when an error was going to be presented and
+                 and apparently it contained a NSMergeConflict in the userInfo
+                 -userInfo or whatever.  I don't know why it crashed, but the
+                 obvious lesson is to not try to archive a NSMergeConflict… */
+                if (![self isKindOfClass:[NSMergeConflict class]]) {
+                    archive = [NSKeyedArchiver archivedDataWithRootObject:self] ;
+                }
+
                 if (!archive) {
-                    /* I've never seen this occur, but testing for it seems
-                     reasonable, especially given the change in behavior that
-                     occurred in macOS 10.10. */
                     isEncodeable = NO ;
                 }
                 else {
