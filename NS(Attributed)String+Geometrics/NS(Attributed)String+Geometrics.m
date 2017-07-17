@@ -14,8 +14,8 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 
 #pragma mark * Measure Attributed String
 
-- (NSSize)sizeForWidth:(float)width 
-				height:(float)height {
+- (NSSize)sizeForWidth:(CGFloat)width 
+				height:(CGFloat)height {
 	NSSize answer = NSZeroSize ;
     if ([self length] > 0) {
 		// Checking for empty string is necessary since Layout Manager will give the nominal
@@ -55,18 +55,18 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 	return answer ;
 }
 
-- (float)heightForWidth:(float)width {
+- (CGFloat)heightForWidth:(CGFloat)width {
 	return [self sizeForWidth:width
 					   height:FLT_MAX].height ;
 }
 
-- (float)widthForHeight:(float)height {
+- (CGFloat)widthForHeight:(CGFloat)height {
 	return [self sizeForWidth:FLT_MAX
 					   height:height].width ;
 }
 
-- (NSAttributedString*)attributedStringTruncatedToWidth:(float)width
-                                                 height:(float)height {
+- (NSAttributedString*)attributedStringTruncatedToWidth:(CGFloat)width
+                                                 height:(CGFloat)height {
     NSAttributedString* answer = self ;
     if ([self length] > 2) {
         if (([self widthForHeight:height] > width) || ([self heightForWidth:width] > height)) {
@@ -97,8 +97,8 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 
 #pragma mark * Given String with Attributes
 
-- (NSSize)sizeForWidth:(float)width 
-				height:(float)height
+- (NSSize)sizeForWidth:(CGFloat)width 
+				height:(CGFloat)height
 			attributes:(NSDictionary*)attributes {
 	NSSize answer ;
 	
@@ -113,14 +113,14 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 	return answer ;
 }
 
-- (float)heightForWidth:(float)width
+- (CGFloat)heightForWidth:(CGFloat)width
 			 attributes:(NSDictionary*)attributes {
 	return [self sizeForWidth:width
 					   height:FLT_MAX
 				   attributes:attributes].height ;
 }
 
-- (float)widthForHeight:(float)height
+- (CGFloat)widthForHeight:(CGFloat)height
 			 attributes:(NSDictionary*)attributes {
 	return [self sizeForWidth:FLT_MAX
 					   height:height
@@ -129,8 +129,8 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 
 #pragma mark * Given String with Font
 
-- (NSSize)sizeForWidth:(float)width 
-				height:(float)height
+- (NSSize)sizeForWidth:(CGFloat)width 
+				height:(CGFloat)height
 				  font:(NSFont*)font {
 	NSSize answer = NSZeroSize ;
 	
@@ -148,14 +148,14 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 	return answer ;
 }
 
-- (float)heightForWidth:(float)width
+- (CGFloat)heightForWidth:(CGFloat)width
 				   font:(NSFont*)font {
 	return [self sizeForWidth:width
 					   height:FLT_MAX
 						 font:font].height ;
 }
 
-- (float)widthForHeight:(float)height
+- (CGFloat)widthForHeight:(CGFloat)height
 				   font:(NSFont*)font {
 	return [self sizeForWidth:FLT_MAX
 					   height:height
