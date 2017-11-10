@@ -16,7 +16,7 @@ NSString* SSYPersistentDocumentVerifyModelResourcesErrorDomain = @"SSYPersistent
         NSURL *modelURL = [NSURL fileURLWithPath:modelPath];
         NSManagedObjectModel* mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL] ;
         if (mom) {
-#if NO_ARC
+#if !__has_feature(objc_arc)
             [mom release] ;
 #endif
         }

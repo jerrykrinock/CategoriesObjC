@@ -286,7 +286,7 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 	}
 	
 	NSDictionary* info = [NSDictionary dictionaryWithDictionary:exceptionInfo] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[exceptionInfo release] ;
 #endif
 	return [self errorByAddingUserInfoObject:info
@@ -311,7 +311,7 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 	NSError* error = [NSError errorWithDomain:[self domain]
 										 code:[self code]
 									 userInfo:userInfo] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[userInfo release] ;
 #endif
 	return error ;

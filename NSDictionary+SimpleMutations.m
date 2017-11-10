@@ -14,7 +14,7 @@
 			  forKey:key] ;
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
 
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[mutant release] ;
 #endif
     
@@ -32,7 +32,7 @@
 		[mutant addEntriesFromDictionary:otherDic] ;
 	}
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[mutant release] ;
 #endif
 	return newDic ;
@@ -47,7 +47,7 @@
 		}
 	}
 	NSDictionary* newDic = [NSDictionary dictionaryWithDictionary:mutant] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[mutant release] ;
 #endif
 	return newDic ;
@@ -69,7 +69,7 @@
 			[newDeletions removeObject:member] ;
 		}
 	}
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[immuterator release] ;
 #endif
     
@@ -83,7 +83,7 @@
 			[deletions removeObject:member] ;
 		}
 	}
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[immuterator release] ;
 #endif
 	// Add surviving new additions to existing additions
@@ -99,7 +99,7 @@
 			[additions removeObjectForKey:key] ;
 		}
 	}
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[immuterator release] ;
 #endif
 	// Add surviving new deletions to existing deletions

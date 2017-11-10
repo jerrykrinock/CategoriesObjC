@@ -34,7 +34,7 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 		[layoutManager glyphRangeForTextContainer:textContainer] ;
 		
 		answer = [layoutManager usedRectForTextContainer:textContainer].size ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 		[textStorage release] ;
 		[textContainer release] ;
 #endif
@@ -44,7 +44,7 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 			answer.height -= extraLineSize.height ;
 		}
 		
-#if NO_ARC
+#if !__has_feature(objc_arc)
 		[layoutManager release] ;
 #endif
 		// In case we changed it above, set typesetterBehavior back
@@ -106,7 +106,7 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
 															   attributes:attributes] ;
 	answer = [astr sizeForWidth:width
 						 height:height] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[astr release] ;
 #endif
     
