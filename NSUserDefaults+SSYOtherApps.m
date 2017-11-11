@@ -58,24 +58,24 @@
 
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray
              applicationId:(NSString*)applicationId {
-	// Don't use componentsJoinedByString:@"." because it is legal
-	// for a key path to contain a dot/period.
-	id obj = self ;
-	for(id key in keyPathArray) {
-		if (![obj respondsToSelector:@selector(objectForKey:)]) {
-			// Corrupt pref?
-			return nil ;
-		}
-		if (obj == self) {
+    // Don't use componentsJoinedByString:@"." because it is legal
+    // for a key path to contain a dot/period.
+    id obj = self ;
+    for(id key in keyPathArray) {
+        if (![obj respondsToSelector:@selector(objectForKey:)]) {
+            // Corrupt pref?
+            return nil ;
+        }
+        if (obj == self) {
             obj = [self valueForKey:key
                       applicationId:applicationId] ;
         }
         else {
             obj = [obj objectForKey:key] ;
         }
-	}
-	
-	return obj;
+    }
+    
+    return obj;
 }
 
 - (id)syncAndGetValueForKeyPathArray:(NSArray*)keyPathArray
@@ -88,22 +88,22 @@
 - (void)setAndSyncValue:(id)value
         forKeyPathArray:(NSArray*)keyArray
           applicationId:(NSString*)applicationId {
-	NSInteger N = [keyArray count] ;
-	if (!value || (N < 1)) {
-		return ;
-	}
-	
+    NSInteger N = [keyArray count] ;
+    if (!value || (N < 1)) {
+        return ;
+    }
+    
     // We sync now, because we need to read the dictionaries enclosing the
     // current value, if any.  We also sync at the end, after we have set
     // the new value.
     [self syncApplicationId:applicationId] ;
-	
+    
     NSMutableArray* dics = [[NSMutableArray alloc] init] ;
-	id object = self ;
-	id nextObject = value ;
-	NSInteger i ;
-	for (i=0; i<N-1; i++) {
-		NSString* key = [keyArray objectAtIndex:i] ;
+    id object = self ;
+    id nextObject = value ;
+    NSInteger i ;
+    for (i=0; i<N-1; i++) {
+        NSString* key = [keyArray objectAtIndex:i] ;
         
         if (object == self) {
             object = [self valueForKey:key
@@ -113,50 +113,50 @@
             object = [object objectForKey:key] ;
         }
         
-		if ([object isKindOfClass:[NSDictionary class]]) {
-			// Required dictionary already exists.  Stash it for later.
-			[dics addObject:object] ;
-		}
-		else {
-			// Dictionary does not exist staring at this level,
-			// (or preferences are corrupt and we didn't get a
-			// dictionary where one was expected.  In this case,
-			// we will, I believe, later, silently overwrite the
-			// corrupt object)
-			// Make one, from the bottom up, starting with
-			// the value and the last key in keyArray.
-			// Then break out of the loop.
-			NSInteger j  ;
-			nextObject = value ;
-			if (nextObject) {   // if () added as bug fix in BookMacster 1.14.4
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            // Required dictionary already exists.  Stash it for later.
+            [dics addObject:object] ;
+        }
+        else {
+            // Dictionary does not exist staring at this level,
+            // (or preferences are corrupt and we didn't get a
+            // dictionary where one was expected.  In this case,
+            // we will, I believe, later, silently overwrite the
+            // corrupt object)
+            // Make one, from the bottom up, starting with
+            // the value and the last key in keyArray.
+            // Then break out of the loop.
+            NSInteger j  ;
+            nextObject = value ;
+            if (nextObject) {   // if () added as bug fix in BookMacster 1.14.4
                 for (j=N-1; j>i; j--) {
                     NSString* aKey = [keyArray objectAtIndex:j] ;
                     nextObject = [NSDictionary dictionaryWithObject:nextObject
                                                              forKey:aKey] ;
                 }
             }
-			
-			break ;
-		}
-	}
-	
+            
+            break ;
+        }
+    }
+    
     NSString* key ;
     
-	// Reverse-enumerate through the dictionaries, starting at
-	// the inside and setting little dictionaries as objects
-	// inside the bigger dictionaries
-	NSEnumerator* e = [dics reverseObjectEnumerator] ;
+    // Reverse-enumerate through the dictionaries, starting at
+    // the inside and setting little dictionaries as objects
+    // inside the bigger dictionaries
+    NSEnumerator* e = [dics reverseObjectEnumerator] ;
     [dics release] ;
-	NSMutableDictionary* copy ;
-	for (NSDictionary* dic in e) {
+    NSMutableDictionary* copy ;
+    for (NSDictionary* dic in e) {
         key = [keyArray objectAtIndex:i] ;
-		copy = [dic mutableCopy] ;
-		[copy setObject:nextObject
-				 forKey:key] ;
-		nextObject = [copy autorelease] ;
-		i-- ;
-	}
-	
+        copy = [dic mutableCopy] ;
+        [copy setObject:nextObject
+                 forKey:key] ;
+        nextObject = [copy autorelease] ;
+        i-- ;
+    }
+    
     if (nextObject) {  // if() added as bug fix added in BookMaster 1.14.4
         key = [keyArray objectAtIndex:0] ;
         [self setValue:nextObject
@@ -181,18 +181,18 @@
    fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
                   applicationId:(NSString*)applicationId {
     [self syncApplicationId:applicationId] ;
-	NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
+    NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
                                             applicationId:applicationId] ;
-	if (dictionary) {
-		dictionary = [dictionary dictionaryBySettingValue:nil
-												   forKey:key] ;
-		[self setAndSyncValue:dictionary
+    if (dictionary) {
+        dictionary = [dictionary dictionaryBySettingValue:nil
+                                                   forKey:key] ;
+        [self setAndSyncValue:dictionary
               forKeyPathArray:keyPathArray
                 applicationId:applicationId] ;
-	}
-	else {
-		// The dictionary doesn't exist.  Don't do anything.
-	}
+    }
+    else {
+        // The dictionary doesn't exist.  Don't do anything.
+    }
 }
 
 @end
