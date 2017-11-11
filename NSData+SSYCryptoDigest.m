@@ -14,6 +14,12 @@
     return hash ;
 }
 
+- (NSData *)sha256Digest {
+    NSMutableData* hash = [NSMutableData dataWithLength: CC_SHA256_DIGEST_LENGTH] ;
+    CC_SHA256([self bytes], (CC_LONG)[self length], [hash mutableBytes]) ;
+    return hash ;
+}
+
 @end
 
 // Reference: https://www.mikeash.com/pyblog/friday-qa-2012-08-10-a-tour-of-commoncrypto.html

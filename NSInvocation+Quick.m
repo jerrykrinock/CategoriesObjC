@@ -129,11 +129,11 @@ static NSObject* gNil = nil ;
 }
 
 + (void)invokeWithAutoreleasePoolInvocation:(NSInvocation*)invocation {
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init] ;
 #endif
 	[invocation invoke] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
 	[pool release] ;
 #endif
 }

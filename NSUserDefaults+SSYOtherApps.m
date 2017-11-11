@@ -153,11 +153,6 @@
 		copy = [dic mutableCopy] ;
 		[copy setObject:nextObject
 				 forKey:key] ;
-        // This statement removed in BookMacster 1.19.6.  It was a mistake
-        // to put this in here.
-        //        [self setValue:nextObject
-        //                forKey:[keyArray objectAtIndex:i]
-        //         applicationId:applicationId] ;
 		nextObject = [copy autorelease] ;
 		i-- ;
 	}

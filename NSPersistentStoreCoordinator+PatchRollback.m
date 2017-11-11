@@ -18,7 +18,7 @@
     NSDictionary* sqlitePragmas = [[NSDictionary alloc] initWithObjectsAndKeys:
                                    @"DELETE", @"journal_mode",
                                    nil] ;
-#if NO_ARC
+#if !__has_feature(objc_arc)
     [sqlitePragmas autorelease] ;
 #endif
     return sqlitePragmas ;
@@ -33,7 +33,7 @@
                forKey:NSSQLitePragmasOption] ;
     NSDictionary* optionsOut = [mutant copy] ;
     
-#if NO_ARC
+#if !__has_feature(objc_arc)
     [mutant release] ;
     [optionsOut autorelease] ;
 #endif

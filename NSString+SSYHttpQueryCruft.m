@@ -138,21 +138,42 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
     if ((ranges.count > 0) && (self.length > 2)) {
         NSMutableString* decruftedSelf = [self mutableCopy] ;
 
-        /* Firstly, we remove the key/value pairs themselvew.  We start from the
-         *end* to avoid shifting ranges which have yet to be removed. */
+        /* Before beginning, because we are going to remove ranges, we must
+         sort them into descending order of .location. */
+        NSMutableArray* sortedRanges = [ranges mutableCopy];
+        [sortedRanges sortUsingComparator:^NSComparisonResult(id  _Nonnull s1, id  _Nonnull s2) {
+            NSInteger loc1 = NSRangeFromString(s1).location;
+            NSInteger loc2 = NSRangeFromString(s2).location;
+            if (loc1 < loc2) {
+                return NSOrderedDescending;
+            }
+            else if (loc1 > loc2) {
+                return NSOrderedAscending;
+            }
+            else {
+                return NSOrderedSame;
+            }
+        }];
 
-        NSInteger beginningOfLastRemovedPair = NSRangeFromString(ranges.lastObject).location ;
+        /* Firstly, we remove the key/value pairs themselves. */
+        NSInteger beginningOfHighestRemovedPair = NSRangeFromString(sortedRanges.firstObject).location ;
         NSRange range = NSMakeRange(NSNotFound, 0) ;
-        for (NSString* rangeString in [ranges reverseObjectEnumerator]) {
+        for (NSString* rangeString in sortedRanges) {
             range = NSRangeFromString(rangeString) ;
             [decruftedSelf deleteCharactersInRange:range] ;
         }
-        
-        /* At this point, range.location indicates the first character where a
-         crufty key/value pair was removed from. */
-        
-        /* Secondly, we remove delimiters which were orphaned by their
-         adjacent key/value pairs having been removed. */
+
+#if !__has_feature(objc_arc)
+        [sortedRanges release];
+#endif
+        /* At this point,
+         .  * decruftedSelf may end with a string of delimiters due to the
+         .    removed key/value pairs.  Example:
+         .        https://www.youtube.com/watch?&v=2jg33NUsCAg&&&&&
+         .  * range.location indicates the first character where a crufty
+         .    key/value pair was removed from.
+
+         Our second task is to now remove those delimiters. */
 
         NSScanner* scanner = [[NSScanner alloc] initWithString:decruftedSelf] ;
         NSMutableIndexSet* indexesOfOrphanedDelimiters = [[NSMutableIndexSet alloc] init] ;
@@ -202,11 +223,11 @@ NSString* constKeyCruftKeyIsRegex = @"keyIsRegex" ;
 
             /* Also break when we get to the end of the query (so we
              don't go into the # fragment portion. */
-            if (scanner.scanLocation > beginningOfLastRemovedPair) {
+            if (scanner.scanLocation > beginningOfHighestRemovedPair) {
                 break ;
             }
         }
-        
+
         /* Actually remove the orphaned delimiters. */
         NSInteger i = [indexesOfOrphanedDelimiters lastIndex] ;
         while ((i != NSNotFound)) {

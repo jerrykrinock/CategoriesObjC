@@ -122,7 +122,7 @@
         i = [indexesToRemove indexLessThanIndex:i] ;
     }
     
-#if NO_ARC
+#if !__has_feature(objc_arc)
     [indexesToRemove release] ;
 #endif
 }
