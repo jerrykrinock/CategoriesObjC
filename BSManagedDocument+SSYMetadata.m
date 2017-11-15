@@ -101,7 +101,8 @@
 
 - (id)metadataObjectForKey:(NSString*)key {
 	NSDictionary* metadata = [[self managedObjectContext] metadata1] ;
-    id answer ;
+    /* metadata could be nil if store has not been saved yet. */
+    id answer = nil;
 	if (metadata) {
         answer = [metadata objectForKey:key] ;
     }
@@ -109,8 +110,10 @@
 		// Probably the store has not been configured yet, so [[self managedObjectContext] store1]
 		// returns nil.  Therefore, we are forced to get the metadata by cheating…
 		NSString* path = [[self fileURL] path] ;
-        answer = [[self class] metadataObjectForKey:key
-                                                 path:path] ;
+        if (path) {
+            answer = [[self class] metadataObjectForKey:key
+                                                   path:path] ;
+        }
 	}
     
     return answer ;
