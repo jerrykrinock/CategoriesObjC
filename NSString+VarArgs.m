@@ -18,10 +18,12 @@ static NSCharacterSet* static_modifierCharacterSet = nil ;
 		  placeholderRange:(NSRange)placeholderRange
 					argPtr:(va_list *)argPtr 
 		 indexCharacterSet:(NSCharacterSet*)indexCharacterSet {
-	if (static_modifierCharacterSet == nil) {
-		static_modifierCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@".01234566789"] ;
-		[static_modifierCharacterSet retain] ; // Stick around until app quits
-	}
+    @synchronized([self class]) {
+        if (static_modifierCharacterSet == nil) {
+            static_modifierCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@".01234566789"] ;
+            [static_modifierCharacterSet retain] ; // Stick around until app quits
+        }
+    }
 	
 	NSUInteger possibleFormatCharLocation ;
 	NSString* modifier = @"" ;
