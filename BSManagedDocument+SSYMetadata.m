@@ -88,7 +88,6 @@
                                           path, @"Path",
                                           // key, @"Key", Removed in BookMacster 1.20.5
                                           nil]] ;
-        NSLog(@"Internal Error 674-8448 in %s: %@", __PRETTY_FUNCTION__, [error longDescription]) ;
     }
     
     return metadata ;

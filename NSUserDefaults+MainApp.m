@@ -144,12 +144,12 @@
 
 - (BOOL)syncAndGetMainAppIntegerForKey:(NSString*)key {
     NSNumber* integerObject = [self syncAndGetMainAppValueForKey:key] ;
-    BOOL answer ;
+    NSInteger answer ;
     if ([integerObject respondsToSelector:@selector(integerValue)]) {
         answer = [integerObject integerValue] ;
     }
     else {
-        answer = NO ;
+        answer = 0 ;
     }
     
     return answer ;
