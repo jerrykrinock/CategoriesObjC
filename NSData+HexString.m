@@ -42,8 +42,12 @@ char ASCIIHexCharacterForNibble(short nibble, BOOL uppercaseLetters) {
 	}
 	hashCString[32] = 0 ; // null termination
 
-	NSString* hashedString = [[NSString alloc] initWithUTF8String:hashCString] ; 
-	return [hashedString autorelease] ;
+    NSString* hashedString = [[NSString alloc] initWithUTF8String:hashCString] ;
+#if !__has_feature(objc_arc)
+    [hashedString autorelease];
+#endif
+
+    return hashedString;
 }
 
 @end
