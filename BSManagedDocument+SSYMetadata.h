@@ -45,15 +45,21 @@
  persistent store of the receiver's managed object context
  
  @details   This method will not work in new managed object contexts
- until after the store has been saved once.
+ until after the store has been saved once.  If the object and key are not
+ added because the store is readonly, this method is a no-op.
  
  @param    object  A serializable object.  (It will be set as a value in an NSDictionary.)
  @param    andSave  See -addMetadata:andSave:.
+ @param    error_p  If not NULL and if returning NO, will point to an error
+ object encapsulating the error.
+ @result   YES the method succeedds, or if it fails because the stores is
+ readonly.  If setting fails for other reasons, returns NO.
 
  */
-- (void)setMetadataObject:(id)object
+- (BOOL)setMetadataObject:(id)object
 				   forKey:(NSString*)key
-                  andSave:(BOOL)doSave ;
+                  andSave:(BOOL)doSave
+                  error_p:(NSError**)error_p;
 
 /*!
  @brief    Adds a given dictionary to the metadata of the first persistent

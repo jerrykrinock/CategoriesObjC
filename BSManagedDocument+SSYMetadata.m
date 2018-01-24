@@ -139,7 +139,7 @@
 	 In that case, fileURL is nil and -[saveDocument never returns, blocks forever!
 	 */
 	
-	if (![[self managedObjectContext] hasChanges]) {
+    if (![[self managedObjectContext] hasChanges]) {
         if (![self ssy_isInViewingMode]) {
             NSError* error = nil ;
             BOOL ok = [[self managedObjectContext] save:&error] ;
@@ -151,9 +151,10 @@
 }
 
 
-- (void)setMetadataObject:(id)object
+- (BOOL)setMetadataObject:(id)object
 				   forKey:(NSString*)key
-                  andSave:(BOOL)doSave {
+                  andSave:(BOOL)doSave
+                  error_p:(NSError**)error_p {
     NSError* error = nil ;
 	[[self managedObjectContext] setMetadata1Object:object
 										   forKey:key
@@ -163,13 +164,19 @@
             // This is expected when operating on store in Versions Browser
         }
         else {
-            NSLog(@"Internal Error 292-0484  %@", [error localizedDescription]) ;
+            error = nil ;
         }
     }
 	
     if (doSave) {
         [self saveMetadataOnly] ;
     }
+
+    if (error && error_p) {
+        *error_p = error ;
+    }
+
+    return (error == nil);
 }	
 
 - (void)addMetadata:(NSDictionary*)moreMetadata
