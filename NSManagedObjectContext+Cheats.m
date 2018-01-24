@@ -231,20 +231,15 @@ end:
 	[metadata setObject:object
 				 forKey:key] ;
 	NSPersistentStoreCoordinator* persistentStoreCoordinator = [self persistentStoreCoordinator] ;
-	NSPersistentStore* persistentStore = [self store1] ;
-	if (![persistentStore isReadOnly]) {
-		[persistentStoreCoordinator setMetadata:metadata
-							 forPersistentStore:persistentStore] ;
-        result = YES ;
-	}
-	else if (!persistentStore) {
+    NSPersistentStore* persistentStore = [self store1] ;
+	if (!persistentStore) {
 		error = [NSError errorWithDomain:SSYManagedObjectContextCheatsErrorDomain
                                     code:SSYManagedObjectContextCheatsErrorCouldNotGetStore
                                 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                           @"Could not get store", NSLocalizedDescriptionKey,
                                           nil]] ;
 	}
-    else {
+    else if ([persistentStore isReadOnly]) {
 		NSString* desc = [NSString stringWithFormat:
                           @"Store is readonly : %@",
                           [persistentStore URL]] ;
@@ -254,7 +249,13 @@ end:
                                           desc, NSLocalizedDescriptionKey,
                                           nil]] ;
     }
-	
+    else {
+        [persistentStoreCoordinator setMetadata:metadata
+                             forPersistentStore:persistentStore] ;
+        /*SSYDBL*/ NSLog(@"PSC %@ wrote to store %@ at url %@ metadata: %@", persistentStoreCoordinator, persistentStore, [persistentStore URL], metadata) ;
+        result = YES ;
+    }
+
     if (error) {
         if (error_p) {
             *error_p = error ;
