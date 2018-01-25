@@ -4,6 +4,17 @@
  https://github.com/jerrykrinock/BSManagedDocument
  */
 
+/*!
+ @brief    Class for accessing Core Data metadata of a BSManagedDocument,
+ with or without a persistence stack
+
+ @details  In macOS 10.13.3, at least, there is no reliable way to *just*
+ save changes to Core Data metadata.  To save metadata changes, you must
+ change object(s) in the actual data model, and *then*  invoke
+ -[NSManagedObjectContext save:].  For your own key/value pairs you  should
+ consider using BSManagedDocument(SSYAuxiliaryData) instead of Core Data's
+ metadata.
+ */
 @interface BSManagedDocument (SSYMetadata)
 
 /*!
@@ -42,65 +53,31 @@
 
 /*!
  @brief    Adds a given object and key to the metadata of the first
- persistent store of the receiver's managed object context
+ persistent store of the receiver's managed object context, or removes a
+ given key
  
  @details   This method will not work in new managed object contexts
  until after the store has been saved once.  If the object and key are not
  added because the store is readonly, this method is a no-op.
  
- @param    object  A serializable object.  (It will be set as a value in an NSDictionary.)
- @param    andSave  See -addMetadata:andSave:.
+ @param    object  A serializable object, or nil to remove the given key
  @param    error_p  If not NULL and if returning NO, will point to an error
  object encapsulating the error.
- @result   YES the method succeedds, or if it fails because the stores is
+ @result   YES the method succeeds, or if it fails because the store is
  readonly.  If setting fails for other reasons, returns NO.
 
  */
 - (BOOL)setMetadataObject:(id)object
 				   forKey:(NSString*)key
-                  andSave:(BOOL)doSave
                   error_p:(NSError**)error_p;
 
 /*!
  @brief    Adds a given dictionary to the metadata of the first persistent
  store of the receiver's managed object context
  
- @details  Also saves the store as described in -saveMetadataOnly.
- To get the existing metadata (which is necesary to mutate it),
+ @details  To get the existing metadata (which is necesary to mutate it),
  relies on the same trick described in -metadataObjectForKey:
- 
- @param    andSave  Optionally saves the store as described in -saveMetadataOnly.
- It is best to pass NO if you know that the document will be saved immediately
- in some other method, because there are wacky edge cases where this save
- followed by another save will result in one of those damned "The changes made
- by the other application will be lost if you save. Save anyway?" because
- "This document’s file has been changed by another application since you opened
- or saved it" sheets being presented (macOS 10.7); or NSCocoa ErrorDomain
- error code 67000 being sent to -willPresentError: (macOS 10.8).
-*/
-- (void)addMetadata:(NSDictionary*)moreMetadata
-            andSave:(BOOL)doSave ;
-
-/*!
- @brief    Workaround for the fact that the only way to save metadata in
- a Core Data document is to save the managed object context, which saves
- the regular data too.
- 
- @details   This method saves only if the document's regular data does
- *not* have changes because…
- 
- * I'm afraid of introducing bugs into the always-fragile  NSPersistentDocument
- document-saving system, which I have already bastardized quite a bit in other places.
- 
- * I don't want to be saving the document and un-dirtying the dirty dot without
- the user asking to "Save".
- 
- * If the document is dirty, and if the user cares, it will be saved later anyhow.
- 
- * Saving will be guaranteed if this method is invoked while opening a document,
- so if there's some really important metadata, you might be able to do it then.
  */
-- (void)saveMetadataOnly ;
+- (void)addMetadata:(NSDictionary*)moreMetadata;
 
-	
 @end

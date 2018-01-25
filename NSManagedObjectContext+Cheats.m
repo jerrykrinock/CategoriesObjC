@@ -228,8 +228,12 @@ end:
     BOOL result = NO ;
     NSError* error = nil ;
 	NSMutableDictionary* metadata = [[self metadata1] mutableCopy] ;
-	[metadata setObject:object
-				 forKey:key] ;
+    if (object) {
+        [metadata setObject:object
+                     forKey:key] ;
+    } else {
+        [metadata removeObjectForKey:key];
+    }
 	NSPersistentStoreCoordinator* persistentStoreCoordinator = [self persistentStoreCoordinator] ;
     NSPersistentStore* persistentStore = [self store1] ;
 	if (!persistentStore) {
@@ -252,7 +256,6 @@ end:
     else {
         [persistentStoreCoordinator setMetadata:metadata
                              forPersistentStore:persistentStore] ;
-        /*SSYDBL*/ NSLog(@"PSC %@ wrote to store %@ at url %@ metadata: %@", persistentStoreCoordinator, persistentStore, [persistentStore URL], metadata) ;
         result = YES ;
     }
 

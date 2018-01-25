@@ -100,7 +100,8 @@
 
 - (id)metadataObjectForKey:(NSString*)key {
 	NSDictionary* metadata = [[self managedObjectContext] metadata1] ;
-    /* metadata could be nil if store has not been saved yet. */
+    /* metadata could be nil if store has not been 
+     ed yet. */
     id answer = nil;
 	if (metadata) {
         answer = [metadata objectForKey:key] ;
@@ -118,42 +119,8 @@
     return answer ;
 }
 
-- (void)saveMetadataOnly {
-	/*
-	 Added in BookMacster 1.6.4 to detect the case when we are invoked from,
-	 for example, this call stack…
-	 #0	0x995d5c5e in semaphore_wait_trap
-	 #1	0x9bb26874 in _dispatch_semaphore_wait_slow
-	 #2	0x9bb26970 in dispatch_semaphore_wait
-	 #3	0x9713b135 in -[NSDocument performActivityWithSynchronousWaiting:usingBlock:]
-	 #4	0x971205cd in -[NSDocument saveDocumentWithDelegate:didSaveSelector:contextInfo:]
-	 #5	0x971201e0 in -[NSDocument saveDocument:]
-	 #6	0x0022801c in -[NSPersistentDocument(SSYMetadata) saveMetadataOnly] at NSPersistentDocument+SSYMetadata.m:81
-	 #7	0x0017c570 in -[BkmxDoc upgradeBrowprietaries] at BkmxDoc.m:1680
-	 #8	0x0017d9d9 in -[BkmxDoc readFromURL:ofType:error:] at BkmxDoc.m:1952
-	 #9	0x96fb979d in -[NSDocument _initForURL:withContentsOfURL:ofType:error:]
-	 #10	0x96fb9687 in -[NSDocument initForURL:withContentsOfURL:ofType:error:]
-	 #11	0x96fb93fc in -[NSDocumentController makeDocumentForURL:withContentsOfURL:ofType:error:]
-	 #12	0x9714dba8 in -[NSDocumentController duplicateDocumentWithContentsOfURL:copying:displayName:error:]
-	 as the result of using clicking menu File ▸ Duplicate, then the Duplicate button.
-	 In that case, fileURL is nil and -[saveDocument never returns, blocks forever!
-	 */
-	
-    if (![[self managedObjectContext] hasChanges]) {
-        if (![self ssy_isInViewingMode]) {
-            NSError* error = nil ;
-            BOOL ok = [[self managedObjectContext] save:&error] ;
-            if (!ok) {
-                NSLog(@"Internal Error 624-0393 saving metadata: %@", [error longDescription]) ;
-            }
-        }
-    }
-}
-
-
 - (BOOL)setMetadataObject:(id)object
 				   forKey:(NSString*)key
-                  andSave:(BOOL)doSave
                   error_p:(NSError**)error_p {
     NSError* error = nil ;
 	[[self managedObjectContext] setMetadata1Object:object
@@ -168,10 +135,6 @@
         }
     }
 	
-    if (doSave) {
-        [self saveMetadataOnly] ;
-    }
-
     if (error && error_p) {
         *error_p = error ;
     }
@@ -179,13 +142,8 @@
     return (error == nil);
 }	
 
-- (void)addMetadata:(NSDictionary*)moreMetadata
-            andSave:(BOOL)doSave {
-	if ([[self managedObjectContext] addMetadata1:moreMetadata]) {
-		if (doSave) {
-            [self saveMetadataOnly] ;
-        }
-	}
+- (void)addMetadata:(NSDictionary*)moreMetadata {
+    [[self managedObjectContext] addMetadata1:moreMetadata];
 }
 
 @end

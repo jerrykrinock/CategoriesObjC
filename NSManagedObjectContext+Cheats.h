@@ -108,13 +108,13 @@ extern NSString* const SSYManagedObjectContextPathExtensionForSqliteStores ;
 
 /*!
  @brief    Sets an object for a given key in the metadata of the
- receiver's first persistent store.
+ receiver's first persistent store, or removes the key
  
  @details  Does not save the store.
  Warning: This method will not work in new managed object contexts
  until after the store has been saved once.
  
- @param    object  A serializable object.  (It will be set as a value in an NSDictionary.)
+ @param    object  A serializable object, or nil to remove the given key
  @param    error_p  If not NULL and if an error occurs, upon return, will point
  to an error object encapsulating the error.  If NULL and an error occurs, the
  error will be logged to the system console
