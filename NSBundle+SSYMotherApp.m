@@ -27,7 +27,6 @@
                                                          YES
                                                          ) ;
     NSString* userAppSupportPath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil ;
-    // The idea is that we return "BookMacster" for the other three apps too.
     NSString* motherAppName = [self motherAppName] ;
     if (!motherAppName) {
         motherAppName = [[NSBundle mainAppBundle] objectForInfoDictionaryKey:@"CFBundleName"] ;
