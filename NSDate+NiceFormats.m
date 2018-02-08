@@ -87,7 +87,7 @@ you've checked that you are running under macOS 10.6.
 }
 
 - (NSString*)compactDateTimeString {
-	//  Remove spaces, dash and colon from YYYY-MM-DD HH:MM:SS
+	//  Remove spaces, dashs and colons from YYYY-MM-DD HH:MM:SS
 	NSString* s1 = [[self geekDateTimeString] stringByReplacingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" :-"]
 																	withString:@""] ;
     return s1 ;
