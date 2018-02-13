@@ -69,4 +69,6 @@
 */
 - (NSString*)listNames ;
 
+- (NSString*)listValuesForKey:(NSString*)key;
+
 @end

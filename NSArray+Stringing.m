@@ -104,4 +104,10 @@
 					   truncateTo:0] ;
 }
 
+- (NSString*)listValuesForKey:(NSString*)key {
+	return [self listValuesForKey:key
+                      conjunction:nil
+                       truncateTo:0];
+}
+
 @end
