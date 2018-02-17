@@ -304,37 +304,6 @@ end:
 
 	NSManagedObject* object ;
 	if (objectId) {
-		// Prior to BookMacster 1.9.3, we just did this here:
-		// object = [self objectWithID:objectId] ;
-		// That sometimes caused Core Data exceptions as explained below.
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1060) 
-		// macOS 10.5 or earlier
-		object = [self objectWithID:objectId] ;
-		// If an object with objectId does not exist in the store, -objectWithID: will
-		// "helpfully" create a bogus object which will raise a "Core Data could not
-		// fulfill a fault" exception when we try to access any of its properties.
-		// (This behavior is per documentation.)
-		// The solution to this problem is to immediately test the object by
-		// trying to access one of its properties in a @try/catch block and
-		// catching the "Core Data could not fulfill a fault" exception.
-		// Amazingly, I tested this kludge and it actually worked, 3 times!
-		id value = nil ;
-		@try {
-			NSDictionary* attributes = [[object entity] propertiesByName] ;
-			NSArray* keys = [attributes allKeys] ;
-			NSString* aKey = [keys firstObjectSafely] ;
-			value = [object valueForKey:aKey] ;
-		}
-		@catch (NSException* exception) {
-			// If asking this method for nonexistent objects is expected,
-			// you should delete the next line…
-			NSLog(@"Warning 927-6429 %@ : %@", exception, value) ;
-			object = nil ;
-		}
-		@finally {
-		}
-#else
-		// macOS 10.6 or later
 		NSError* error = nil ;
 		object = [self existingObjectWithID:objectId
 									  error:&error] ;
@@ -357,7 +326,6 @@ end:
                 NSLog(@"Warning 927-4140  object=%p", object) ;
             }
 		}
-#endif
 	}
 	else {
 		object = nil ;
