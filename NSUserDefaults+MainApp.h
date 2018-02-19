@@ -28,7 +28,7 @@
 
 - (BOOL)syncAndGetMainAppBoolForKey:(NSString*)key ;
 
-- (BOOL)syncAndGetMainAppIntegerForKey:(NSString*)key ;
+- (NSInteger)syncAndGetMainAppIntegerForKey:(NSString*)key ;
 
 
 /*!
@@ -53,6 +53,9 @@
 
 - (void)addAndSyncMainAppObject:(id)object
           toArrayAtKeyPathArray:(NSArray*)keyPathArray ;
+
+- (void)addAndSyncMainAppUniqueObject:(id)object
+                toArrayAtKeyPathArray:(NSArray*)keyPathArray;
 
 - (void)removeAndSyncMainAppObject:(id)object
            fromArrayAtKeyPathArray:(NSArray*)keyPathArray ;

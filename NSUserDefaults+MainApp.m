@@ -88,6 +88,20 @@
                  forKeyPathArray:keyPathArray] ;
 }
 
+- (void)addAndSyncMainAppUniqueObject:(id)object
+                toArrayAtKeyPathArray:(NSArray*)keyPathArray {
+    NSArray* array = [self syncAndGetMainAppValueForKeyPathArray:keyPathArray] ;
+    if (array) {
+        array = [array arrayByAddingUniqueObject:object] ;
+    }
+    else {
+        array = [NSArray arrayWithObject:object] ;
+    }
+
+    [self setAndSyncMainAppValue:array
+                 forKeyPathArray:keyPathArray] ;
+}
+
 
 
 - (void)removeAndSyncMainAppObject:(id)object
@@ -142,7 +156,7 @@
                           forKey:key] ;    
 }
 
-- (BOOL)syncAndGetMainAppIntegerForKey:(NSString*)key {
+- (NSInteger)syncAndGetMainAppIntegerForKey:(NSString*)key {
     NSNumber* integerObject = [self syncAndGetMainAppValueForKey:key] ;
     NSInteger answer ;
     if ([integerObject respondsToSelector:@selector(integerValue)]) {
