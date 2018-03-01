@@ -130,4 +130,19 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 		  error_p:(NSError**)error_p ;
 
 
+/*!
+ @brief    Ensures that the user's Desktop contains a folder with a given
+ name, creating one of necessary
+
+ @details  This method is handy when you want to write some files to the
+ user's Desktop, for debugging maybe.  It contains the couple dozen lines of
+ tedious code, with error checking, which are necessary to do it robustly.
+
+ @param    error_p  If not NULL and if an unsuccessful, upon return,
+ will point to an error object encapsulating the error.
+ @result   If successful, the full path to the target directory, otherwise nil
+ */
+- (NSString*)ensureDesktopDirectoryNamed:(NSString*)dirName
+                                 error_p:(NSError**)error_p;
+
 @end

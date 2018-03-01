@@ -341,5 +341,61 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 	return ok ;
 }
 
+- (NSString*)ensureDesktopDirectoryNamed:(NSString*)dirName
+                                 error_p:(NSError**)error_p {
+    BOOL ok = YES;
+    NSError* error = nil;
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDesktopDirectory,  // or NSLibraryDirectory
+                                                         NSUserDomainMask,
+                                                         YES
+                                                         ) ;
+    NSString* path = ([paths count] > 0) ? [paths objectAtIndex:0] : nil ;
+    if (!path) {
+        ok = NO;
+        error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                    code:617005
+                                userInfo:@{NSLocalizedDescriptionKey: @"Weird: Could not find ~/Desktop"}];
+    }
+
+    BOOL needsCreation = NO;
+    if (ok) {
+        path = [path stringByAppendingPathComponent:dirName];
+
+        BOOL dirIsDir;
+        BOOL dirExists = [[NSFileManager defaultManager] fileExistsAtPath:path
+                                                              isDirectory:&dirIsDir];
+        if (dirExists) {
+            if (!dirIsDir) {
+                ok = [[NSFileManager defaultManager] removeItemAtPath:path
+                                                                error:&error];
+                needsCreation = YES;
+            }
+        } else {
+            needsCreation = YES;
+        }
+    }
+
+    if (ok) {
+        if (needsCreation) {
+            ok = [[NSFileManager defaultManager] createDirectoryAtPath:path
+                                           withIntermediateDirectories:YES
+                                                            attributes:nil
+                                                                 error:&error];
+        }
+    }
+
+    if (!ok) {
+        path = nil;
+    }
+
+    if (error && error_p) {
+        *error_p = error ;
+    }
+
+    return path;
+}
+
 
 @end
