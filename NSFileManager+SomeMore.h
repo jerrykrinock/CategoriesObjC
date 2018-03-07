@@ -81,8 +81,12 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
  
  @details  Starting in BookMacster 1.15.3, this method no longer returns YES
  if a document appears to be in a Dropbox cache/trash.
+
+ @param    error_p  A pointer, or nil.  If non-nil, on output, if returning NO,
+ points to the relevant NSError.
  */
-- (BOOL)fileIsPermanentAtPath:(NSString*)path ;
+- (BOOL)fileIsPermanentAtPath:(NSString*)path
+                      error_p:(NSError**)error_p;
 
 /*!
  @brief    Returns the unix advisory lock status for a given path

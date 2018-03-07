@@ -139,77 +139,126 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 	return ok ;
 }
 
-- (BOOL)fileIsPermanentAtPath:(NSString*)path {
-    if (!path) {
-        return NO ;
+- (BOOL)fileIsPermanentAtPath:(NSString*)path
+                      error_p:(NSError**)error_p {
+    BOOL ok = YES;
+    NSError* error = nil;
+    NSURL* url = nil;
+    NSURLRelationship relationship;
+    NSFileManager* fm;
+
+    if (ok) {
+        if (!path) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617010
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is nil"}] ;
+        }
     }
 
-    NSURL* url = [NSURL fileURLWithPath:path] ;
-    NSFileManager* fm = [NSFileManager defaultManager] ;
-    if (![fm fileExistsAtPath:path]) {
-        return NO ;
-    }
-    
-    NSURLRelationship relationship ;
-    
-    [fm getRelationship:&relationship
-            ofDirectory:NSTrashDirectory
-               inDomain:NSAllDomainsMask
-            toItemAtURL:url
-                  error:NULL] ;
-    if (relationship == NSURLRelationshipContains) {
-        return NO ;
-    }
-    
-    [fm getRelationship:&relationship
-            ofDirectory:NSCachesDirectory
-               inDomain:NSAllDomainsMask
-            toItemAtURL:url
-                  error:NULL] ;
-    if (relationship == NSURLRelationshipContains) {
-        return NO ;
+    if (ok) {
+        url = [NSURL fileURLWithPath:path] ;
+        fm = [NSFileManager defaultManager] ;
+        if (![fm fileExistsAtPath:path]) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617011
+                                    userInfo:@{NSLocalizedDescriptionKey: @"There is no file at the given path"}] ;
+        }
     }
 
-    // It would be nice if the NSAutosavedInformationDirectory someday meant the
-    // /.DocumentRevisions-V100/ directory, but probably the following refers
-    // only to Documents/Autosaved which is the legacy generation of auto save.
-    [fm getRelationship:&relationship
-            ofDirectory:NSAutosavedInformationDirectory
-               inDomain:NSAllDomainsMask
-            toItemAtURL:url
-                  error:NULL] ;
-    if (relationship == NSURLRelationshipContains) {
-        return NO ;
+    if (ok) {
+        [fm getRelationship:&relationship
+                ofDirectory:NSTrashDirectory
+                   inDomain:NSAllDomainsMask
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617012
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Trash directory"}] ;
+        }
     }
-    
-    // Unfortunately, NSSearchPathDirectory does not offer an
-    // NSTemporaryDirectory, so we use the path, and only in the Home
-    // directory (the "user" domain), with or without the "/private" symlink
+
+    if (ok) {
+        [fm getRelationship:&relationship
+                ofDirectory:NSCachesDirectory
+                   inDomain:NSAllDomainsMask
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617013
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Caches directory"}] ;
+        }
+    }
+
+    if (ok) {
+        /* It would be nice if the NSAutosavedInformationDirectory someday
+         meant the /.DocumentRevisions-V100/ directory, but probably the
+         following refers only to Documents/Autosaved which is the legacy
+         generation of auto save. */
+        [fm getRelationship:&relationship
+                ofDirectory:NSAutosavedInformationDirectory
+                   inDomain:NSAllDomainsMask
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617014
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Autosave Information directory (probably a OS X legacy)"}] ;
+        }
+    }
+
     NSURL* temporaryUrl ;
-    
-    temporaryUrl = [NSURL fileURLWithPath:NSTemporaryDirectory()] ;
-    [fm getRelationship:&relationship
-       ofDirectoryAtURL:temporaryUrl
-            toItemAtURL:url
-                  error:NULL] ;
-    if (relationship == NSURLRelationshipContains) {
-        return NO ;
+    if (ok) {
+        // Unfortunately, NSSearchPathDirectory does not offer an
+        // NSTemporaryDirectory, so we use the path, and only in the Home
+        // directory (the "user" domain), with or without the "/private" symlink
+        temporaryUrl = [NSURL fileURLWithPath:NSTemporaryDirectory()] ;
+        [fm getRelationship:&relationship
+           ofDirectoryAtURL:temporaryUrl
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617015
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Temporary directory"}] ;
+        }
     }
 
-    temporaryUrl = [NSURL fileURLWithPath:[@"/private" stringByAppendingPathComponent:NSTemporaryDirectory()]] ;
-    [fm getRelationship:&relationship
-       ofDirectoryAtURL:temporaryUrl
-            toItemAtURL:url
-                  error:NULL] ;
-    if (relationship == NSURLRelationshipContains) {
-        return NO ;
+    if (ok) {
+        temporaryUrl = [NSURL fileURLWithPath:[@"/private" stringByAppendingPathComponent:NSTemporaryDirectory()]] ;
+        [fm getRelationship:&relationship
+           ofDirectoryAtURL:temporaryUrl
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617016
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in /private/"}] ;
+        }
+    }
+
+    if (ok) {
+        if ([path length] < 1) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617017
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is too short"}] ;
+        }
     }
     
-    if ([path length] < 1) {
-        return NO ;
+    if (error && error_p) {
+        *error_p = error ;
     }
-    
-	return YES ;
+
+    return ok ;
 }
 
 - (NSString*)pathToSpecialFolderType:(NSSearchPathDirectory)folderType {
