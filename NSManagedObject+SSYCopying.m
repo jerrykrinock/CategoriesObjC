@@ -146,14 +146,13 @@
     for (NSString* key in relationships) {
         if (![key isEqualToString:fromParentInverseKey]) {
             NSRelationshipDescription* relationship = [relationships objectForKey:key] ;
-            NSRelationshipDescription* inverseRelationship =[relationship inverseRelationship] ;
             NSAssert(
-                     (inverseRelationship != nil),
+                     ([relationship inverseRelationship] != nil),
                      @"No inverse relationship in %@ from %@ in %@",
                      relationship.destinationEntity.name,
                      relationship.name,\
                      self.className) ;
-            // Note: Property .toMany requires OS X 10.10 or later
+            // Note: Property .toMany requires macOS 10.10 or later
             if (relationship.toMany) {
                 // To-Many Relationship
                 NSObject <NSFastEnumeration> * oldCollection = [self valueForKey:key] ;
