@@ -20,42 +20,43 @@ static NSObject* gNil = nil ;
 		if (methSig == nil) {
 			NSString* msg = [NSString stringWithFormat:@"No method signature for selector %@ in %@", NSStringFromSelector(selector), target] ;
 			NSLog(@"Internal Error 232-0843 %@", msg) ;
-		}
-		invoc = [NSInvocation invocationWithMethodSignature:methSig] ;
-		[invoc setTarget:target] ;
-		[invoc setSelector:selector] ;
-		void* address ;
-		va_list argumentList;
-		if (firstArgumentAddress) {
-			address = firstArgumentAddress ;
-		}
-		else {
-			address = &gNil ;
-		}
-		
-		if ([methSig numberOfArguments] > 2) {
-			// First two arguments at Indices 0 and 1 indicate the hidden arguments self and _cmd
-			// So, we start at index 2
-			[invoc setArgument:address atIndex:2] ;
-			// The following loops executes if selector takes > 1 argument
-			if ([methSig numberOfArguments] > 3) {
-				va_start(argumentList, firstArgumentAddress) ;
-				NSInteger i ;
-				for (i=3; i<[methSig numberOfArguments]; i++) { 
-					address = va_arg(argumentList, void*) ;
-					if (!address) {
-						address = &gNil ;
-					}
-					[invoc setArgument:address
-							   atIndex:i] ;
-				}
-				va_end(argumentList) ;
-			}
-		}
-		
-		if (retainArguments) {
-			[invoc retainArguments] ;
-		}
+        } else {
+            invoc = [NSInvocation invocationWithMethodSignature:methSig] ;
+            [invoc setTarget:target] ;
+            [invoc setSelector:selector] ;
+            void* address ;
+            va_list argumentList;
+            if (firstArgumentAddress) {
+                address = firstArgumentAddress ;
+            }
+            else {
+                address = &gNil ;
+            }
+
+            if ([methSig numberOfArguments] > 2) {
+                // First two arguments at Indices 0 and 1 indicate the hidden arguments self and _cmd
+                // So, we start at index 2
+                [invoc setArgument:address atIndex:2] ;
+                // The following loops executes if selector takes > 1 argument
+                if ([methSig numberOfArguments] > 3) {
+                    va_start(argumentList, firstArgumentAddress) ;
+                    NSInteger i ;
+                    for (i=3; i<[methSig numberOfArguments]; i++) {
+                        address = va_arg(argumentList, void*) ;
+                        if (!address) {
+                            address = &gNil ;
+                        }
+                        [invoc setArgument:address
+                                   atIndex:i] ;
+                    }
+                    va_end(argumentList) ;
+                }
+            }
+
+            if (retainArguments) {
+                [invoc retainArguments] ;
+            }
+        }
 	}
 	
 	return invoc ;

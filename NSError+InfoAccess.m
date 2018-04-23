@@ -95,9 +95,12 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
             }
             
             set = [mutaset copy] ;
+
+#if !__has_feature(objc_arc)
             [set autorelease] ;
             [mutaset release] ;
-            
+#endif
+
             key = [key stringByAppendingFormat:
                    @" (only first %ld)",
                    (long)truncateTo] ;
