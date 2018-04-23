@@ -1,5 +1,4 @@
 #import "NSDictionary+SimpleMutations.h"
-#import "SSY_ARC_OR_NO_ARC.h"
 
 @implementation NSDictionary (SimpleMutations)
 

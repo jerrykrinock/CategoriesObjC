@@ -12,7 +12,7 @@
  blah, blah...  Of course, if you have many mutations to make
  it would be more efficient to make a mutable copy and then do
  all your mutations at once in the normal way.
- @param    object  The new value for the key.  May be nil.
+ @param    value  The new value for the key.  May be nil.
  If it is nil, the key is removed from the receiver if it exists.
  If it is non-nil and the key already exists, the existing
  value is overwritten with the new value

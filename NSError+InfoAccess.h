@@ -57,7 +57,7 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
  If the 'object' parameter is nil, this method is a no-op.
  
  @param    object  of the pair to be added
- @param    key  of the pair to be added
+ @param    proposedKey  of the pair to be added
  */
 - (NSError*)errorByAddingUserInfoObject:(id)object
 								 forKey:(NSString*)proposedKey ;
@@ -111,7 +111,7 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
  @details  Invokes -errorByAddingUserInfoObject:forKey:, so that if such a string
  key already exists, it is not overwritten.  See errorByAddingUserInfoObject:forKey:.
  
- @param    newText  The C string to be added for key SSYprettyFunctionErrorKey
+ @param    prettyFunction  The C string to be added for key SSYprettyFunctionErrorKey
  */
 - (NSError*)errorByAddingPrettyFunction:(const char*)prettyFunction ;
 
@@ -120,7 +120,7 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
  to userInfo of a copy of the receiver and returns the copy, unless the
  parameter is nil, then returns the receiver.
  @details  If the parameter is nil, this method is a no-op.
- @param    options  The array of strings which will be added for key
+ @param    recoveryOptions  The array of strings which will be added for key
  NSLocalizedRecoverySuggestionErrorKey
  */
 - (NSError*)errorByAddingLocalizedRecoveryOptions:(NSArray*)recoveryOptions ;

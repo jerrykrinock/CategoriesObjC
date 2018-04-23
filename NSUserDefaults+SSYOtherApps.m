@@ -38,11 +38,11 @@
     if (!key || !applicationId) {
         return nil ;
     }
-    NSObject* value = CFPreferencesCopyAppValue(
-                                                (CFStringRef)key,
-                                                (CFStringRef)applicationId
-                                                ) ;
-    return [value autorelease] ;
+    NSObject* value = CFBridgingRelease(CFPreferencesCopyAppValue(
+                                                                  (CFStringRef)key,
+                                                                  (CFStringRef)applicationId
+                                                                  )) ;
+    return value;
 }
 
 - (NSObject*)syncAndGetValueForKey:(NSString*)key
@@ -146,14 +146,19 @@
     // the inside and setting little dictionaries as objects
     // inside the bigger dictionaries
     NSEnumerator* e = [dics reverseObjectEnumerator] ;
+#if !__has_feature(objc_arc)
     [dics release] ;
+#endif
     NSMutableDictionary* copy ;
     for (NSDictionary* dic in e) {
         key = [keyArray objectAtIndex:i] ;
         copy = [dic mutableCopy] ;
         [copy setObject:nextObject
                  forKey:key] ;
-        nextObject = [copy autorelease] ;
+#if !__has_feature(objc_arc)
+        [copy autorelease];
+#endif
+        nextObject = copy;
         i-- ;
     }
     

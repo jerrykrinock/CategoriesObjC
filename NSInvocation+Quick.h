@@ -157,7 +157,7 @@
  
  @param    target  The object which will receive the invocation when it is invoked.
  @param    selector  The selector that will be invoked when the invocation is invoked.
- @param    retainArguments.&nbsp;  See notes in class documentation.   
+ @param    retainArguments  See notes in class documentation.   
  @param    firstArgumentAddress  A va_args-style list of the addresses of the arguments
  passed to the selector when the invocation is invoked, or NULL.  See Details above for
  important requirements.
@@ -197,7 +197,7 @@
  +invocationWithTarget:selector:retainArguments:argumentAddresses:
  followed by -invokeOnMainThreadWaitUntilDone:.&nbsp; For information
  see those methods.
- @param    retainArguments.&nbsp;  See notes in class documentation.   
+ @param    retainArguments  See notes in class documentation.   
 */
 + (NSInvocation*)invokeOnMainThreadTarget:(id)target
 								 selector:(SEL)selector
