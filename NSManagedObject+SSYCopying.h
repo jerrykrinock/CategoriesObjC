@@ -5,7 +5,7 @@
 /*!
  @brief    Returns a "copy" of the receiver, inserted into a given managed
  object context, having all of the same attributes as the receiver, but ignoring
- all of the receivers relationships
+ all of the receiver's relationships
  */
 - (NSManagedObject*)shallowCopyInManagedObjectContext:(NSManagedObjectContext*)targetMoc ;
 

@@ -27,8 +27,15 @@
         NSDictionary* __block attributeDic = nil ;
         [[self managedObjectContext] performBlockAndWait:^(void) {
             attributeDic = [self dictionaryWithValuesForKeys:[[entity attributesByName] allKeys]] ;
+#if !__has_feature(objc_arc)
+            [attributeDic retain];
+#endif
         }] ;
         [newObject setValuesForKeysWithDictionary:attributeDic] ;
+#if !__has_feature(objc_arc)
+        [attributeDic release];
+        [newObject retain];
+#endif
     }] ;
 
     NSSet <NSString*> * doNotEnterKeys = [doNoEnterRelationships valueForKey:@"name"]  ;
@@ -95,6 +102,9 @@
             }
         }
     }
+#if !__has_feature(objc_arc)
+    [newObject autorelease];
+#endif
     
     return newObject ;
 }
