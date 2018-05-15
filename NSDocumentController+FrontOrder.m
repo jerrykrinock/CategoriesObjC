@@ -7,15 +7,19 @@
     NSArray* documents = [self documents] ;
     NSInteger count = [documents count] ;
     if (count > 1) {
-        NSDocument* frontDoc = [self currentDocument] ;
-        if ([documents objectAtIndex:0] != frontDoc) {
-            // Need to fix the order
-            NSMutableArray* mutant = [documents mutableCopy] ;
-            [mutant removeObject:frontDoc] ;
-            [mutant insertObject:frontDoc
-                         atIndex:0] ;
-            documents = [[mutant copy] autorelease] ;
-            [mutant release] ;
+        NSDocument* frontDoc = [self currentDocument];
+        /* frontDoc will be nil if a non-document window such as Preferences
+         is frontmost. */
+        if (frontDoc) {
+            if ([documents objectAtIndex:0] != frontDoc) {
+                // Need to fix the order
+                NSMutableArray* mutant = [documents mutableCopy] ;
+                [mutant removeObject:frontDoc] ;
+                [mutant insertObject:frontDoc
+                             atIndex:0] ;
+                documents = [[mutant copy] autorelease] ;
+                [mutant release] ;
+            }
         }
     }
     
