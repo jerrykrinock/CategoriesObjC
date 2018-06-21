@@ -33,8 +33,8 @@
     [self syncApplicationId:applicationId] ;
 }
 
-- (NSObject*)valueForKey:(NSString*)key
-           applicationId:(NSString*)applicationId {
+- (id)valueForKey:(NSString*)key
+    applicationId:(NSString*)applicationId {
     if (!key || !applicationId) {
         return nil ;
     }
@@ -45,12 +45,12 @@
     return value;
 }
 
-- (NSObject*)syncAndGetValueForKey:(NSString*)key
-                     applicationId:(NSString*)applicationId {
+- (id)syncAndGetValueForKey:(NSString*)key
+              applicationId:(NSString*)applicationId {
     if (!applicationId) {
         return nil ;
     }
-
+    
     [self syncApplicationId:applicationId] ;
     return [self valueForKey:key
                applicationId:applicationId] ;

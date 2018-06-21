@@ -12,11 +12,11 @@
                  forKey:(NSString*)key
           applicationId:(NSString*)applicationId ;
 
-- (NSObject*)valueForKey:(NSString*)key
-           applicationId:(NSString*)applicationId ;
+- (id)valueForKey:(NSString*)key
+    applicationId:(NSString*)applicationId ;
 
-- (NSObject*)syncAndGetValueForKey:(NSString*)key
-                     applicationId:(NSString*)applicationId ;
+- (id)syncAndGetValueForKey:(NSString*)key
+              applicationId:(NSString*)applicationId ;
 
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray
              applicationId:(NSString*)applicationId ;
