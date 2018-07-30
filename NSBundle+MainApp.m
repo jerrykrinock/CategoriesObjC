@@ -8,8 +8,6 @@ static NSBundle* mainAppBundle = nil ;
 @implementation NSBundle (MainApp)
 
 + (NSBundle*)mainAppBundle {
-    //NSLog(@"MAB %@", SSYDebugCaller());
-    return [NSBundle bundleWithPath:@"/Users/jk/Library/Developer/Xcode/DerivedData/BkmkMgrs-erjagcrpeurpyadfanfvztysloib/Build/Products/Debug/BookMacster.app"];
 	NSBundle* myMainAppBundle ;
  	@synchronized(self) {
 		myMainAppBundle = mainAppBundle ;
