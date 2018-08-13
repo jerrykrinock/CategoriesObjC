@@ -1,5 +1,4 @@
 #import "NSString+SSYHttpQueryCruft.h"
-#import "Stark.h"
 
 NSString* constKeyCruftDeskription = @"deskription" ;
 NSString* constKeyCruftDomain = @"domain" ;
