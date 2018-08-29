@@ -1,41 +1,32 @@
 #import "NSBundle+MainApp.h"
 #import <objc/runtime.h>
 
-
-// Cache for efficiency.  We assume that the bundle will not move while running.
 static NSBundle* mainAppBundle = nil ;
 
 @implementation NSBundle (MainApp)
 
 + (NSBundle*)mainAppBundle {
-	NSBundle* myMainAppBundle ;
- 	@synchronized(self) {
-		myMainAppBundle = mainAppBundle ;
-	}
-	
-	if (!myMainAppBundle) {
-		NSBundle* bundle = [NSBundle mainBundle] ;
- 		NSString* mainAppBundlePath = [bundle bundlePath] ;
-		while (YES) {
-			if ([[[mainAppBundlePath lastPathComponent] pathExtension] isEqual:@"app"]) {
-				break ;
-			}
-			if ([mainAppBundlePath length] < 2) {
-                // mainAppBundlePath is probably "/"
-				mainAppBundlePath = nil ;
-				break ;
-			}
-			
-			mainAppBundlePath = [mainAppBundlePath stringByDeletingLastPathComponent] ;
- 		}
-		myMainAppBundle = [NSBundle bundleWithPath:mainAppBundlePath] ;
+    @synchronized(self) {
+        if (!mainAppBundle) {
+            NSBundle* innermostBundle = [NSBundle mainBundle] ;
+            NSString* path = [innermostBundle bundlePath] ;
+            while (path.length > 4) {
+                if ([path hasSuffix:@".app"]) {
+#if !__has_feature(objc_arc)
+                    [mainAppBundle release];
+#endif
+                    mainAppBundle = [NSBundle bundleWithPath:path];
+#if !__has_feature(objc_arc)
+                    [mainAppBundle retain];
+#endif
+                }
 
-		@synchronized(self) {
- 			mainAppBundle = myMainAppBundle ;
-		}
-	}
-	
-	return myMainAppBundle ;
+                path = [path stringByDeletingLastPathComponent];
+            }
+        }
+    }
+    
+	return mainAppBundle ;
 }
 
 @end
