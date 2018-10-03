@@ -6,9 +6,9 @@
  @brief    Returns YES if the receiver and a given set have
  exactly the same members, meaning the same pointer values
 
- @details  The documentation of -isEqualToSet: says that it
- does this, but in fact members must only be -isEqual in order
- for -isEqualToSet: to return YES.
+ @details  Apple's documentation of -isEqualToSet: states that objects are
+ compared using -isEqual:.  This method is for when you need a more strict
+ comparison.
 */
 - (BOOL)isIdenticalToSet:(NSSet*)set ;
 
