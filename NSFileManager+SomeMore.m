@@ -94,8 +94,8 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
     return [fileAttributes objectForKey:NSFileCreationDate] ;
 }	
 
-- (BOOL)createDirectoryIfNoneExistsAtPath:(NSString*)path
-								  error_p:(NSError**)error_p {
+- (BOOL)ensureDirectoryAtPath:(NSString*)path
+                      error_p:(NSError**)error_p {
 	NSError* error = nil ;
 	
 	NSFileManager* fileManager = [NSFileManager defaultManager] ;

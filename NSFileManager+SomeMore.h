@@ -63,7 +63,8 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 - (NSDate*)creationDateForPath:(NSString*)path ;
 
 /*!
- @brief    Creates a directory if none exists at a given path.
+ @brief    Creates a directory if none exists at a given path, also creating
+ any necessary intermediate directories.
 
  @details  If a regular file is found at the given path, it is deleted
  and replaced with the new directory.
@@ -72,8 +73,8 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
  @result   YES if the directory already exists or was successfully
  created; NO otherwise.
 */
-- (BOOL)createDirectoryIfNoneExistsAtPath:(NSString*)path
-								  error_p:(NSError**)error_p ;
+- (BOOL)ensureDirectoryAtPath:(NSString*)path
+                      error_p:(NSError**)error_p ;
 
 /*!
  @brief    Returns YES if a file or directory exists at a given
