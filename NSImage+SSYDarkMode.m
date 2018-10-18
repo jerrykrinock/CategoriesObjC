@@ -1,24 +1,25 @@
 #import <CoreImage/CoreImage.h>
 #import "NSImage+SSYDarkMode.h"
+#import "NSView+SSYDarkMode.h"
 
 @implementation NSImage (SSYDarkMode)
 
-- (void)drawInvertedIfDarkModeInRect:(NSRect)frame
-                           operation:(NSCompositingOperation)operation
-                            fraction:(CGFloat)fraction
-                      appearanceView:(NSView*)view {
-    BOOL darkMode = NO;
-    if (@available(macOS 10.14, *)) {
-        /* https://stackoverflow.com/questions/51672124/how-can-it-be-detected-dark-mode-on-macos-10-14 */
-        NSAppearanceName basicAppearance = [view.effectiveAppearance bestMatchFromAppearancesWithNames:@[
-                                                                                                         NSAppearanceNameAqua,
-                                                                                                         NSAppearanceNameDarkAqua
-                                                                                                         ]];
-        darkMode = [basicAppearance isEqualToString:NSAppearanceNameDarkAqua];
+- (void)drawInRect:(NSRect)frame
+         operation:(NSCompositingOperation)operation
+          fraction:(CGFloat)fraction
+  invertIfDarkMode:(BOOL)doInvert
+            inView:(NSView*)view {
+    if (doInvert) {
+        doInvert = view.isDarkMode_SSY;
     }
 
-    if (!darkMode) {
-        [self drawInRect:frame];
+    if (!doInvert) {
+        [self drawInRect:frame
+                fromRect:NSMakeRect(0.0, 0.0, self.size.width, self.size.height)
+               operation:operation
+                fraction:1.0
+          respectFlipped:YES
+                   hints:nil];
     } else {
         /* We are going to create and apply two filters in succession.  Because
          the filters require separate input and output images, we pingpong
@@ -50,7 +51,7 @@
 
         [image1 drawAtPoint:frame.origin
                    fromRect:NSRectFromCGRect([image1 extent])
-                  operation:NSCompositeSourceOver
+                  operation:operation
                    fraction:1.0];
     }
 }

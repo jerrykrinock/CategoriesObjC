@@ -14,7 +14,7 @@
 - (id)transformedValue:(id)string {
 	NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
 								[NSFont systemFontOfSize:12.0], NSFontAttributeName,
-								[NSColor blackColor], NSForegroundColorAttributeName,
+								[NSColor controlTextColor	], NSForegroundColorAttributeName,
 								nil] ;
 	if (!string) {
 		string = @"" ;

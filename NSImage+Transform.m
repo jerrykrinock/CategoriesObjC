@@ -42,7 +42,7 @@
 
                                  return YES ;
                              }] ;
-	
+    rotatedImage.template = self.isTemplate;
 	return rotatedImage;
 }
 

@@ -5,31 +5,37 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSImage (SSYDarkMode)
 
 /*!
- @brief    Replacement for NSImage draw:… methods which inverts colors if in
- Dark Mode
+ @brief    Replacement for NSImage draw:… methods with option to invert
+ colors if in Dark Mode
 
  @details  Cocoa takes care of Dark Mode for you by inverting luminance if you
  pass a NSImage with isTemplate = YES to a control such as a NSButton.  But
  if you draw such a NSImage yourself, in the -drawRect: method of a control or
- view, or the -drawWithFrame method of a cell, you need to do the inversion.
- This meethd does that for you.
+ view, or the -drawWithFrame method of a cell, you may need to do the
+ inversion yourself.
 
- The "inversion" used is a different than that used by Cocoa for template
- images.  While this method applies a simple color inversion, Cocoa converts
- the opacity of the image to brightness.  While this works the same for
- most black and white template images, it is different for color in images.
- For example, in Dark Mode, this method converts blue to yellow.  I wonder if
- maybe dark blue to light blue would be better.  This is a work in progress.
+ The "inversion" used in this method is a different than that used by Cocoa for
+ template images.  This method applies a simple color inversion.  But Cocoa
+ maps opacity of the image to brightness.  While the two work the same for
+ most black and white template images, it is different for colored images.
+ For example, in Dark Mode, this method converts blue with opacity 1.0 to
+ yellow, but Cocoa's method will convert it to white, due to the opacity.  I'm
+ wondering if it might not be better to convert dark blue to light blue.
+ The obvious, simple algorithm to do this (reflect the brightness about 0.5)
+ seems like it gives results which are frequently too dark.  Deferred to
+ future study, if I ever need this.
 
- @param appaeranceView  An associated view, usually the view into which the
+ @param inView  An associated view, usually the view into which the
  receiver will be drawn, or the control view of the cell into which the
- receiver will be drawn.  This view is used only to get its effective
- appearance, to determine whether or not to draw in Dark Mode,
+ receiver will be drawn.  This view is only accessed to get its effective
+ appearance, which is used to determine whether or not to draw in Dark Mode,
+ If doInvert is NO, this parameter is ignored.
  */
-- (void)drawInvertedIfDarkModeInRect:(NSRect)frame
-                           operation:(NSCompositingOperation)operation
-                            fraction:(CGFloat)fraction
-                      appearanceView:(NSView*)view;
+- (void)drawInRect:(NSRect)frame
+         operation:(NSCompositingOperation)operation
+          fraction:(CGFloat)fraction
+  invertIfDarkMode:(BOOL)doInvert
+            inView:(NSView*)view;
 
 @end
 
