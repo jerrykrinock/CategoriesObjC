@@ -240,8 +240,8 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 									  forKey:NSLocalizedRecoveryOptionsErrorKey] ;
 }
 
-- (NSError*)errorByAddingHelpAnchor:(NSString*)helpAnchor {
-	return [self errorByAddingUserInfoObject:helpAnchor
+- (NSError*)errorByAddingHelpAddress:(NSString*)helpAddress {
+	return [self errorByAddingUserInfoObject:helpAddress
 									  forKey:NSHelpAnchorErrorKey] ;
 }
 

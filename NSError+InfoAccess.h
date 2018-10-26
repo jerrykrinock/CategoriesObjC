@@ -126,12 +126,22 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
 - (NSError*)errorByAddingLocalizedRecoveryOptions:(NSArray*)recoveryOptions ;
 	
 /*!
- @brief    Adds an string which can be retrieved by -helpAnchor to the receiver's userInfo
- and returns an autoreleased copy of the receiver, unless the parameter is nil, then returns the receiver.
- @details  This can be used to encapsulate in the error a string which your presentError:
- or alertError: method can use to target a Help button.
+ @brief    Adds a string which to the receiver's userInfo, which can be later
+ retrieved by -helpAnchor, and returns an autoreleased copy of the receiver,
+ unless the parameter is nil, then returns the receiver.
+
+ @details  This can be used to encapsulate in the error a string which your
+ presentError: or alertError: method can use to target a Help URL or anchor in
+ your application's Help Book.  It is the value for the user info dictionary
+ key NSHelpAnchorErrorKey.  I don't know if Apple's error presentation methods
+ do anything with this key/value, but if they do, it probably treats it as a
+ help anchor only, so if you pass a URL it might present the dreaded "The
+ selected content is currently unavailable" page in Apple Help Viewer.  So,
+ unless you are using your own error presentation methods, or those provided
+ by SSYAlert which supports either help anchor or URL, you should only pass
+ a help anchor.
  */
-- (NSError*)errorByAddingHelpAnchor:(NSString*)helpAnchor ;
+- (NSError*)errorByAddingHelpAddress:(NSString*)helpAddress ;
 
 /*!
  @brief    Appends a new string to a given key in a copy of the receiver,
