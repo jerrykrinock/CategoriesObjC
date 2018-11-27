@@ -13,7 +13,7 @@
 	[scanner scanUpToString:slashEntityName
 				 intoString:NULL] ;
 	[slashEntityName release] ;
-	NSString* truncatedID = @"t?p?" ;  // Fail-safe default value
+	NSString* truncatedID = uriStringRep ;  // Fail-safe default value
 	if (![scanner isAtEnd]) {
 		// The fact that the scanner is not at end means that
 		// it must be at the beginning of the string slashEntityName,

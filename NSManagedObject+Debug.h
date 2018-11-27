@@ -9,7 +9,7 @@
  Conserves console space when printing in logs during debugging.
 
  @details  An managed object can be uniquely identified by its
- [[[self objectID] URIRepresentation] absoluteString].
+ self.objectID.URIRepresentation.absoluteString.
  These typically look like this:
  *   For permanent objects:
  *       x-coredata://8E4A6EED-E4FE-4C6B-95AD-02E874FDAEAC/myEntityName/p139
@@ -21,9 +21,11 @@
  usually unique.  For temporary objects, only the last few digits of that
  UUID at the end are usually unique.
  
- This method returns a string beginning with "t" or "p" to indicate whether
- it's temporary or permanent, followed by a few characters form the unique
- parts identified above.
+ This method, if such an ID parses out, returns a string beginning with "t" or
+ "p" to indicate whether it's temporary or permanent, followed by a few
+ characters form the unique parts identified above.  Otherwise, it returns
+ the entire self.objectID.URIRepresentation.absoluteString without any
+ truncation.
 */
 - (NSString*)truncatedID ;
 
