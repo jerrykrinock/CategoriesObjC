@@ -6,10 +6,16 @@
 - (NSString*)truncatedID {
 	NSManagedObjectID* myID = [self objectID] ;
 	NSString* uriStringRep = [[myID URIRepresentation] absoluteString] ;
+    return [[self class] truncatedIDForManagedObjectWithUri:uriStringRep
+                                                 entityName:[[self entity] name]];
+}
+
++ (NSString*)truncatedIDForManagedObjectWithUri:(NSString*)uriStringRep
+                                     entityName:(NSString*)entityName {
 	NSScanner* scanner = [[NSScanner alloc] initWithString:uriStringRep] ;
 	NSString* slashEntityName = [[NSString alloc] initWithFormat:
 								 @"/%@",
-								 [[self entity] name]] ;
+								 entityName] ;
 	[scanner scanUpToString:slashEntityName
 				 intoString:NULL] ;
 	[slashEntityName release] ;

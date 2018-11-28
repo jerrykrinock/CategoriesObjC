@@ -4,7 +4,7 @@
 @interface NSManagedObject (Debug)
 
 /*!
- @brief    Returns a truncation of [[[self objectID] URIRepresentation] absoluteString],
+ @brief    Truncates a given URI String Representation of a managed object,
  showing only some of the unique parts, in a string of 2-6 characters.
  Conserves console space when printing in logs during debugging.
 
@@ -27,6 +27,17 @@
  the entire self.objectID.URIRepresentation.absoluteString without any
  truncation.
 */
++ (NSString*)truncatedIDForManagedObjectWithUri:(NSString*)uriStringRep
+                                     entityName:(NSString*)entityName;
+//TODO: Eliminate the `entityName` parameter.
+/* This could be done either by using +[NSManagedObject entity] if you can
+ require macOS 10.12, or doing more granual scanning with that NSScanner. */
+
+
+/*!
+ @brief    Returns the result of +truncatedIDForManagedObjectWithUri:entity:
+ for the receiver
+ */
 - (NSString*)truncatedID ;
 
 @end
