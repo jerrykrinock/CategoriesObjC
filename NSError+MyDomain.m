@@ -46,7 +46,7 @@
 }
 
 + (NSString*)myDomain {
-	NSString* domain = [[self mainAppBundle] bundleIdentifier] ;
+	NSString* domain = [[NSBundle mainBundle] bundleIdentifier] ;
 	// Background/daemon/helper/tools will usually not have a bundle...
 	if (!domain) {
 		NSString* path = [[[NSProcessInfo processInfo] arguments] objectAtIndex:0] ;
