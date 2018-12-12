@@ -3,6 +3,7 @@
 #import "NSError+MyDomain.h"
 #import "NSError+LowLevel.h"
 #import "SSYUuid.h"
+#import "SSYAppleScripter.h"
 
 #import <fcntl.h>    
 
@@ -330,10 +331,10 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 - (BOOL)trashPath:(NSString*)path
 	 scriptFinder:(BOOL)scriptFinder
 		  error_p:(NSError**)error_p {
-    NSMutableArray* kludge = [[NSMutableArray alloc] init] ;
-	
-	BOOL ok = YES ;
-	if (scriptFinder) {
+	__block BOOL ok = YES ;
+    __block NSError* error = nil;
+
+    if (scriptFinder) {
 		NSString* source = [NSString stringWithFormat:
 							/**/@"with timeout 15 seconds\n"
 							/**/  @"tell application \"Finder\"\n"
@@ -341,51 +342,46 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 							/**/  @"end tell\n"
 							/**/@"end timeout\n",
 							path] ;
-		NSAppleScript* script = [[NSAppleScript alloc] initWithSource:source];
-		NSDictionary* errorDic = nil ;
-		[script executeAndReturnError:&errorDic] ;
-		[script release] ;
-		if (errorDic) {
-			ok = NO ;
-			NSError* error = SSYMakeError(572286, @"Finder refused to trash path") ;
-			error = [error errorByAddingUnderlyingError:[NSError errorWithAppleScriptErrorDictionary:errorDic]] ;
-            [kludge addObject:error] ;
-		}
+        [SSYAppleScripter executeScriptSource:source
+                              ignoreKeyPrefix:nil
+                                     userInfo:nil
+                         blockUntilCompletion:YES
+                            completionHandler:^(id  _Nullable payload, id  _Nullable userInfo, NSError * _Nullable scriptError) {
+                                if (scriptError) {
+                                    ok = NO;
+                                    error = SSYMakeError(572286, @"Finder refused to trash path") ;
+                                    error = [error errorByAddingUnderlyingError:scriptError];
+                                    [error retain];
+                                }
+                            }];
+        [error autorelease];
 	}
 	else {
         NSArray* urls = @[[NSURL fileURLWithPath:path]] ;
-        dispatch_semaphore_t sem = dispatch_semaphore_create(0) ;
-        dispatch_queue_t aSerialQueue = dispatch_queue_create(
-                                                              "com.sheepsystems.NSFileManager.SomeMore",
-                                                              DISPATCH_QUEUE_SERIAL
-                                                              ) ;
-        dispatch_async(aSerialQueue, ^{
-            [[NSWorkspace sharedWorkspace] recycleURLs:urls
-                                     completionHandler:^void(NSDictionary *newURLs,
-                                                             NSError* recycleError) {
-                                         
-                                         NSError* error = SSYMakeError(572287, @"Could not trash path") ;
-                                         error = [error errorByAddingUnderlyingError:recycleError] ;
-                                         [kludge addObject:error] ;
-                                         dispatch_semaphore_signal(sem) ;
-                                     }] ;
-             }) ;
-        dispatch_async(aSerialQueue, ^{
-            dispatch_release(aSerialQueue) ;
-        }) ;
-        
-        // Wait here in case error is set by completionHandler block
-        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER) ;
-        dispatch_release(sem) ;
-	}
+        /* Method -recycleURLs:completionHandler is very strange.  From its
+         documentation
+
+         "you must call the recycleURLs:completionHandler: method from a block
+         running on an active dispatch queue; your completion handler block
+         is subsequently executed on the same dispatch queue."
+
+         That seems to mean that any attempt pause this thread while waiting
+         for the completion handler to complete and assign `error` would
+         result in deadlock.  This was corroborated by experiments.  I also
+         tried to wrap it in an outer dispatch_async() but I could not get
+         that to work without deadlock either.
+
+         So that is why we pass completionHandler:NULL and just do not report
+         errors when scriptFinder = NO :(  */
+        [[NSWorkspace sharedWorkspace] recycleURLs:urls
+                                 completionHandler:NULL] ;
+    }
 	
-    NSError* error = [kludge firstObject] ;
-	if (error_p && error) {
-		*error_p = [error errorByAddingUserInfoObject:path
-											   forKey:@"Path Attempted to Trash"] ;		
+	if (error && error_p) {
+        error = [error errorByAddingUserInfoObject:path
+                                            forKey:@"Path Attempted to Trash"];
+        *error_p = error;
 	}
-    
-    [kludge release] ;
     
 	return ok ;
 }

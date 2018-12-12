@@ -127,7 +127,8 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
  The Finder will play the trash sound if successful.  If NO, uses
  -[NSWorkspace recycleURLs::]
  @param    error_p  If not NULL and if an error occurs, upon return,
- will point to an error object encapsulating the error.
+ will point to an error object encapsulating the error.  Errors are only
+ reported in this way if scriptFinder is YES.
  @result   YES if the method completed successfully, otherwise NO
  */
 - (BOOL)trashPath:(NSString*)path
