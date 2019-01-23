@@ -25,7 +25,7 @@
 						   prettyFunction:(const char*)prettyFunction {
 	NSDictionary* userInfo = nil ;
 	if (localizedDescription) {
-		NSString* const CFBundleVersionKey = @"CFBundleVersion" ;
+		NSString* const CFBundleVersionKey = @"Version of Main App Bundle" ;
 		userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 					localizedDescription, NSLocalizedDescriptionKey,
 					[[self mainAppBundle] objectForInfoDictionaryKey:CFBundleVersionKey], CFBundleVersionKey,
