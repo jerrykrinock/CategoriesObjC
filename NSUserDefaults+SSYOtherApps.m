@@ -4,9 +4,11 @@
 @implementation NSUserDefaults (SSYOtherApps)
 
 - (void)syncApplicationId:(NSString*)applicationId {
-    Boolean ok = CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
-    if (!ok) {
-        NSLog(@"Internal Error 624-3849 %@", applicationId) ;
+    if (applicationId) {
+        Boolean ok = CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
+        if (!ok) {
+            NSLog(@"Internal Error 624-3849 %@", applicationId) ;
+        }
     }
 }
 
@@ -58,38 +60,56 @@
 
 - (id)valueForKeyPathArray:(NSArray*)keyPathArray
              applicationId:(NSString*)applicationId {
-    // Don't use componentsJoinedByString:@"." because it is legal
-    // for a key path to contain a dot/period.
-    id obj = self ;
-    for(id key in keyPathArray) {
-        if (![obj respondsToSelector:@selector(objectForKey:)]) {
-            // Corrupt pref?
-            return nil ;
+    id answer = nil;
+    if (applicationId) {
+        // Don't use componentsJoinedByString:@"." because it is legal
+        // for a key path to contain a dot/period.
+        id obj = self ;
+        for(id key in keyPathArray) {
+            if (![obj respondsToSelector:@selector(objectForKey:)]) {
+                // Corrupt pref?
+                return nil ;
+            }
+            if (obj == self) {
+                obj = [self valueForKey:key
+                          applicationId:applicationId] ;
+            }
+            else {
+                obj = [obj objectForKey:key] ;
+            }
         }
-        if (obj == self) {
-            obj = [self valueForKey:key
-                      applicationId:applicationId] ;
-        }
-        else {
-            obj = [obj objectForKey:key] ;
-        }
+
+        answer = obj;
     }
-    
-    return obj;
+
+    return answer;
 }
 
 - (id)syncAndGetValueForKeyPathArray:(NSArray*)keyPathArray
                        applicationId:(NSString*)applicationId {
-    [self syncApplicationId:applicationId] ;
-    return [self valueForKeyPathArray:keyPathArray
-                        applicationId:applicationId] ;
+    id answer = nil;
+    if (applicationId) {
+        [self syncApplicationId:applicationId] ;
+        answer = [self valueForKeyPathArray:keyPathArray
+                              applicationId:applicationId] ;
+    }
+
+    return answer;
 }
 
 - (void)setAndSyncValue:(id)value
         forKeyPathArray:(NSArray*)keyArray
           applicationId:(NSString*)applicationId {
+    if (!applicationId) {
+        return;
+    }
+
+    if (!value) {
+        return;
+    }
+
     NSInteger N = [keyArray count] ;
-    if (!value || (N < 1)) {
+    if (N < 1) {
         return ;
     }
     
@@ -174,29 +194,33 @@
 
 - (void)       removeAndSyncKey:(id)key
                   applicationId:(NSString*)applicationId {
-    CFPreferencesSetAppValue(
-                             (CFStringRef)key,
-                             NULL,  // indicator to remove the given key
-                             (CFStringRef)applicationId
-                             ) ;
-    CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
+    if (applicationId) {
+        CFPreferencesSetAppValue(
+                                 (CFStringRef)key,
+                                 NULL,  // indicator to remove the given key
+                                 (CFStringRef)applicationId
+                                 ) ;
+        CFPreferencesAppSynchronize((CFStringRef)applicationId) ;
+    }
 }
 
 - (void)       removeAndSyncKey:(id)key
    fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
                   applicationId:(NSString*)applicationId {
-    [self syncApplicationId:applicationId] ;
-    NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
-                                            applicationId:applicationId] ;
-    if (dictionary) {
-        dictionary = [dictionary dictionaryBySettingValue:nil
-                                                   forKey:key] ;
-        [self setAndSyncValue:dictionary
-              forKeyPathArray:keyPathArray
-                applicationId:applicationId] ;
-    }
-    else {
-        // The dictionary doesn't exist.  Don't do anything.
+    if (applicationId) {
+        [self syncApplicationId:applicationId] ;
+        NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
+                                                applicationId:applicationId] ;
+        if (dictionary) {
+            dictionary = [dictionary dictionaryBySettingValue:nil
+                                                       forKey:key] ;
+            [self setAndSyncValue:dictionary
+                  forKeyPathArray:keyPathArray
+                    applicationId:applicationId] ;
+        }
+        else {
+            // The dictionary doesn't exist.  Don't do anything.
+        }
     }
 }
 
