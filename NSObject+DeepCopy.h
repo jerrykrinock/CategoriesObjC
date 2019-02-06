@@ -78,7 +78,7 @@ extern SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable ;
  
  @param    style  Determines the makeup of non-collection
  objects in the result */
-- mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style;
+- (id)mutableCopyDeepStyle:(SSYDeepCopyStyleBitmask)style;
 
 /*!
  @details  This method assumes that the receiver and all of its
