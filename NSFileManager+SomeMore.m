@@ -334,47 +334,50 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 	__block BOOL ok = YES ;
     __block NSError* error = nil;
 
-    if (scriptFinder) {
-		NSString* source = [NSString stringWithFormat:
-							/**/@"with timeout 15 seconds\n"
-							/**/  @"tell application \"Finder\"\n"
-							/**/	@"delete POSIX file \"%@\"\n"
-							/**/  @"end tell\n"
-							/**/@"end timeout\n",
-							path] ;
-        [SSYAppleScripter executeScriptSource:source
-                              ignoreKeyPrefix:nil
-                                     userInfo:nil
-                         blockUntilCompletion:YES
-                            completionHandler:^(id  _Nullable payload, id  _Nullable userInfo, NSError * _Nullable scriptError) {
-                                if (scriptError) {
-                                    ok = NO;
-                                    error = SSYMakeError(572286, @"Finder refused to trash path") ;
-                                    error = [error errorByAddingUnderlyingError:scriptError];
-                                    [error retain];
-                                }
-                            }];
-        [error autorelease];
-	}
-	else {
-        NSArray* urls = @[[NSURL fileURLWithPath:path]] ;
-        /* Method -recycleURLs:completionHandler is very strange.  From its
-         documentation
+    if (path) {
+        if (scriptFinder) {
+            NSString* source = [NSString stringWithFormat:
+                                /**/@"with timeout 15 seconds\n"
+                                /**/  @"tell application \"Finder\"\n"
+                                /**/	@"delete POSIX file \"%@\"\n"
+                                /**/  @"end tell\n"
+                                /**/@"end timeout\n",
+                                path] ;
+            [SSYAppleScripter executeScriptSource:source
+                                  ignoreKeyPrefix:nil
+                                         userInfo:nil
+                             blockUntilCompletion:YES
+                                completionHandler:^(id  _Nullable payload, id  _Nullable userInfo, NSError * _Nullable scriptError) {
+                                    if (scriptError) {
+                                        ok = NO;
+                                        error = SSYMakeError(572286, @"Finder refused to trash path") ;
+                                        error = [error errorByAddingUnderlyingError:scriptError];
+                                        [error retain];
+                                    }
+                                }];
+            [error autorelease];
+        } else {
+            NSArray* urls = @[[NSURL fileURLWithPath:path]] ;
+            /* Method -recycleURLs:completionHandler is very strange.  From its
+             documentation
 
-         "you must call the recycleURLs:completionHandler: method from a block
-         running on an active dispatch queue; your completion handler block
-         is subsequently executed on the same dispatch queue."
+             "you must call the recycleURLs:completionHandler: method from a block
+             running on an active dispatch queue; your completion handler block
+             is subsequently executed on the same dispatch queue."
 
-         That seems to mean that any attempt pause this thread while waiting
-         for the completion handler to complete and assign `error` would
-         result in deadlock.  This was corroborated by experiments.  I also
-         tried to wrap it in an outer dispatch_async() but I could not get
-         that to work without deadlock either.
+             That seems to mean that any attempt pause this thread while waiting
+             for the completion handler to complete and assign `error` would
+             result in deadlock.  This was corroborated by experiments.  I also
+             tried to wrap it in an outer dispatch_async() but I could not get
+             that to work without deadlock either.
 
-         So that is why we pass completionHandler:NULL and just do not report
-         errors when scriptFinder = NO :(  */
-        [[NSWorkspace sharedWorkspace] recycleURLs:urls
-                                 completionHandler:NULL] ;
+             So that is why we pass completionHandler:NULL and just do not report
+             errors when scriptFinder = NO :(  */
+            [[NSWorkspace sharedWorkspace] recycleURLs:urls
+                                     completionHandler:NULL] ;
+        }
+    } else {
+        error = SSYMakeError(35262, @"Cannot trash nil path") ;
     }
 	
 	if (error && error_p) {

@@ -125,7 +125,9 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 
  @param    scriptFinder  If YES, tells the Finder to do it via AppleScript.
  The Finder will play the trash sound if successful.  If NO, uses
- -[NSWorkspace recycleURLs::]
+ -[NSWorkspace recycleURLs::]  Note: YES is not recommended in macOS 10.14 and
+ later because macOS will display an annoying and possibly confusing dialog
+ asking the user's permission to let your app "control" Finder.
  @param    error_p  If not NULL and if an error occurs, upon return,
  will point to an error object encapsulating the error.  Errors are only
  reported in this way if scriptFinder is YES.
