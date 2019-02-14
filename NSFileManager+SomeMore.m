@@ -99,15 +99,14 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
                       error_p:(NSError**)error_p {
 	NSError* error = nil ;
 	
-	NSFileManager* fileManager = [NSFileManager defaultManager] ;
 	BOOL isDirectory ;
-	BOOL exists = [fileManager fileExistsAtPath:path
-									isDirectory:&isDirectory] ;
+    BOOL exists = [self fileExistsAtPath:path
+                             isDirectory:&isDirectory] ;
 	
 	BOOL ok = YES ;
 	if (exists && !isDirectory) {
-		ok = [fileManager removeItemAtPath:path
-									 error:&error] ;
+        ok = [self removeItemAtPath:path
+                              error:&error] ;
 		if (ok) {
             exists = NO ;
         }
@@ -127,10 +126,10 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
 		NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
 									octal755, NSFilePosixPermissions,
 									nil] ;
-		ok = [fileManager createDirectoryAtPath:path
-					withIntermediateDirectories:YES
-									 attributes:attributes
-										  error:&error] ;
+        ok = [self createDirectoryAtPath:path
+             withIntermediateDirectories:YES
+                              attributes:attributes
+                                   error:&error] ;
 	}
 	
 	if (error && error_p) {
