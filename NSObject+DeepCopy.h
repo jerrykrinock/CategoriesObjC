@@ -21,8 +21,9 @@
  To do that,
  id foo = ... ;
  NSData* fooArchive = [NSKeyedArchiver archivedDataWithRootObject:foo] ;
- id fooCopy = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:fooArchive] ;
- 
+ if (fooArchive) {
+     id fooCopy = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:fooArchive] ;
+ }
  Source: http://www.cocoadev.com/index.pl?mutableCopyDeepAndUserDefaults
  */
 
