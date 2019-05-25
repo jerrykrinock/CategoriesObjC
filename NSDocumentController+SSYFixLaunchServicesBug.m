@@ -3,8 +3,13 @@
 @implementation NSDocumentController (SSYFixLaunchServicesBug)
 
 - (NSString*)fixLaunchServicesBugForUrl:(NSURL*)url
+                               otherUrl:(NSURL* _Nullable)otherUrl
                              typeName_p:(NSString**)typeName_p {
     NSString* result = nil;
+
+    if (!url) {
+        url = otherUrl;
+    }
 
     if (url) {
         NSString* revisedTypeName = nil;

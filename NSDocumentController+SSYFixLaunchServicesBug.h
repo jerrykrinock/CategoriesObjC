@@ -55,10 +55,16 @@ NS_ASSUME_NONNULL_BEGIN
  NSDocumentController and at the beginning of your overrides, before invoking
  super, call this method like this:
 
- NSString* msg = [self fixLaunchServicesBugForUrl:url typeName_p:&typeName];
+ NSString* msg = [self fixLaunchServicesBugForUrl:url contentsUrl:contentsUrl typeName_p:&typeName];
  if (msg) { NSLog(msg); }  // optional
 
- @param   url  The url passed to one of the two -makeDocument… methods
+ @param   url  The url passed to one of the two -makeDocument… methods.
+ May be nil.
+
+ @paaram  otherUrl  An alternative URL which will be used if url is nil,
+ as typically happens during -duplicateDocument… aka Save As operations.
+ Typically, you should pass the contentsURL.
+ If url is not nil, this parameter will be ignored.
 
  @param   typeName_p  The address of the typeName passed to one of the two
  -makeDocument… methods
@@ -68,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
  logging.
  */
 - (NSString* _Nullable)fixLaunchServicesBugForUrl:(NSURL* _Nullable)url
+                                         otherUrl:(NSURL* _Nullable)otherUrl
                                        typeName_p:(NSString* _Nonnull * _Nullable)typeName_p;
 
 @end
