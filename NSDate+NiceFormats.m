@@ -37,7 +37,6 @@ you've checked that you are running under macOS 10.6.
 + (NSDateFormatter*)geekDateFormatter {
     if (!static_geekDateFormatter) {
         static_geekDateFormatter = [[NSDateFormatter alloc] init] ;
-        // Colons cannot be used because this will be part of a filename…
         [static_geekDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"] ;
     }
 
@@ -47,7 +46,6 @@ you've checked that you are running under macOS 10.6.
 + (NSDateFormatter*)geekMilliDateFormatter {
     if (!static_geekMilliDateFormatter) {
         static_geekMilliDateFormatter = [[NSDateFormatter alloc] init] ;
-        // Colons cannot be used because this will be part of a filename…
         [static_geekMilliDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"] ;
     }
 
