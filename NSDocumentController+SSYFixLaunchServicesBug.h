@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
  NSDocumentController and at the beginning of your overrides, before invoking
  super, call this method like this:
 
- NSString* msg = [self fixLaunchServicesBugForUrl:url contentsUrl:contentsUrl typeName_p:&typeName];
+ NSString* msg = [self fixLaunchServicesBugForUrl:url otherUrl:otherUrl typeName_p:&typeName];
  if (msg) { NSLog(msg); }  // optional
 
  @param   url  The url passed to one of the two -makeDocument… methods.
