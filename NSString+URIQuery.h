@@ -127,6 +127,18 @@ typedef enum SSYPercentEscapeStandard_enum SSYPercentEscapeStandard ;
 #endif
 
 /*!
+ @brief    Assuming the receiver is a percent-escape encoded (aka URL encoded)
+ UTF8 string, returns a new equivalent string which has all percent-escape sequences
+ in given unicode ranges replaced with actual characters..
+
+ @details  If the receiver contains no percent escape sequences, efficiently returns self.
+ @param    indexSet
+ @result
+*/
+- (NSString*)decodeOnlyPercentEscapesInUnicodeIndexSet:(NSIndexSet*)indexSet;
+
+
+/*!
  @brief    Assuming that the receiver is a query string of key=value pairs,
  of the form "key0=value0&key1=value1&...", , returns a dictionary of the keys
  and values, with any percent-escape encoded sequences decoded.

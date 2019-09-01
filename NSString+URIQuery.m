@@ -3,6 +3,56 @@
 
 static NSString* const constStringRFC3896AdditionsTo2396 = @"!*'();:@&=+$,/?" ;
 
+/* This function is adapted from https://nullprogram.com/blog/2017/10/06/ */
+const unsigned char* utf8_simple(const unsigned char *s, uint16_t *c) {
+    const unsigned char *next;
+    if (s[0] < 0x80) {
+        *c = s[0];
+        next = s + 1;
+    } else if ((s[0] & 0xe0) == 0xc0) {
+        *c = ((uint16_t)(s[0] & 0x1f) <<  6) |
+             ((uint16_t)(s[1] & 0x3f) <<  0);
+        next = s + 2;
+    } else if ((s[0] & 0xf0) == 0xe0) {
+        *c = ((uint16_t)(s[0] & 0x0f) << 12) |
+             ((uint16_t)(s[1] & 0x3f) <<  6) |
+             ((uint16_t)(s[2] & 0x3f) <<  0);
+        next = s + 3;
+    } else if ((s[0] & 0xf8) == 0xf0 && (s[0] <= 0xf4)) {
+        *c = ((uint16_t)(s[0] & 0x07) << 18) |
+             ((uint16_t)(s[1] & 0x3f) << 12) |
+             ((uint16_t)(s[2] & 0x3f) <<  6) |
+             ((uint16_t)(s[3] & 0x3f) <<  0);
+        next = s + 4;
+    } else {
+        *c = -1; // invalid
+        next = s + 1; // skip this byte
+    }
+    if (*c >= 0xd800 && *c <= 0xdfff)
+        *c = -1; // surrogate half
+    return next;
+}
+
+@interface NSScanner (SSYPercentEscapes)
+
+- (void)scanPercentEscapeTripletIntoData:(NSMutableData*)data;
+
+@end
+
+@implementation NSScanner (SSYPercentEscapes)
+
+/* This method assusmes that the given scanner.scanLocation is at the "%". */
+- (void)scanPercentEscapeTripletIntoData:(NSMutableData*)data {
+    NSString* twoHexCharacters = [self.string substringWithRange:NSMakeRange(self.scanLocation + 1, 2)];
+    unsigned short codeValue;
+    sscanf([twoHexCharacters UTF8String], "%2hx", &codeValue) ;
+    [data appendBytes:&codeValue
+               length:1];
+    self.scanLocation = self.scanLocation + 3;
+}
+
+@end
+
 
 @implementation NSString (URIQuery)
 
@@ -158,58 +208,95 @@ static NSString* const constStringRFC3896AdditionsTo2396 = @"!*'();:@&=+$,/?" ;
 	return ([decodedString length] < [self length]) ;
 }
 
-#if 0
-This work-in-progress does not handle multi-byte encoded characters.
-- (NSString*)decodePercentEscapesOnly:(NSIndexSet*)valuesToBeDecoded {
+- (NSString*)decodeOnlyPercentEscapesInUnicodeIndexSet:(NSIndexSet*)indexSet {
+    /* Part 1 of 3.  Scan self for percent escapes, and, if any are found,
+     create a data object UTF8 encoded bytes.  For example, if self is
+     the string "M%C2%B5d" (which is the UTF8 representation of the string
+     "Mµd"), `data` will be created containing the four bytes:
+       0x4d 0xc2 0xb5 0x64.  In other words, it converts a percent-escape
+     encoded UTF8 string to a UTF8 data. */
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
-	NSMutableString* mutant = nil ;
-	while (![scanner isAtEnd]) {
-		NSString* priorString ;
-		[scanner scanUpToString:@"%"
-					 intoString:&priorString] ;
-		if ([scanner isAtEnd]) {
-			if (mutant) {
-				[appendString priorString] ;
-			}
-			else {
-				break;
-			}
-		}
-		else {
-			[scanner scanString:@"%@"
-					 intoString:NULL] ;
-			NSString* hexString ;
-			BOOL foundHex = [scanner scanCharactersFromSet:[NSCharacterSet ssyHexDigitsCharacterSet]
-												intoString:&hexString] ;
-			if (foundHex) {
-				int16_t codeValue ;
-				sscanf([hexString UTF8String], @"%2hx", &codeValue) ;
-				if (!mutant) {
-					mutant = [[NSMutableDictionary alloc] init] ;
-				}
-				
-				[mutant appendString:priorString] ;
-				[mutant appendFormat:@"%c", codeValue] ;
-			}
-			else {
-				[scanner set
-			}
+	NSMutableData* data = nil ;
+    while (![scanner isAtEnd]) {
+        NSString* aString = nil;
+        [scanner scanUpToString:@"%"
+                     intoString:&aString];
+        /* The following will be a no-op if `data` is still nil. */
+        [data appendData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
+        if ([scanner isAtEnd]) {
+            break;
+        } else {
+            scanner.scanLocation = scanner.scanLocation + 1;
+            if (!data) {
+                data = [NSMutableData data];
+                if (aString) {
+                    [data appendData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
+                }
+            }
 
-		}
-	}
-	
-	if(!mutant) {
-		answer = self ;
-	}
-	else {
-		answer = [[mutant copy] autorelease] ;
-	}
-	
-	[mutant release] ;
-	
-	return answer ;
-}
+            // Next two characters are the next byte of a UTF8 sequence
+            unichar lengthChar = [self characterAtIndex:scanner.scanLocation];
+            NSInteger percentCount;
+            switch(lengthChar) {
+                case 'c':
+                case 'C':
+                    percentCount = 2;
+                    break;
+                case 'e':
+                case 'E':
+                    percentCount = 3;
+                    break;
+                case 'f':
+                case 'F':
+                    percentCount = 4;
+                    break;
+                default:
+                    percentCount = 0;
+                    NSLog(@"Error 484");
+            }
+            scanner.scanLocation = scanner.scanLocation - 1;
+            for (NSInteger i=0; i<percentCount; i++) {
+                [scanner scanPercentEscapeTripletIntoData:data] ;
+            }
+        }
+    }
+    
+    NSString* answer;
+    if(!data) {
+        answer = self ;
+    }
+    else {
+        /* Part 2 of 3.  Convert UTF8 data to UTF16 data.  */
+        const void* startingPointer = [data bytes];
+        const void* nextBytePointer = startingPointer;
+        /* Count of characters in output can be no longer than data.length. */
+        NSInteger length = data.length;
+        uint16_t* output = malloc(length * sizeof(uint16_t));
+        NSInteger j = 0;
+        while (nextBytePointer < startingPointer + length) {
+            uint16_t nextWideChar;
+            nextBytePointer = utf8_simple(nextBytePointer, &nextWideChar);
+            output[j] = nextWideChar;
+            j++;
+        }
+
+#if 0
+        printf("The output is:\n");
+        for (NSInteger i=0; i<j; i++) {
+            printf("i=%ld:0x%04x ", (long)i, output[i]);
+        }
+        printf("\nEnd of output.\n");
 #endif
+        /* Part 3 of 3.  Convert UTF16 data to string. */
+        answer = [[NSString alloc] initWithBytes:output
+                                          length:j*sizeof(uint16_t)
+                                        encoding:NSUTF16LittleEndianStringEncoding];
+        free(output);
+        [answer autorelease];
+    }
+    
+    return answer ;
+}
 				 
 - (NSString*)decodeAllPercentEscapes {
 	// Unfortunately, CFURLCreateStringByReplacingPercentEscapes() seems to only replace %[NUMBER] escapes
