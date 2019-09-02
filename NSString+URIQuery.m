@@ -3,8 +3,22 @@
 
 static NSString* const constStringRFC3896AdditionsTo2396 = @"!*'();:@&=+$,/?" ;
 
-/* This function is adapted from https://nullprogram.com/blog/2017/10/06/ */
-const unsigned char* utf8_simple(const unsigned char *s, uint16_t *c) {
+enum State_enum
+{
+    StateHopeless = -2,
+    StateValidButFiltered = -1,
+    StateHoping = 0,
+    StateValidAndAccepted = 1
+} ;
+typedef enum State_enum State ;
+
+/* This function is adapted from https://nullprogram.com/blog/2017/10/06/.
+ That blog post refers to a more performant implementation, given here:
+ https://github.com/skeeto/branchless-utf8.  But after 2 minutes I was not able
+ to get the more efficient implementation to work, and 2 minutes was all I had
+ afforded to spend on it.  The problem is certainly related to the 8 vs 16 vs
+ 32 bit integer sizes used. */
+const uint8_t* utf8_simple(const uint8_t* s, uint16_t* c) {
     const unsigned char *next;
     if (s[0] < 0x80) {
         *c = s[0];
@@ -33,22 +47,79 @@ const unsigned char* utf8_simple(const unsigned char *s, uint16_t *c) {
     return next;
 }
 
+/* static_zeroPad is used when creating UTF16 from UTF8. */
+uint8_t const static_zeroPad = 0x00;
+
 @interface NSScanner (SSYPercentEscapes)
 
-- (void)scanPercentEscapeTripletIntoData:(NSMutableData*)data;
+/*!
+ @brief  Scans the next three characters and returns by reference the value of
+ the last two characters interpreted to be two hexidecimal digits, as in a
+ URL-encoded percent escape sequence
+ 
+ @details  A triplet is, for example, "%CE" or "%ce".  For this method to work
+ as intended, when this method is called, the receiver's scanLocation should be
+ at (just before) the target '%' character.
+ 
+ @param  into  Upon return, points to the hex value scanned, or to 0 if the
+ next two characters are not hex characters.
+ 
+ @result  The count of characters that were scanned – that is, the change in
+ the receiver's scan location.  Should be 3 unless the scan location is within
+ 3 characters of the end of the receiver's string.
+ */
+- (NSInteger)scanPercentEscapeTripletInto:(uint8_t*)byteValue;
 
 @end
 
 @implementation NSScanner (SSYPercentEscapes)
 
-/* This method assusmes that the given scanner.scanLocation is at the "%". */
-- (void)scanPercentEscapeTripletIntoData:(NSMutableData*)data {
-    NSString* twoHexCharacters = [self.string substringWithRange:NSMakeRange(self.scanLocation + 1, 2)];
-    unsigned short codeValue;
-    sscanf([twoHexCharacters UTF8String], "%2hx", &codeValue) ;
-    [data appendBytes:&codeValue
-               length:1];
-    self.scanLocation = self.scanLocation + 3;
+- (NSInteger)scanPercentEscapeTripletInto:(uint8_t*)byteValue {
+    BOOL ok;
+    NSInteger countOfScanned;
+    NSString* twoHexCharacters = nil;
+    NSInteger loc = 0;
+    NSInteger len = 0;
+    NSInteger originalLoc = 0;
+    uint8_t value;
+
+    /* This will only work if we have at least 3 bytes before the end!*/
+    ok = self.string.length - self.scanLocation >= 3;
+    if (ok) {
+        originalLoc = self.scanLocation;
+        loc = originalLoc + 1;
+        len = 2;
+        if (loc+len > self.string.length) {
+            len = self.string.length - loc;
+            ok = NO;
+        }
+    }
+    
+    if (ok) {
+        twoHexCharacters = [self.string substringWithRange:NSMakeRange(loc,len)];
+        for (NSInteger i=0; i<len; i++) {
+            unichar aChar = [twoHexCharacters characterAtIndex:i];
+            if (![[NSCharacterSet ssyHexDigitsCharacterSet] characterIsMember:aChar]) {
+                ok = NO;
+            }
+        }
+    }
+    
+    if (ok && (twoHexCharacters.length == 2)) {
+        sscanf([twoHexCharacters UTF8String], "%2hhx", &value);
+        loc = self.scanLocation + 3;
+        if (loc > self.string.length) {
+            loc = self.string.length;
+        }
+        self.scanLocation = loc;
+        countOfScanned = loc - originalLoc;
+    } else {
+        value = 0;
+        countOfScanned = 0;
+    }
+
+    *byteValue = value;
+    return countOfScanned;
 }
 
 @end
@@ -208,91 +279,326 @@ const unsigned char* utf8_simple(const unsigned char *s, uint16_t *c) {
 	return ([decodedString length] < [self length]) ;
 }
 
-- (NSString*)decodeOnlyPercentEscapesInUnicodeIndexSet:(NSIndexSet*)indexSet {
-    /* Part 1 of 3.  Scan self for percent escapes, and, if any are found,
-     create a data object UTF8 encoded bytes.  For example, if self is
-     the string "M%C2%B5d" (which is the UTF8 representation of the string
-     "Mµd"), `data` will be created containing the four bytes:
-       0x4d 0xc2 0xb5 0x64.  In other words, it converts a percent-escape
-     encoded UTF8 string to a UTF8 data. */
-	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
-	NSMutableData* data = nil ;
+- (void)appendString:(NSString*)aString
+         toUtf16Data:(NSMutableData*)utf16Data {
+    for (NSInteger i=0; i<aString.length; i++) {
+        char aChar = [aString characterAtIndex:i];
+        [utf16Data appendBytes:&aChar
+                        length:1];
+        [utf16Data appendBytes:&static_zeroPad
+                        length:1];
+    }
+}
+
+- (NSRange)pathRangeLoosely {
+    /* This remaining code is simply to replace the path.  Sadly,
+     NSURL does not feature a method to simply build a path
+     from all 10 of its components (scheme, url, user, password,
+     host, port, path, parameterString, query, fragment).  And
+     there is no NSMutableURL.  So, instead we tediously parse
+     the string, find the third slash… */
+    NSScanner* scanner = [[NSScanner alloc] initWithString:self];
+    NSInteger slashCount  = 0;
     while (![scanner isAtEnd]) {
-        NSString* aString = nil;
-        [scanner scanUpToString:@"%"
-                     intoString:&aString];
-        /* The following will be a no-op if `data` is still nil. */
-        [data appendData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
-        if ([scanner isAtEnd]) {
+        [scanner scanUpToString:@"/"
+                     intoString:NULL];
+        NSInteger scanCount = [scanner scanString:@"/"
+                                       intoString:NULL];
+        if (scanCount == 1) {
+            slashCount++;
+        }
+        if (slashCount == 3) {
             break;
-        } else {
-            scanner.scanLocation = scanner.scanLocation + 1;
-            if (!data) {
-                data = [NSMutableData data];
-                if (aString) {
-                    [data appendData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+    }
+    
+    NSInteger location;
+    if (slashCount == 3) {
+        location = scanner.scanLocation - 1;
+    } else {
+        location = NSNotFound;
+    }
+    
+    /* The path of a URL may be followed by a query, parameters, or fragment,
+     each of which begins with a certain delimiter. */
+    NSCharacterSet* paramQueryAndFragmentDelimiters = [NSCharacterSet characterSetWithCharactersInString:@"?;#"];
+    [scanner scanUpToCharactersFromSet:paramQueryAndFragmentDelimiters
+                            intoString:NULL];
+    NSInteger length;
+    if (location != NSNotFound) {
+        length = scanner.scanLocation - location;
+    } else {
+        length = 0;
+    }
+    [scanner release];
+    
+    return NSMakeRange(location, length);
+}
+
+- (NSString*)decodeOnlyPercentEscapesInUnicodeSet:(NSCharacterSet*)targetSet
+                               uppercaseAnyOthers:(BOOL)uppercaseAnyOthers
+                          resolveDoubleDotsInPath:(BOOL)resolveDoubleDotsInPath {
+    /* Part 1 of 2.  Scan self for percent escapes, and, if any are found,
+     create a data object `utf16' of UTF16 little endian encoded bytes.  For
+     example, if self is the string "M%C2%B5d" (which is the UTF8
+     representation of the string "Mµd"), `utf16` will be created containing
+     the six bytes:
+       0x4d 0x00 0xc2 0xb5 0x64 0x00 .  In other words, it converts a
+     percent-escape encoded UTF8 string to a UTF16 data. */
+    NSMutableData* utf16 = nil;
+    if (targetSet) {
+        NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
+        NSInteger pendingUppercaseCount = 0;
+        while (![scanner isAtEnd]) {
+            NSString* aString = nil;
+            
+            [scanner scanUpToString:@"%"
+                         intoString:&aString];
+            if (utf16) {
+                if (aString.length > 0) {
+                    if (pendingUppercaseCount > 0) {
+                        if (aString.length == 2) {
+                            aString = [aString uppercaseString];
+                        } else if (aString.length > 2){
+                            NSString* aString1 = [aString substringToIndex:2];
+                            NSString* aString2 = [aString substringFromIndex:2];
+                            aString = [[aString1 uppercaseString] stringByAppendingString:aString2];
+                        }
+                        pendingUppercaseCount--;
+                    }
+                    [self appendString:aString
+                           toUtf16Data:utf16];
                 }
             }
-
-            // Next two characters are the next byte of a UTF8 sequence
-            unichar lengthChar = [self characterAtIndex:scanner.scanLocation];
-            NSInteger percentCount;
-            switch(lengthChar) {
-                case 'c':
-                case 'C':
-                    percentCount = 2;
-                    break;
-                case 'e':
-                case 'E':
-                    percentCount = 3;
-                    break;
-                case 'f':
-                case 'F':
-                    percentCount = 4;
-                    break;
-                default:
-                    percentCount = 0;
-                    NSLog(@"Error 484");
+            if ([scanner isAtEnd]) {
+                break;
+            } else {
+                if (!utf16) {
+                    utf16 = [NSMutableData new];
+                    if (aString) {
+                        [self appendString:aString
+                               toUtf16Data:utf16];
+                    }
+                }
+                
+                /* UTF8 multibyte sequences may have up to 4 bytes … */
+                uint8_t escapeSequenceValues[4] = {0,0,0,0};
+                NSInteger escapeSequenceByteIndex = 0;
+                NSInteger escapeSequenceStartingCharacterIndex = scanner.scanLocation;
+                State state = StateHoping;
+                NSInteger expectedByteCount = 1;
+                while (state == StateHoping) {
+                    uint8_t byteValue;
+                    NSInteger thisTripletScanned = [scanner scanPercentEscapeTripletInto:&byteValue];
+                    if (thisTripletScanned == 3) {
+                        escapeSequenceValues[escapeSequenceByteIndex] = byteValue;
+                    } else {
+                        state = StateHopeless;
+                    }
+                    
+                    if (state == StateHoping) {
+                        if (escapeSequenceByteIndex == 0) {
+                            /* We have successfully parsed the first triplet of a
+                             new candidate escape sequence. */
+                            uint8_t firstNibbleValue = (escapeSequenceValues[0] & 0xf0) >> 4;
+                            switch(firstNibbleValue) {
+                                case 0x0:
+                                case 0x1:
+                                case 0x2:
+                                case 0x3:
+                                case 0x4:
+                                case 0x5:
+                                case 0x6:
+                                case 0x7:
+                                    /* ASCII character, 0x01 thru 0x7f.  Example: %20, space character */
+                                    expectedByteCount = 1;
+                                    break;
+                                    break;
+                                case 0xc:
+                                    /* Two-byte UTF8 character.  Example: %CEBC, Greek letter mu  */
+                                    expectedByteCount = 2;
+                                    break;
+                                case 0xe:
+                                    /* Three-byte UTF8 character */
+                                    expectedByteCount = 3;
+                                    break;
+                                case 0xf:
+                                    /* Four-byte UTF8 character */
+                                    expectedByteCount = 4;
+                                    break;
+                                default:
+                                    /* Not a valid percent escape sequence */
+                                    expectedByteCount = 0;
+                                    state = StateHopeless;
+                            }
+                            
+                            if (state == StateHoping) {
+                                if (escapeSequenceByteIndex > expectedByteCount) {
+                                    state = StateHopeless;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (state == StateHoping) {
+                        if (escapeSequenceByteIndex == expectedByteCount - 1) {
+                            uint16_t codePointValue = 0x0000;
+                            utf8_simple(escapeSequenceValues, &codePointValue);
+                            if ([targetSet characterIsMember:codePointValue]) {
+                                /* We've got a good percent escape sequence. */
+                                [utf16 appendBytes:&codePointValue
+                                            length:2];
+                                state = StateValidAndAccepted;
+                            } else if (codePointValue != 0x0000){
+                                state = StateValidButFiltered;
+                            } else {
+                                /* The current bytes in escapeSequenceValues is
+                                 invalid.  But we stay in StateHoping because
+                                 subsequent iterations of this loop may result
+                                 in validity. */
+                            }
+                        }
+                    }
+                    
+                    switch(state) {
+                        case StateValidButFiltered: {
+                            if (uppercaseAnyOthers && (pendingUppercaseCount == 0)) {
+                                pendingUppercaseCount = expectedByteCount;
+                            }
+                            // no break – continue to next case
+                        }
+                        case StateHopeless: {
+                            NSInteger nextLocation = escapeSequenceStartingCharacterIndex + 1;
+                            if (nextLocation <= scanner.string.length) {
+                                scanner.scanLocation = nextLocation;
+                            }
+                            uint8_t const percent = '%';
+                            /* Insert the percent character that we scanned by. */
+                            [utf16 appendBytes:&percent
+                                        length:1];
+                            [utf16 appendBytes:&static_zeroPad
+                                        length:1];
+                            break;
+                        }
+                        case StateHoping: {
+                            break;
+                        }
+                        case StateValidAndAccepted: {
+                            break;
+                        }
+                    }
+                    
+                    escapeSequenceByteIndex++;
+                }
             }
-            scanner.scanLocation = scanner.scanLocation - 1;
-            for (NSInteger i=0; i<percentCount; i++) {
-                [scanner scanPercentEscapeTripletIntoData:data] ;
+        }
+        [scanner release];
+    }
+    
+    NSString* answer1 = nil;
+    if(utf16) {
+#if 0
+        printf("The utf16 is:\n   ");
+        for (NSInteger k=0; k<utf16.length; k++) {
+            printf("0x%02x ", (*((uint8_t*)utf16.bytes + k)));
+        }
+        printf("\n");
+#endif
+        /* Part 2 of 2.  Convert UTF16 data to string. */
+        answer1 = [[NSString alloc] initWithData:utf16
+                                       encoding:NSUTF16LittleEndianStringEncoding];
+        [answer1 autorelease];
+    }
+    [utf16 release];
+
+    NSString* answer;
+    if (answer1) {
+        answer = answer1;
+    } else {
+        answer = self;
+    }
+
+    NSString* answer2 = nil;
+    if (resolveDoubleDotsInPath) {
+        NSRange pathRange = [answer pathRangeLoosely];
+        if (pathRange.location < answer.length) {
+            NSString* path = [answer substringWithRange:pathRange];
+            if (path && [path rangeOfString:@"/../"].location != NSNotFound) {
+                NSMutableArray* comps = [[path pathComponents] mutableCopy];
+                NSMutableIndexSet* doubleDotCompsIndexes = [NSMutableIndexSet new];
+                NSInteger i = 0;
+                for (NSString* comp in comps) {
+                    if ([comp isEqualToString:@".."]) {
+                        [doubleDotCompsIndexes addIndex:i];
+                    }
+                    i++;
+                }
+                if (doubleDotCompsIndexes.count > 0) {
+                    /* So far, our doubleDotCompsIndexes includes only the double
+                     dot path components themselves.  We now crete a
+                     augmentedDoubleDotIndexes set which also contains indexes
+                     of the previous, target path components which those double-dot
+                     components imply should be wiped out. */
+                    NSMutableIndexSet* augmentedDoubleDotIndexes = [doubleDotCompsIndexes mutableCopy];
+                    NSInteger doomedIndex = NSNotFound;
+                    while (YES) {
+                        doomedIndex = [doubleDotCompsIndexes indexLessThanIndex:doomedIndex];
+                        if (doomedIndex < comps.count) {
+                            NSInteger k = 1;
+                            while (YES) {
+                                NSInteger targetIndex = doomedIndex - k;
+                                if ([augmentedDoubleDotIndexes containsIndex:targetIndex]) {
+                                    k++;
+                                } else {
+                                    if (targetIndex >= 0) {
+                                        [augmentedDoubleDotIndexes addIndex:targetIndex];
+                                    }
+                                    break;
+                                }
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    doomedIndex = NSNotFound;
+                    while (YES) {
+                        doomedIndex = [augmentedDoubleDotIndexes indexLessThanIndex:doomedIndex];
+                        if (doomedIndex < comps.count) {
+                            [comps removeObjectAtIndex:doomedIndex];
+                        } else {
+                            break;
+                        }
+                    }
+                    [augmentedDoubleDotIndexes release];
+                    
+                    NSString* newPath = [NSString pathWithComponents:comps];
+                    newPath = [newPath stringByAppendingString:@"/"];
+                    
+                    /* This remaining code is simply to replace the path.  Sadly,
+                     NSURL does not feature a method to simply build a URL
+                     from all 10 of its components (scheme, url, user, password,
+                     host, port, path, parameters, query, fragment).  And
+                     there is no NSMutableURL.  So, instead we tediously parse
+                     the string, find the path, and replace it… */
+                    NSMutableString* newString = [answer mutableCopy];
+                    NSRange pathRange = [answer pathRangeLoosely];
+                    if (pathRange.location + pathRange.length <= newString.length) { // Defensive programming
+                        [newString replaceCharactersInRange:pathRange
+                                                 withString:newPath];
+                        answer2 = [newString copy];
+                        [answer2 autorelease];
+                    }
+                    [newString release];
+                }
+                [comps release];
+                [doubleDotCompsIndexes release];
             }
         }
     }
     
-    NSString* answer;
-    if(!data) {
-        answer = self ;
-    }
-    else {
-        /* Part 2 of 3.  Convert UTF8 data to UTF16 data.  */
-        const void* startingPointer = [data bytes];
-        const void* nextBytePointer = startingPointer;
-        /* Count of characters in output can be no longer than data.length. */
-        NSInteger length = data.length;
-        uint16_t* output = malloc(length * sizeof(uint16_t));
-        NSInteger j = 0;
-        while (nextBytePointer < startingPointer + length) {
-            uint16_t nextWideChar;
-            nextBytePointer = utf8_simple(nextBytePointer, &nextWideChar);
-            output[j] = nextWideChar;
-            j++;
-        }
-
-#if 0
-        printf("The output is:\n");
-        for (NSInteger i=0; i<j; i++) {
-            printf("i=%ld:0x%04x ", (long)i, output[i]);
-        }
-        printf("\nEnd of output.\n");
-#endif
-        /* Part 3 of 3.  Convert UTF16 data to string. */
-        answer = [[NSString alloc] initWithBytes:output
-                                          length:j*sizeof(uint16_t)
-                                        encoding:NSUTF16LittleEndianStringEncoding];
-        free(output);
-        [answer autorelease];
+    if (answer2) {
+        answer = answer2;
     }
     
     return answer ;
