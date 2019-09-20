@@ -64,11 +64,21 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
         if (@available(macOS 10.13, *)) {
             // macOS 10.13 or later
             NSError* error = nil;
-            archive = [NSKeyedArchiver archivedDataWithRootObject:self
-                                            requiringSecureCoding:NO
-                                                            error:&error];
-            if (error) {
+            if ([self isKindOfClass:[NSManagedObject class]]) {
+                /* Core Data managed objects are generally not encodeable,
+                 but, more importantly, accessing their properties to
+                 create an archive as in the next branch will cause a Core
+                 Data __Multithreading_Violation_AllThatIsLeftToUsIsHonor_
+                 if we are not on the correct thread for this object.
+                 So, we play it safe, simple and do no even try. */
                 archive = nil;
+            } else {
+                archive = [NSKeyedArchiver archivedDataWithRootObject:self
+                                                requiringSecureCoding:NO
+                                                                error:&error];
+                if (error) {
+                    archive = nil;
+                }
             }
         } else {
             archive = [NSKeyedArchiver archivedDataWithRootObject:self] ;

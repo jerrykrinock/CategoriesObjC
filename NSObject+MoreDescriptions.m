@@ -6,7 +6,23 @@ NSString* constIndentation = @"   " ;
 @implementation NSObject (MoreDescriptions)
 
 - (NSString*)longDescription {
-	return [self description] ;
+    __block NSString* answer = nil;
+    if ([self isKindOfClass:[NSManagedObject class]]) {
+        [[(NSManagedObject*)self managedObjectContext] performBlockAndWait:^{
+            answer = [self description];
+#if !__has_feature(objc_arc)
+            [answer retain];
+#endif
+        }];
+#if !__has_feature(objc_arc)
+        [answer autorelease];
+#endif
+    }
+    else {
+        answer = [self description] ;
+    }
+    
+    return answer;
 }
 
 - (NSString*)shortDescription {

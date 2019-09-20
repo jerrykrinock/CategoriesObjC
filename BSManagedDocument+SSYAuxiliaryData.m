@@ -38,8 +38,18 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
                                                               format:NSPropertyListBinaryFormat_v1_0
                                                              options:0
                                                                error:NULL];
-    [data writeToURL:[self auxiliaryDataFileUrl]
-          atomically:YES];
+    NSURL* url = [self auxiliaryDataFileUrl];
+    if (url) {
+        [data writeToURL:url
+              atomically:YES];
+    } else {
+        /* This failure is expected if receiver isopted into asynchronous
+         saving, during the first attempt with a new document, because our
+         fileURL is nil.  The subclass must have a mechanism to call this
+         method again after fileURL has been set.  For example, in the
+         BkmkMgrs project, our BkmxDoc subclass has such a mechanism based
+         on -[BkmxDoc observeValueForKeyPath::::]. */
+    }
 }
 
 - (id)auxiliaryObjectForKey:(NSString*)key {
