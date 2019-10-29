@@ -24,6 +24,9 @@
 - (id)syncAndGetValueForKeyPathArray:(NSArray*)keyPathArray
                        applicationId:(NSString*)applicationId ;
 
+/*
+ @details  If 'value' is nil, this method will be a no-op.  To remove a value,
+ you should instead use one of the -remove… methods in this category. */
 - (void)setAndSyncValue:(id)value
         forKeyPathArray:(NSArray*)keyArray
           applicationId:(NSString*)applicationId ;
