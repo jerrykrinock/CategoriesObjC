@@ -192,8 +192,8 @@
     [self syncApplicationId:applicationId] ;
 }
 
-- (void)       removeAndSyncKey:(id)key
-                  applicationId:(NSString*)applicationId {
+- (void)removeAndSyncKey:(id)key
+           applicationId:(NSString*)applicationId {
     if (applicationId) {
         CFPreferencesSetAppValue(
                                  (CFStringRef)key,
@@ -204,6 +204,21 @@
     }
 }
 
+- (void)removeAndSyncKeyPathArray:(NSArray*)keyPathArray
+                    applicationId:(NSString*)applicationId {
+    if (applicationId) {
+        if (keyPathArray.count == 1) {
+            [self removeAndSyncKey:[keyPathArray firstObject]
+                     applicationId:applicationId];
+        } else if (keyPathArray.count > 1) {
+            NSArray* parentKeyPathArray = [keyPathArray subarrayWithRange:NSMakeRange(0, keyPathArray.count -1)];
+            [self             removeAndSyncKey:parentKeyPathArray.lastObject
+                  fromDictionaryAtKeyPathArray:parentKeyPathArray
+                                 applicationId:applicationId];
+        }
+    }
+}
+
 - (void)       removeAndSyncKey:(id)key
    fromDictionaryAtKeyPathArray:(NSArray*)keyPathArray
                   applicationId:(NSString*)applicationId {
@@ -211,12 +226,18 @@
         [self syncApplicationId:applicationId] ;
         NSDictionary* dictionary = [self valueForKeyPathArray:keyPathArray
                                                 applicationId:applicationId] ;
-        if (dictionary) {
+        if ([dictionary isKindOfClass:[NSDictionary class]]) {
             dictionary = [dictionary dictionaryBySettingValue:nil
                                                        forKey:key] ;
             [self setAndSyncValue:dictionary
                   forKeyPathArray:keyPathArray
                     applicationId:applicationId] ;
+        } else if (dictionary) {
+            NSLog(@"Warning 482-4740 Removed unexpected %@ : %@",
+                  dictionary.className,
+                  dictionary);
+            [self removeAndSyncKeyPathArray:keyPathArray
+                              applicationId:applicationId];
         }
         else {
             // The dictionary doesn't exist.  Don't do anything.
