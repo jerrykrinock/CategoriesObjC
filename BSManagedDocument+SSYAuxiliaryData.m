@@ -10,6 +10,11 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
     return url;
 }
 
++ (NSString*)auxiliaryDataFilePathForDocumentPath:(NSString*)path {
+    path = [path stringByAppendingPathComponent:auxiliaryDataFilename];
+    return path;
+}
+
 - (NSURL*)auxiliaryDataFileUrl {
     return [[self class] auxiliaryDataFileUrlForDocumentUrl:[self fileURL]];
 }

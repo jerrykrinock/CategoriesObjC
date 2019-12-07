@@ -24,6 +24,8 @@
  */
 @interface BSManagedDocument (SSYAuxiliaryData)
 
++ (NSString*)auxiliaryDataFilePathForDocumentPath:(NSString*)path;
+
 - (id)auxiliaryObjectForKey:(NSString*)key;
 
 /*!
