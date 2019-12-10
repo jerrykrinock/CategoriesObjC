@@ -26,6 +26,9 @@
 
 + (NSString*)auxiliaryDataFilePathForDocumentPath:(NSString*)path;
 
++ (NSString *)documentPathForAuxiliaryDataFilePath:(NSString*)path
+                                 documentExtension:(NSString*)extension;
+
 - (id)auxiliaryObjectForKey:(NSString*)key;
 
 /*!

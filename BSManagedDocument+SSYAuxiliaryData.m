@@ -15,6 +15,19 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
     return path;
 }
 
++ (NSString *)documentPathForAuxiliaryDataFilePath:(NSString*)path
+                                 documentExtension:(NSString*)extension {
+    NSString* answer = nil;
+    if ([path.lastPathComponent isEqualToString:auxiliaryDataFilename]) {
+        path = [path stringByDeletingLastPathComponent];
+        if ([path.pathExtension isEqualToString:extension]) {
+            answer = path;
+        }
+    }
+
+    return answer;
+}
+
 - (NSURL*)auxiliaryDataFileUrl {
     return [[self class] auxiliaryDataFileUrlForDocumentUrl:[self fileURL]];
 }
