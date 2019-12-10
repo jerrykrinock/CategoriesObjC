@@ -346,6 +346,7 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
                                   ignoreKeyPrefix:nil
                                          userInfo:nil
                              blockUntilCompletion:YES
+                                  failSafeTimeout:21.578
                                 completionHandler:^(id  _Nullable payload, id  _Nullable userInfo, NSError * _Nullable scriptError) {
                                     if (scriptError) {
                                         ok = NO;
