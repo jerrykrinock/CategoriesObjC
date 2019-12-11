@@ -61,7 +61,7 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
         [data writeToURL:url
               atomically:YES];
     } else {
-        /* This failure is expected if receiver isopted into asynchronous
+        /* This failure is expected if receiver is opted into asynchronous
          saving, during the first attempt with a new document, because our
          fileURL is nil.  The subclass must have a mechanism to call this
          method again after fileURL has been set.  For example, in the
