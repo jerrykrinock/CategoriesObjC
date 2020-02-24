@@ -51,22 +51,23 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
     return [[self class] auxiliaryDataDictionaryFromDiskForDocumentUrl:[self fileURL]];
 }
 
-- (void)writeToDiskAuxiliaryDataDictionary:(NSDictionary*)dic {
-    NSData* data = [NSPropertyListSerialization dataWithPropertyList:dic
-                                                              format:NSPropertyListBinaryFormat_v1_0
-                                                             options:0
-                                                               error:NULL];
+- (BOOL)writeToDiskAuxiliaryDataDictionary:(NSDictionary*)dic {
     NSURL* url = [self auxiliaryDataFileUrl];
     if (url) {
-        [data writeToURL:url
-              atomically:YES];
+        NSData* data = [NSPropertyListSerialization dataWithPropertyList:dic
+                                                                  format:NSPropertyListBinaryFormat_v1_0
+                                                                 options:0
+                                                                   error:NULL];
+        return [data writeToURL:url
+                     atomically:YES];
     } else {
-        /* This failure is expected if receiver is opted into asynchronous
+        /* This branch is expected if receiver is opted into asynchronous
          saving, during the first attempt with a new document, because our
          fileURL is nil.  The subclass must have a mechanism to call this
          method again after fileURL has been set.  For example, in the
          BkmkMgrs project, our BkmxDoc subclass has such a mechanism based
          on -[BkmxDoc observeValueForKeyPath::::]. */
+        return NO;
     }
 }
 
@@ -74,9 +75,10 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
     return [[self auxiliaryDataDictionaryFromDisk] objectForKey:key];
 }
 
-- (void)setAuxiliaryObject:(id)newObject
-                    forKey:(NSString*)key {
+- (BSManagedDocumentAuxiliaryDataWriteResult)setAuxiliaryObject:(id)newObject
+                                                         forKey:(NSString*)key {
     NSObject* existingObject = [self auxiliaryObjectForKey:key];
+    BSManagedDocumentAuxiliaryDataWriteResult result;
     if (![NSObject isEqualHandlesNilObject1:existingObject
                                     object2:newObject]) {
         NSMutableDictionary* dic = [[self auxiliaryDataDictionaryFromDisk] mutableCopy];
@@ -87,11 +89,22 @@ NSString* auxiliaryDataFilename = @"auxiliaryData.plist";
             [dic removeObjectForKey:key];
         }
 
-        [self writeToDiskAuxiliaryDataDictionary:dic];
-#if !__has_feature(objc_arc)
-        [dic release];
-#endif
+        BOOL ok = [self writeToDiskAuxiliaryDataDictionary:dic];
+        if (ok) {
+            result = BSManagedDocumentAuxiliaryDataWriteResultDid;
+        } else {
+            result = BSManagedDocumentAuxiliaryDataWriteResultFailed;
+        }
+        #if !__has_feature(objc_arc)
+                [dic release];
+        #endif
+
+    } else {
+        /* Nothing to do */
+        result = BSManagedDocumentAuxiliaryDataWriteResultUnnecessary;
     }
+    
+    return result;
 }
 
 - (void)addAuxiliaryKeyValues:(NSDictionary*)keyValues {

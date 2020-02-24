@@ -1,5 +1,13 @@
 #import "BSManagedDocument.h"
 
+enum BSManagedDocumentAuxiliaryDataWriteResult_enum {
+    BSManagedDocumentAuxiliaryDataWriteResultFailed      = 0,
+    BSManagedDocumentAuxiliaryDataWriteResultDid         = 1,
+    BSManagedDocumentAuxiliaryDataWriteResultUnnecessary = 2
+} ;
+typedef enum BSManagedDocumentAuxiliaryDataWriteResult_enum BSManagedDocumentAuxiliaryDataWriteResult ;
+
+
 /*
  @brief    Class for infrequently reading and writing non-Core-Data key-value
  pairs of a BSManagedDocument to and from the disk
@@ -36,9 +44,13 @@
 
  @param    object  The desired value.  May be nil to remove the given key
  value from the disk.
- */
-- (void)setAuxiliaryObject:(id)object
-                    forKey:(NSString*)key;
+ 
+ @result   The result BSManagedDocumentAuxiliaryDataWriteResultFailed
+ typically occurs if the receiver's `fileURL` property is nil, probably because
+ it has not been set yet.
+  */
+- (BSManagedDocumentAuxiliaryDataWriteResult)setAuxiliaryObject:(id)object
+                                                         forKey:(NSString*)key;
 
 - (void)addAuxiliaryKeyValues:(NSDictionary*)keyValues;
 
