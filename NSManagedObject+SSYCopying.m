@@ -18,7 +18,7 @@
 }
 
 - (NSManagedObject*)deepCopyInManagedObjectContext:(NSManagedObjectContext*)targetMoc
-                           doNotEnterRelationships:(NSSet <NSRelationshipDescription*> *)doNoEnterRelationships {
+                           doNotEnterRelationships:(NSSet <NSRelationshipDescription*> *)doNotEnterRelationships {
     NSEntityDescription* entity = self.entity ;
     NSManagedObject* __block newObject = nil ;
     [targetMoc performBlockAndWait:^(void) {
@@ -38,7 +38,7 @@
 #endif
     }] ;
 
-    NSSet <NSString*> * doNotEnterKeys = [doNoEnterRelationships valueForKey:@"name"]  ;
+    NSSet <NSString*> * doNotEnterKeys = [doNotEnterRelationships valueForKey:@"name"]  ;
     NSDictionary* relationships = [entity relationshipsByName] ;
     for (NSString* key in relationships) {
         if (![doNotEnterKeys member:key]) {
