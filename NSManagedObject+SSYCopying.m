@@ -38,6 +38,19 @@
 #endif
     }] ;
 
+    NSMutableSet<NSRelationshipDescription*>* alwaysDoNotEnterRelationships = [NSMutableSet new];
+    for (NSRelationshipDescription* relationship in doNotEnterRelationships) {
+        [alwaysDoNotEnterRelationships addObject:relationship];
+        NSRelationshipDescription* inverseRelationship = [relationship inverseRelationship] ;
+        NSAssert(
+                 (inverseRelationship != nil),
+                 @"[1] No inverse relationship in %@ from %@ in %@",
+                 relationship.destinationEntity.name,
+                 relationship.name,
+                 self.className);
+        [alwaysDoNotEnterRelationships addObject:inverseRelationship];
+    }
+
     NSSet <NSString*> * doNotEnterKeys = [doNotEnterRelationships valueForKey:@"name"]  ;
     NSDictionary* relationships = [entity relationshipsByName] ;
     for (NSString* key in relationships) {
@@ -46,7 +59,7 @@
             NSRelationshipDescription* inverseRelationship = [relationship inverseRelationship] ;
             NSAssert(
                      (inverseRelationship != nil),
-                     @"No inverse relationship in %@ from %@ in %@",
+                     @"[2] No inverse relationship in %@ from %@ in %@",
                      relationship.destinationEntity.name,
                      relationship.name,
                      self.className) ;
@@ -71,9 +84,15 @@
 #endif
                 [[self managedObjectContext] performBlockAndWait:^(void) {
                     for (NSManagedObject* oldChild in oldCollection) {
+                        NSMutableSet<NSRelationshipDescription*>* doNotEnterInverseRelationships = [alwaysDoNotEnterRelationships mutableCopy];
+                        [doNotEnterInverseRelationships addObject:inverseRelationship];
+                        [doNotEnterInverseRelationships removeObject:relationship];
                         NSManagedObject* newChild = [oldChild deepCopyInManagedObjectContext:targetMoc
-                                                                      doNotEnterRelationships:[NSSet setWithObject:inverseRelationship]] ;
-                        
+                                                                     doNotEnterRelationships:doNotEnterInverseRelationships] ;
+
+                        #if !__has_feature(objc_arc)
+                            [doNotEnterInverseRelationships release];
+                        #endif
                         // Wire up relationship, and its inverse relationship.
                         [targetMoc performBlockAndWait:^(void) {
                             [newObject recklessPerformVoidSelector:addObjectSelector
@@ -91,7 +110,7 @@
                     oldChild = [self valueForKey:key] ;
                 }] ;
                 NSManagedObject* newChild = [oldChild deepCopyInManagedObjectContext:targetMoc
-                                                             doNotEnterRelationships:[NSSet setWithObject:inverseRelationship]] ;
+                                                             doNotEnterRelationships:alwaysDoNotEnterRelationships] ;
                 [targetMoc performBlockAndWait:^(void) {
                     // Wire up relationship, and its inverse relationship.
                     [newObject setValue:newChild
@@ -104,6 +123,7 @@
     }
 #if !__has_feature(objc_arc)
     [newObject autorelease];
+    [alwaysDoNotEnterRelationships release];
 #endif
     
     return newObject ;
