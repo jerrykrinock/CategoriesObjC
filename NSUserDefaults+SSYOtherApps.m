@@ -233,9 +233,11 @@
                   forKeyPathArray:keyPathArray
                     applicationId:applicationId] ;
         } else if (dictionary) {
-            NSLog(@"Warning 482-4740 Removed unexpected %@ : %@",
+            NSLog(@"Warning 482-4740 Removed unexpected %@ : %@\nwhile attempting to remove from %@ the key path array: %@",
                   dictionary.className,
-                  dictionary);
+                  dictionary,
+                  applicationId,
+                  keyPathArray);
             [self removeAndSyncKeyPathArray:keyPathArray
                               applicationId:applicationId];
         }
