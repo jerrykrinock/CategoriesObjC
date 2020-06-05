@@ -93,7 +93,7 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
          object.  Exception occurred below, when sending
          -unarchiveObjectWithData: to it, due to
          "-[Client initWithCoder:]: unrecognized selector".
-         Indeed, I checked and found that Client respnds to
+         Indeed, I checked and found that Client responds to
          -encodeWithCoder: but not -initWithCoder. */
         id unarchivedSelf = [NSKeyedUnarchiver unarchiveObjectWithData:archive] ;
         if (!unarchivedSelf) {
@@ -171,8 +171,12 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
 			![self isDeeplyEncodeable]
 			) {
 		// Invoker specified encodeable but self is not encodeable
-		// Return a description
-		return [[self longDescription] retain] ;
+        NSString* longDescription = [self longDescription];
+        if (longDescription) {
+            return [longDescription retain];
+        } else {
+            return [[self description] retain];
+        }
 	}
 	else if(
 			((style & SSYDeepCopyStyleBitmaskMutable) != 0) 
