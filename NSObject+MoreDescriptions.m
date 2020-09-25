@@ -242,9 +242,11 @@ NSString* constIndentation = @"   " ;
 		[desc appendString:@"<Empty Set>"] ;
 	}
     
-	NSString* answer = [[desc copy] autorelease] ;
-    
-    [desc release] ;
+    NSString* answer = [desc copy];
+#if !__has_feature(objc_arc)
+    [desc release];
+    [answer autorelease];
+#endif
     
     return answer ;
 }
