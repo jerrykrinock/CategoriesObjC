@@ -492,23 +492,23 @@ NSString* const aNewline = @"\n" ;
 	return cleanString;
 }
 
-- (NSString *)stringByReplacingCharactersInSet:(NSCharacterSet*)characterSet withString:(NSString*)string
-{
-	NSScanner*			 cleanerScanner = [NSScanner scannerWithString:self];
-	NSMutableString* cleanString		= [NSMutableString stringWithCapacity:[self length]];
-	
-	while (![cleanerScanner isAtEnd])
-	{
-		NSString* stringFragment = @"" ;
-		if ([cleanerScanner scanUpToCharactersFromSet:characterSet intoString:&stringFragment])
-			[cleanString appendString:stringFragment];
-		
-		if ([cleanerScanner scanCharactersFromSet:characterSet
-									   intoString:nil])
-			[cleanString appendString:string];
-	}
-	
-	return cleanString;
+- (NSString *)stringByReplacingCharactersInSet:(NSCharacterSet*)characterSet
+                                    withString:(NSString*)string {
+    NSScanner* cleanerScanner = [NSScanner scannerWithString:self];
+    NSMutableString* cleanString = [NSMutableString stringWithCapacity:[self length]];
+    
+    while (![cleanerScanner isAtEnd])
+    {
+        NSString* stringFragment = @"" ;
+        if ([cleanerScanner scanUpToCharactersFromSet:characterSet intoString:&stringFragment])
+            [cleanString appendString:stringFragment];
+        
+        if ([cleanerScanner scanCharactersFromSet:characterSet
+                                       intoString:nil])
+            [cleanString appendString:string];
+    }
+    
+    return cleanString;
 }
 
 - (NSString*)substringSafelyWithRange:(NSRange)range {
