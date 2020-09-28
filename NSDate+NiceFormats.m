@@ -4,24 +4,6 @@
 static NSDateFormatter* static_geekDateFormatter = nil;
 static NSDateFormatter* static_geekMilliDateFormatter = nil;
 
-
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < 1060) 
-
-/*!
-@brief    Declares stuff defined in the 10.6 SDK,
-to eliminate compiler warnings.
-
-@details  Be careful to only invoke super on these methods after
-you've checked that you are running under macOS 10.6.
-*/
-@interface NSDate (DefinedInMac_OS_X_10_6)
-
-- (id)dateByAddingTimeInterval:(NSTimeInterval)seconds ;
-
-@end
-
-#endif
-
 @implementation NSDate (NiceFormats)
 
 - (NSString*)medDateShortTimeString {
@@ -29,7 +11,10 @@ you've checked that you are running under macOS 10.6.
 	[dateFormatter setDateStyle:NSDateFormatterMediumStyle] ;
 	[dateFormatter setTimeStyle:NSDateFormatterShortStyle] ;		
 	NSString* string  = [dateFormatter stringFromDate:self];
-	[dateFormatter release] ;
+
+#if !__has_feature(objc_arc)
+	[dateFormatter release];
+#endif
 	
 	return string ;
 }
