@@ -153,4 +153,13 @@ extern NSString* const SSYMoreFileManagerErrorDomain ;
 - (NSString*)ensureDesktopDirectoryNamed:(NSString*)dirName
                                  error_p:(NSError**)error_p;
 
+#if 0
+*** Wrote these two methods but then decided I don't need them now ***
+- (NSInteger)sizeOfDirectory:(NSString *)path
+                     error_p:(NSError**)error_p;
+
+- (NSDictionary*)fileSizesInDirectory:(NSString *)path
+                              error_p:(NSError**)error_p;
+#endif
+
 @end

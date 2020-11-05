@@ -445,5 +445,58 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
     return path;
 }
 
+#if 0
+*** Wrote these two methods but then decided I don't them now ***
+- (NSInteger)sizeOfDirectory:(NSString *)path
+                     error_p:(NSError**)error_p {
+    NSArray* names = [self subpathsOfDirectoryAtPath:path
+                                               error:nil];
+    NSInteger size = 0;
+    NSError* error = nil;
+    for (NSString* name in names) {
+        NSDictionary* attributes  = [self attributesOfItemAtPath:[path stringByAppendingPathComponent:name]
+                                                           error:&error];
+        size += [attributes fileSize];
+        if (error) {
+            break;
+        }
+    }
+
+    if (error && error_p) {
+        *error_p = error;
+    }
+
+    return size;
+}
+- (NSDictionary*)fileSizesInDirectory:(NSString *)path
+                              error_p:(NSError**)error_p {
+    NSArray* names = [self subpathsOfDirectoryAtPath:path
+                                               error:nil];
+    NSMutableDictionary* dic = [NSMutableDictionary new];
+    NSError* error = nil;
+    for (NSString* name in names) {
+        NSString* aPath = [path stringByAppendingPathComponent:name];
+        NSDictionary* attributes  = [self attributesOfItemAtPath:aPath
+                                                           error:&error];
+        [dic setObject:@(attributes.fileSize)
+                forKey:aPath];
+        if (error) {
+            break;
+        }
+    }
+
+    if (error && error_p) {
+        *error_p = error;
+    }
+
+    NSDictionary* answer = [dic copy];
+#if !__has_feature(objc_arc)
+    [dic release];
+    [answer autorelease];
+#endif
+
+    return answer;
+}
+#endif
 
 @end
