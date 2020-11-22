@@ -7,15 +7,12 @@
 	BOOL boolValue = [self boolValue] ;
 	NSString* string ;
 	
-	switch (boolValue) {
-		case YES:
-			string = [NSString localize:@"yes"] ;
-			break ;
-		case NO:
-			string = [NSString localize:@"no"] ;
-			break ;
-        default:
-            string = @"" ;
+	if (boolValue == YES) {
+        string = [NSString localize:@"yes"];
+    } else if (boolValue == NO) {
+        string = [NSString localize:@"no"];
+    } else {
+        string = @"";
 	}
 	
 	return string ;
