@@ -4,7 +4,7 @@
 @implementation NSMenuItem (MoreStates)
 
 - (void)toggleState {
-	[self setState:([self state] == NSOnState) ? NSOffState : NSOnState] ;
+	[self setState:([self state] == NSControlStateValueOn) ? NSControlStateValueOff : NSControlStateValueOn] ;
 }
 	
 @end

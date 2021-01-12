@@ -12,9 +12,9 @@ extern NSString* const NSDataFileAliasStalenessKey ;
  
  Value of NSDataFileAliasStalenessKey is an NSNumber whose integer value
  is one of these:
- NSMixedState : unknown.  Either error, or data was legacy Alias Manager alias.
- NSOnState    : stale.  Data was modern NSURL file bookmark.
- NSOffState   : not stale.  Data was modern NSURL file bookmark.
+ NSControlStateValueMixed : unknown.  Either error, or data was legacy Alias Manager alias.
+ NSControlStateValueOn    : stale.  Data was modern NSURL file bookmark.
+ NSControlStateValueOff   : not stale.  Data was modern NSURL file bookmark.
  */
 
 enum NSDataFileAliasModernity_enum {
