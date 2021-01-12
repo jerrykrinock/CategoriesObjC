@@ -61,7 +61,7 @@
     [topSubView setFrame:topFrame];
     [bottomSubView setFrame:bottomFrame];
     [self adjustSubviews];
-    [self setNeedsDisplay: YES];
+    self.needsDisplay=YES;
 }
 
 @end
