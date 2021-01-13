@@ -5,7 +5,7 @@
 
 + (NSString*)clipboard {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard] ;
-	NSArray* supportedTypes = [NSArray arrayWithObject:NSStringPboardType] ;
+	NSArray* supportedTypes = [NSArray arrayWithObject:NSPasteboardTypeString] ;
 	NSString* type = [pasteboard availableTypeFromArray:supportedTypes] ;
 	NSString* value = [pasteboard stringForType:type];
 	return value ;
@@ -13,11 +13,11 @@
 
 - (void)copyToClipboard {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard] ;
-	[pasteboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil]
+	[pasteboard declareTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, nil]
 					   owner:nil] ;
 	// Above, we can say owner:nil since we are going to provide data immediately
 	[pasteboard setString:self
-				  forType:NSStringPboardType] ;
+				  forType:NSPasteboardTypeString] ;
 }
 
 
