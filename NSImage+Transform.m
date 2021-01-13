@@ -53,10 +53,10 @@
                                            flipped:NO
                                     drawingHandler:^(NSRect dstRect) {
                                         [[NSColor colorWithCalibratedWhite:0.35 alpha:0.33] set] ;
-                                        NSRectFillUsingOperation(rect, NSCompositeSourceOver) ;
+                                        NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver) ;
                                         [self drawInRect:rect
                                                 fromRect:rect
-                                               operation:NSCompositeSourceOver
+                                               operation:NSCompositingOperationSourceOver
                                                 fraction:0.75] ;
                                         
                                         return YES ;

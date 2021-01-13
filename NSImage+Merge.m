@@ -45,7 +45,7 @@
                         for (NSImage* image in images) {
                             [image drawAtPoint:NSMakePoint(x, y)
                                       fromRect:NSZeroRect
-                                     operation:NSCompositeSourceOver
+                                     operation:NSCompositingOperationSourceOver
                                       fraction:1.0] ;
                             if (vertically) {
                                 y += [image size].height ;
