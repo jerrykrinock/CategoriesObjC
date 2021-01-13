@@ -6,7 +6,7 @@
 	[self removeAllItems] ;
 	
 	NSMenu* menu = [self menu] ;
-	[self setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]] ;
+	[self setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSControlSizeSmall]]] ;
 	NSMenuItem* menuItem ;
 	NSInteger i = 0 ;
 	NSEnumerator * e = [titles objectEnumerator] ;

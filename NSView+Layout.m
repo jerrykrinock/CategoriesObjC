@@ -238,7 +238,7 @@ NSView* SSResizeWindowAndContent(NSWindow* window, CGFloat dXLeft, CGFloat dXRig
                                         horizontalScrollerClass:[NSScroller class]
                                           verticalScrollerClass:[NSScroller class]
                                                      borderType:NSNoBorder
-                                                    controlSize:NSRegularControlSize
+                                                    controlSize:NSControlSizeRegular
                                                   scrollerStyle:NSScrollerStyleOverlay] ;
 
         NSTextView* textView = (NSTextView*)[(NSScrollView*)self documentView] ;
