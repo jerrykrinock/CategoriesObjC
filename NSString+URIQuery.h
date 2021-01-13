@@ -95,7 +95,7 @@ typedef enum SSYPercentEscapeStandard_enum SSYPercentEscapeStandard ;
  
  @details  Unfortunately, CFURLCreateStringByReplacingPercentEscapes() on which this
  is based seems to only replace %[NUMBER] escapes.
- Not sure how this is different than -stringByReplacingPercentEscapesUsingEncoding:
+ Not sure how this is different than -stringByRemovingPercentEncoding
  Performing test in implementation to see if I can use that instead of this.
  */
 - (NSString*)decodeAllPercentEscapes ;
@@ -219,7 +219,7 @@ typedef enum SSYPercentEscapeStandard_enum SSYPercentEscapeStandard ;
  pairs.  The latter is recommended here:
  http://www.w3.org/TR/1998/REC-html40-19980424/appendix/notes.html#h-B.2.2
  */
-- (NSDictionary*)queryDictionaryUsingEncoding:(NSStringEncoding)encoding ;
+- (NSDictionary*)queryDictionary;
 
 /*! @brief    Returns the location of the third slash character in the receiver
  

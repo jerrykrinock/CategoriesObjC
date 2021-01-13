@@ -614,7 +614,7 @@ uint8_t const static_zeroPad = 0x00;
 	// The full URL was probably one of Allison's:
     //    http://evalweb.cum.qc.ca/Role2007actualise/recherche.asp?text1=&x=43&y=12&txCadastre=Num%E9ro+du+lot&txMatricule=&txMatricule1=&txMatricule2=&txMatricule3=&txMatricule4=&paroisse=&Txtdivcad1=Lot&Txtdivcad2=Subdivision
     // (Should have used -isEqualHandlesNilString1:string2: instead of -isEqualToString.)
-	NSString* cocoaWay = [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] ;
+	NSString* cocoaWay = [self stringByRemovingPercentEncoding] ;
 	if (![cfWay isEqualToString:cocoaWay]) {
 		NSLog(@"Internal Error 402-2626 %s", __PRETTY_FUNCTION__) ;
 		NSLog(@" Input: %@", self) ;
@@ -625,7 +625,7 @@ uint8_t const static_zeroPad = 0x00;
 	return cfWay ;
 }
 
-- (NSDictionary*)queryDictionaryUsingEncoding:(NSStringEncoding)encoding {
+- (NSDictionary*)queryDictionary {
 	NSCharacterSet* delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"] ;
 	NSMutableDictionary* pairs = [NSMutableDictionary dictionary] ;
 	NSScanner* scanner = [[NSScanner alloc] initWithString:self] ;
@@ -636,8 +636,8 @@ uint8_t const static_zeroPad = 0x00;
 		[scanner scanCharactersFromSet:delimiterSet intoString:NULL] ;
 		NSArray* kvPair = [pairString componentsSeparatedByString:@"="] ;
 		if ([kvPair count] == 2) {
-			NSString* key = [[kvPair objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:encoding] ;
-			NSString* value = [[kvPair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:encoding] ;
+			NSString* key = [[kvPair objectAtIndex:0] stringByRemovingPercentEncoding] ;
+			NSString* value = [[kvPair objectAtIndex:1] stringByRemovingPercentEncoding] ;
 			[pairs setObject:value forKey:key] ;
 		}
 	}
