@@ -37,7 +37,7 @@
                                  [transform concat] ;
                                  [self drawInRect:imageBounds
                                          fromRect:NSZeroRect
-                                        operation:NSCompositeCopy
+                                        operation:NSCompositingOperationCopy
                                          fraction:1.0] ;
 
                                  return YES ;

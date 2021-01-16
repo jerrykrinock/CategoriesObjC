@@ -70,7 +70,7 @@
                     drawingHandler:^(NSRect dstRect) {
                         [self drawAtPoint:NSZeroPoint
                                  fromRect:NSZeroRect
-                                operation:NSCompositeCopy
+                                operation:NSCompositingOperationCopy
                                  fraction:1.0] ;
                         
                         NSBezierPath* path = [NSBezierPath bezierPath] ;
@@ -109,7 +109,7 @@
                     drawingHandler:^(NSRect dstRect) {
                         [self drawAtPoint:NSMakePoint(outset, outset)
                                  fromRect:NSZeroRect
-                                operation:NSCompositeCopy
+                                operation:NSCompositingOperationCopy
                                  fraction:1.0] ;
                         
                         NSBezierPath* path = [NSBezierPath bezierPath] ;
