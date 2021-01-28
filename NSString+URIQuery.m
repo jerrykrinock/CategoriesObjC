@@ -127,31 +127,9 @@ uint8_t const static_zeroPad = 0x00;
 
 @implementation NSString (URIQuery)
 
-- (NSString*)encodePercentEscapesStrictlyPerRFC2396 {
-	
-	CFStringRef decodedString = (CFStringRef)[self decodeAllPercentEscapes] ;
-	// The above may return NULL if url contains invalid escape sequences like %E8me, %E8fe, %E800 or %E811,
-	// because CFURLCreateStringByReplacingPercentEscapes() isn't smart enough to ignore them.
-	CFStringRef recodedString = CFURLCreateStringByAddingPercentEscapes(
-																		kCFAllocatorDefault,
-																		decodedString,
-																		NULL,
-																		NULL,
-																		kCFStringEncodingUTF8
-																		) ;
-	// And then, if decodedString is NULL, recodedString will be NULL too.
-	// So, we recover from this rare but possible error by returning the original self
-	// because it's "better than nothing".
-	NSString* answer = (recodedString != NULL) ? [(NSString*)recodedString autorelease] : self ;
-	// Note that if recodedString is NULL, we don't need to CFRelease() it.
-	// Actually, CFRelease(NULL) causes a crash.  That's kind of stupid, Apple.
-	return answer ;
-}
-
 - (NSString*)encodePercentEscapesPerStandard:(SSYPercentEscapeStandard)standard
 									  butNot:(NSString*)butNot
 									 butAlso:(NSString*)butAlso {
-	// CFURLCreateStringByAddingPercentEscapes escapes per RFC2396
 	if (standard == SSYPercentEscapeStandardRFC3986) {
 		// We are going to add some standard butAlso characters.
 		// However, we don't want to add a butAlso character which is
@@ -201,15 +179,30 @@ uint8_t const static_zeroPad = 0x00;
 			butAlso = standardButAlso ;
 		}
 	}
+    
+    /* Prior to BkmkMgrs 3.0, Jan 2021, the following code used the now-
+     deprecated CFURLCreateStringByAddingPercentEscapes().  After changing the
+     to the following code, I ran my testNormalizeUrl unit test, and all 49
+     test URLs passed.  So it should definitely be good! */
 	
-	NSString* answer = (NSString*)[(NSString*)CFURLCreateStringByAddingPercentEscapes(
-																		  NULL,
-																		  (CFStringRef)self,
-																		  (CFStringRef)butNot,
-																		  (CFStringRef)butAlso,
-																		  kCFStringEncodingUTF8
-																		  ) autorelease] ;
-	return answer ;
+    NSMutableCharacterSet* allowedCharacters = [[NSCharacterSet URLFragmentAllowedCharacterSet] mutableCopy];
+    /* Tricky double negatives here.  We remove from the set of allowed
+     characters those which should also be encoded.  We add to the set of
+     allowed characters those which should not be encoded. */
+    for (NSInteger i=0; i<butAlso.length; i++) {
+        unichar aChar = [butAlso characterAtIndex:i];
+        NSRange range = NSMakeRange(aChar, 1);
+        [allowedCharacters removeCharactersInRange:range];
+    }
+    for (NSInteger i=0; i<butNot.length; i++) {
+        unichar aChar = [butNot characterAtIndex:i];
+        NSRange range = NSMakeRange(aChar, 1);
+        [allowedCharacters addCharactersInRange:range];
+    }
+    NSString* answer = [self stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+    [allowedCharacters release];
+    
+    return answer ;
 }
 
 - (NSString*)encodePercentEscapesPerStandard:(SSYPercentEscapeStandard)standard {
@@ -239,42 +232,8 @@ uint8_t const static_zeroPad = 0x00;
 	return [NSString stringWithString:string] ;
 }
 
-- (NSString*)decodePercentEscapesButNot:(NSString*)butNot {
-	if (butNot) {
-	}
-	else {
-		butNot = @"" ;
-	}
-
-	// Unfortunately, CFURLCreateStringByReplacingPercentEscapes() seems to only replace %[NUMBER] escapes
-	NSString* cfWay = (NSString*)[(NSString*)CFURLCreateStringByReplacingPercentEscapes(
-																						kCFAllocatorDefault,
-																						(CFStringRef)self,
-																						(CFStringRef)butNot
-																						)
-								  autorelease] ;
-	return cfWay ;
-}
-
-- (NSString*)stringByFixingPercentEscapes {
-    CFStringRef s1 = CFURLCreateStringByReplacingPercentEscapes(kCFAllocatorDefault,
-                                                                   (CFStringRef)self,
-                                                                   CFSTR("")) ;
-    NSString* s2 = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                              s1,
-                                                              CFSTR("#"),
-                                                              CFSTR("+-"),
-                                                              kCFStringEncodingUTF8) ;
-    [s2 autorelease] ;
-    if (s1) {
-        CFRelease(s1) ;
-    }
-    
-    return s2 ;
-}
-
 - (BOOL)hasPercentEscapeEncodedCharacters {
-	NSString* decodedString = [self decodePercentEscapesButNot:nil] ;
+	NSString* decodedString = [self decodePercentEscapes];
 	// Decoding percent escapes will always cause the string to become shorter.
 	return ([decodedString length] < [self length]) ;
 }
@@ -604,11 +563,11 @@ uint8_t const static_zeroPad = 0x00;
     return answer ;
 }
 				 
-- (NSString*)decodeAllPercentEscapes {
+- (NSString*)decodePercentEscapes {
 	// Unfortunately, CFURLCreateStringByReplacingPercentEscapes() seems to only replace %[NUMBER] escapes
 	NSString* cfWay = (NSString*)[(NSString*)CFURLCreateStringByReplacingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, CFSTR("")) autorelease] ;
 /*
-	// The only action ai've ever seen from the following test is when Input was:
+	// The only action I've ever seen from the following test is when Input was:
     //    text1=&x=43&y=12&txCadastre=Num%E9ro+du+lot&txMatricule=&txMatricule1=&txMatricule2=&txMatricule3=&txMatricule4=&paroisse=&Txtdivcad1=Lot&Txtdivcad2=Subdivision
     // and in that case both cfWay and cocoaWay were nil.
 	// The full URL was probably one of Allison's:
