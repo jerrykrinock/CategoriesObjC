@@ -27,41 +27,6 @@ extern NSString* const SSYManagedObjectContextPathExtensionForSqliteStores ;
  store with a path
  */
 - (NSString*)path1 ;
-
-/*!
- @brief    Returns a managed object context backed by a specified
- sqlite store and specified managed object model version, creating
- a .sql file if one does not exist.
-
- @details  This is sometimes useful in performing complex migrations.
- @param    sqlFilename  The basename of a file in the application support
- directory for this app (returned by [NSString applicationSupportFolderForThisApp]),
- not including an assumed .sql extension, which is the persistent store
- for the desired managed object context
- @param    momdName  The basename of the .momd directory in the application's
- Resources, not including the .momd extension, which contains the target
- managed object model
- @param    versionName  The name of the target managed object model,
- assumed to be one of the keys in the NSManagedObjectModel_VersionHashes
- dictionary in the VersionInfo.plist file in the .momd directory
- specified by the given momdName.  You may pass nil, in which case
- the method will try to automatically migrate to the required store.
- @param    brutally  If YES, and a persistent store coordinator cannot
- be created due to an existing file, tries to move the corrupt file to
- a new name by appending one or more "#" to the basename.  If that fails,
- tries to delete the existing file and, in any case, tries to create a
- new, empty store at the same path as the corrupt one was.
- @param    error_p  If nil is returned, upon return points to an instance
- of NSError that states why this method failed
- @result   The target managed object context, or nil if one could not
- be constructed with the given parameters
-*/
-+ (NSManagedObjectContext*)contextForSqlFilename:(NSString*)sqlFilename
-										momdName:(NSString*)momdName
-								modelVersionName:(NSString*)versionName
-										brutally:(BOOL)brutally
-										 error_p:(NSError**)error_p ;
-
 /*!
  @brief    Performs a fetch request for objects of a given entity name
  in the receiver's store, optionally satisfying a given predicate,
