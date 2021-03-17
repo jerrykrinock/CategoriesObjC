@@ -152,7 +152,7 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617010
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is nil"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is nil."}] ;
         }
     }
 
@@ -163,7 +163,7 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617011
-                                    userInfo:@{NSLocalizedDescriptionKey: @"There is no file at the given path"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"There is no file at the path."}] ;
         }
     }
 
@@ -177,7 +177,7 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617012
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Trash directory"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is in the Trash."}] ;
         }
     }
 
@@ -191,7 +191,7 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617013
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Caches directory"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is in the Caches directory."}] ;
         }
     }
 
@@ -209,48 +209,69 @@ NSString* const SSYMoreFileManagerErrorDomain = @"SSYMoreFileManagerErrorDomain"
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617014
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Autosave Information directory (probably a OS X legacy)"}] ;
-        }
-    }
-
-    NSURL* temporaryUrl ;
-    if (ok) {
-        // Unfortunately, NSSearchPathDirectory does not offer an
-        // NSTemporaryDirectory, so we use the path, and only in the Home
-        // directory (the "user" domain), with or without the "/private" symlink
-        temporaryUrl = [NSURL fileURLWithPath:NSTemporaryDirectory()] ;
-        [fm getRelationship:&relationship
-           ofDirectoryAtURL:temporaryUrl
-                toItemAtURL:url
-                      error:NULL] ;
-        if (relationship == NSURLRelationshipContains) {
-            ok =  NO;
-            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
-                                        code:617015
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in a Temporary directory"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is in a Autosave Information directory (probably a OS X legacy)."}] ;
         }
     }
 
     if (ok) {
-        temporaryUrl = [NSURL fileURLWithPath:[@"/private" stringByAppendingPathComponent:NSTemporaryDirectory()]] ;
+        NSURL* urlMutant = url;
+        /* We delete components until there is one remaining component, which
+         will be "file:///".  The "/" component will not be deleted by
+         -[NSURL URLByDeletingLastPathComponent].  Instead, it will add
+         "../" infinitely, creating an infinite loop here.  In case Apple
+         ever changes this behavior, as defensive programming, we add a circuit
+         breaker at 1024 components. */
+        while (urlMutant.pathComponents.count > 1) {
+           if ([urlMutant.lastPathComponent isEqualToString:@"AppTranslocation"]) {
+                ok =  NO;
+                error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                            code:617015
+                                        userInfo:@{NSLocalizedDescriptionKey: @"The path is in an AppTranslocation folder."}] ;
+           }
+            urlMutant = [urlMutant URLByDeletingLastPathComponent];
+            if (urlMutant.pathComponents.count > 1024) {
+                NSLog(@"Internal Error 248-3834");
+                break;
+            }
+        }
+    }
+
+    NSURL* badParentUrl ;
+
+    if (ok) {
+        badParentUrl = [NSURL fileURLWithPath:@"/private"] ;
         [fm getRelationship:&relationship
-           ofDirectoryAtURL:temporaryUrl
+           ofDirectoryAtURL:badParentUrl
                 toItemAtURL:url
                       error:NULL] ;
         if (relationship == NSURLRelationshipContains) {
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617016
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is in /private/"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is in /private/."}] ;
         }
     }
 
     if (ok) {
-        if ([path length] < 1) {
+        badParentUrl = [NSURL fileURLWithPath:@"/var"] ;
+        [fm getRelationship:&relationship
+           ofDirectoryAtURL:badParentUrl
+                toItemAtURL:url
+                      error:NULL] ;
+        if (relationship == NSURLRelationshipContains) {
             ok =  NO;
             error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
                                         code:617017
-                                    userInfo:@{NSLocalizedDescriptionKey: @"The given path is too short"}] ;
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is in /var/."}] ;
+        }
+    }
+    
+    if (ok) {
+        if ([path length] < 1) {
+            ok =  NO;
+            error = [NSError errorWithDomain:SSYMoreFileManagerErrorDomain
+                                        code:617018
+                                    userInfo:@{NSLocalizedDescriptionKey: @"The path is empty."}] ;
         }
     }
     
