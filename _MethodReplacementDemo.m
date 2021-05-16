@@ -1,5 +1,5 @@
 #import <objc/runtime.h> // Comment this out if you don't need it.
-
+#import "BkmxBasis.h"
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
@@ -612,7 +612,7 @@
 
 - (id)replacement_init {
     NSLog(@"Created exception at:\n%@", SSYDebugBacktrace()) ;
-    return [super replacement_init] ;
+    return [super replacement_init] ; // Why super here????????
 }
 
 @end
@@ -668,6 +668,36 @@
         NSInteger* killer_p = 0x0 ;
         *killer_p = 0 ;
     }
+}
+
+@end
+
+#endif
+
+#if 0
+#warning * Logging -[NSManagedObjectContext rollback]
+
+@interface NSManagedObjectContext (DebugByReplacingMethod)
+@end
+
+@implementation NSManagedObjectContext (DebugByReplacingMethod)
+
++ (void)load {
+    // Swap the implementations of one method with another.
+    // When the message xxx is sent to the object (either instance or class),
+    // Sending message xxx will result in replacement_xxx being invoked
+    // Sending message replacement_xxx will result in xxx being invoked
+
+    // NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
+    [[BkmxBasis sharedBasis] logFormat:@"Bonehead replacing rollback in %@", [self class]];
+    Method originalMethod = class_getInstanceMethod(self, @selector(rollback)) ;
+    Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_rollback)) ;
+    method_exchangeImplementations(originalMethod, replacedMethod) ;
+}
+
+- (void)replacement_rollback {
+    NSLog(@"rollback called by:\n%@", SSYDebugBacktrace()) ;
+    [self replacement_rollback] ;
 }
 
 @end
