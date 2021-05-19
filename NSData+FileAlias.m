@@ -42,19 +42,25 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
     NSError* error = nil ;
     NSString* path = nil ;
     
-    NSError* taskError = nil ;
-    if (!path) {
-        error = nil ; // Start over with legacy Alias Manager
+    NSData* requestData = nil;
+    if (!error) {
         NSDictionary* requestInfo = [NSDictionary dictionaryWithObject:self
                                                                 forKey:NSDataFileAliasDataKey] ;
         // Note: It is important that requestInfo and all of its keys and all
         // of its values be encodeable.  The only objects we put in there were
         // an NSString key and an NSData value.
         // Thus, we should be OK to do the following:
-        NSData* requestData = [NSKeyedArchiver archivedDataWithRootObject:requestInfo] ;
-        
+        requestData = [NSKeyedArchiver archivedDataWithRootObject:requestInfo
+                                                    requiringSecureCoding:YES
+                                                                    error:&error];
+        if (error) {
+            error = [SSYMakeError(426190, @"Could not encode request") errorByAddingUnderlyingError:error];
+        }
+    }
+    
+    NSData* responseData = nil;
+    if (!error) {
         NSString* workerPath = [[NSBundle mainAppBundle] pathForHelper:NSDataFileAliasWorkerName] ;
-        NSData* responseData = nil ;
         NSData* stderrData = nil ;
         NSInteger taskResult = [SSYShellTasker doShellTaskCommand:workerPath
                                                         arguments:nil
@@ -63,38 +69,38 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
                                                      stdoutData_p:&responseData
                                                      stderrData_p:&stderrData
                                                           timeout:timeout
-                                                          error_p:&taskError] ;
+                                                          error_p:&error] ;
         
         if (!responseData) {
-            error = SSYMakeError(59751, @"No stdout from helper") ;
+            error = [SSYMakeError(459751, @"No stdout from helper") errorByAddingUnderlyingError:error];
             error = [error errorByAddingUserInfoObject:[NSNumber numberWithInteger:taskResult]
                                                 forKey:@"task result"] ;
             error = [error errorByAddingUserInfoObject:stderrData
                                                 forKey:@"stderr"] ;
-            goto end ;
         }
-        
-        NSDictionary* responseInfo = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:responseData] ;
+    }
+    
+    NSDictionary* responseInfo = nil;
+    if (!error) {
+        responseInfo = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:responseData] ;
         
         if (!responseInfo) {
-            error = SSYMakeError(29170, @"Could not decode response from helper") ;
-            goto end ;
+            error = SSYMakeError(429170, @"Could not decode response from helper") ;
         }
+    }
         
+    if (!error) {
         path = [responseInfo objectForKey:NSDataFileAliasPathKey] ;
         if (!path) {
-            NSError* helperError = [responseInfo objectForKey:NSDataFileAliasErrorKey] ;
-            error = SSYMakeError(26195, @"Helper returned error") ;
-            error = [error errorByAddingUnderlyingError:helperError] ;
+            error = [responseInfo objectForKey:NSDataFileAliasErrorKey];
+            error = [SSYMakeError(426195, @"Helper returned error") errorByAddingUnderlyingError:error];
         }
         /* If ever needed, return values for NSDataFileAliasModernityKey
          and NSDataFileAliasStalenessKey which are available here, in the
          responseInfo. */
     }
     
-end:
-    if (error_p) {
-        error = [error errorByAddingUnderlyingError:taskError] ;
+    if (error && error_p) {
         *error_p = error ;
     }
     
