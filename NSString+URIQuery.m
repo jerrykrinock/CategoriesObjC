@@ -165,12 +165,17 @@ uint8_t const static_zeroPad = 0x00;
 					i = indexToRemove ;
 				}
 				
-				standardButAlso = [[mutatedStandardButAlso copy] autorelease] ;
+				standardButAlso = [mutatedStandardButAlso copy];
+#if !__has_feature(objc_arc)
+                [standardButAlso autorelease];
 				[mutatedStandardButAlso release] ;
-			}
+#endif
+            }
 			
+#if !__has_feature(objc_arc)
 			[indexesToRemove release] ;
-		}	
+#endif
+        }
 		
 		if (butAlso) {
 			butAlso = [butAlso stringByAppendingString:standardButAlso] ;
@@ -200,8 +205,9 @@ uint8_t const static_zeroPad = 0x00;
         [allowedCharacters addCharactersInRange:range];
     }
     NSString* answer = [self stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+#if !__has_feature(objc_arc)
     [allowedCharacters release];
-    
+#endif
     return answer ;
 }
 
@@ -289,7 +295,9 @@ uint8_t const static_zeroPad = 0x00;
     } else {
         length = 0;
     }
+#if !__has_feature(objc_arc)
     [scanner release];
+#endif
     
     return NSMakeRange(location, length);
 }
@@ -451,7 +459,10 @@ uint8_t const static_zeroPad = 0x00;
                 }
             }
         }
+#if !__has_feature(objc_arc)
         [scanner release];
+#endif
+        
     }
     
     NSString* answer1 = nil;
@@ -466,10 +477,14 @@ uint8_t const static_zeroPad = 0x00;
         /* Part 2 of 2.  Convert UTF16 data to string. */
         answer1 = [[NSString alloc] initWithData:utf16
                                        encoding:NSUTF16LittleEndianStringEncoding];
+#if !__has_feature(objc_arc)
         [answer1 autorelease];
+#endif
+        
     }
+#if !__has_feature(objc_arc)
     [utf16 release];
-
+#endif
     NSString* answer;
     if (answer1) {
         answer = answer1;
@@ -529,8 +544,9 @@ uint8_t const static_zeroPad = 0x00;
                             break;
                         }
                     }
-                    [augmentedDoubleDotIndexes release];
-                    
+#if !__has_feature(objc_arc)
+                   [augmentedDoubleDotIndexes release];
+#endif
                     NSString* newPath = [NSString pathWithComponents:comps];
                     newPath = [newPath stringByAppendingString:@"/"];
                     
@@ -546,12 +562,18 @@ uint8_t const static_zeroPad = 0x00;
                         [newString replaceCharactersInRange:pathRange
                                                  withString:newPath];
                         answer2 = [newString copy];
+#if !__has_feature(objc_arc)
                         [answer2 autorelease];
+#endif
                     }
+#if !__has_feature(objc_arc)
                     [newString release];
+#endif
                 }
+#if !__has_feature(objc_arc)
                 [comps release];
                 [doubleDotCompsIndexes release];
+#endif
             }
         }
     }
@@ -565,7 +587,7 @@ uint8_t const static_zeroPad = 0x00;
 				 
 - (NSString*)decodePercentEscapes {
 	// Unfortunately, CFURLCreateStringByReplacingPercentEscapes() seems to only replace %[NUMBER] escapes
-	NSString* cfWay = (NSString*)[(NSString*)CFURLCreateStringByReplacingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, CFSTR("")) autorelease] ;
+    NSString* cfWay = (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, CFSTR("")));
 /*
 	// The only action I've ever seen from the following test is when Input was:
     //    text1=&x=43&y=12&txCadastre=Num%E9ro+du+lot&txMatricule=&txMatricule1=&txMatricule2=&txMatricule3=&txMatricule4=&paroisse=&Txtdivcad1=Lot&Txtdivcad2=Subdivision
@@ -600,8 +622,10 @@ uint8_t const static_zeroPad = 0x00;
 			[pairs setObject:value forKey:key] ;
 		}
 	}
+#if !__has_feature(objc_arc)
 	[scanner release] ;
-    
+#endif
+
 	return [NSDictionary dictionaryWithDictionary:pairs] ;
 }
 			

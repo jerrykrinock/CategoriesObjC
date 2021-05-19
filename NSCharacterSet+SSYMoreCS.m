@@ -15,8 +15,11 @@ static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
 	// Remove the forward slash character
 	[set removeCharactersInRange:NSMakeRange(0x2f, 1)] ;
 	NSCharacterSet* answer = [set copy] ;
-	[set release] ;
-	return [answer autorelease] ;
+#if !__has_feature(objc_arc)
+    [set release];
+    [answer autorelease];
+#endif
+	return answer;
 }
 
 + (NSCharacterSet*)filenameLegalMacUnixCharacterSet {
@@ -25,8 +28,11 @@ static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
 	[set removeCharactersInRange:NSMakeRange(0x3a, 1)] ;
 	[set addCharactersInString:@" "] ;
 	NSCharacterSet* answer = [set copy] ;
-	[set release] ;
-	return [answer autorelease] ;
+#if !__has_feature(objc_arc)
+    [set release];
+    [answer autorelease];
+#endif
+	return answer;
 }
 
 - (NSString*)stringOfAllCharacters {
@@ -37,10 +43,12 @@ static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
 			[string appendFormat:@"%c", (unichar)i] ;
 		}
 	}
-	
-	NSString* answer = [NSString stringWithString:string] ;
-	[string release] ;
-	return answer ;
+
+    NSString* answer = [string copy];
+#if !__has_feature(objc_arc)
+    [answer autorelease];
+#endif
+	return answer;
 }
 
 + (NSCharacterSet*)characterSetNotAllowedInUrlHost {
@@ -62,7 +70,9 @@ static NSCharacterSet* static_zeroWidthAndIllegalCharacterSet = nil;
         [zeroWidthAndIllegalCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceAndNewlineCharacterSet] invertedSet]];
         [zeroWidthAndIllegalCharacterSet formUnionWithCharacterSet:[NSCharacterSet illegalCharacterSet]];
         static_zeroWidthAndIllegalCharacterSet = [zeroWidthAndIllegalCharacterSet copy];
+#if !__has_feature(objc_arc)
         [zeroWidthAndIllegalCharacterSet release];
+#endif
     }
 
     return static_zeroWidthAndIllegalCharacterSet;
