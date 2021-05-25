@@ -75,9 +75,9 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  userInfo dictionary contains an object which does not, you'll get an exception.&nbsp;
  This method iterates recursively through the userInfo dictionary, replacing any object
  which is not serializable by its -description, then as a convenience, applies
- -[NSKeyedArchiver archivedDataWithRootObject] and returns the result.&nbsp;
- To-do: Could relax the 'serializable' requirement to 'encodeable'.&nbsp;
- See NSObject+DeepCopy.
+ -[NSKeyedArchiver archivedDataWithRootObject:usingSecureCoding:(YES)error:]
+ and returns the result.&nbsp;  To-do: Could relax the 'serializable'
+ requirement to 'encodeable'.&nbsp; See NSObject+DeepCopy.
  */
 - (NSData*)keyedArchive ;
 

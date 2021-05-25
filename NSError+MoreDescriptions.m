@@ -242,7 +242,13 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 												   code:code
 											   userInfo:encodeableUserInfo] ;
 	[encodeableUserInfo release] ;
-	NSData* archive = [NSKeyedArchiver archivedDataWithRootObject:encodeableError] ;
+    NSError* error = nil;
+    NSData* archive = [NSKeyedArchiver archivedDataWithRootObject:encodeableError
+                                            requiringSecureCoding:YES
+                                                            error:&error];
+    if (error) {
+        NSLog(@"Internal error 243-3897: %@", error);
+    }
 	
 	return archive ;
 }
