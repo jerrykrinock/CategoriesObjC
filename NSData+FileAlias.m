@@ -4,7 +4,6 @@
 #import "NSError+LowLevel.h"
 #import "SSYShellTasker.h"
 #import "NSBundle+HelperPaths.h"
-#import "NSKeyedUnarchiver+CatchExceptions.h"
 #import "NSBundle+MainApp.h"
 
 __attribute__((visibility("default"))) NSString* const NSDataFileAliasDataKey = @"aliasRecord" ;
@@ -82,13 +81,15 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
     
     NSDictionary* responseInfo = nil;
     if (!error) {
-        responseInfo = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:responseData] ;
+        responseInfo = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class]
+                                                         fromData:responseData
+                                                            error:&error];
         
         if (!responseInfo) {
-            error = SSYMakeError(429170, @"Could not decode response from helper") ;
+            error = [SSYMakeError(429170, @"Could not decode response from helper") errorByAddingUnderlyingError:error];
         }
     }
-        
+
     if (!error) {
         path = [responseInfo objectForKey:NSDataFileAliasPathKey] ;
         if (!path) {
