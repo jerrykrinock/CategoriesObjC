@@ -18,11 +18,13 @@
  different variable. The only down-side is that the object to
  be copied must implement NSCoding ^and^ be encodeable.
  
- To do that,
- id foo = ... ;
+ To do that, something like this:
+ Foo* foo = ... ;
  NSData* fooArchive = [NSKeyedArchiver archivedDataWithRootObject:foo] ;
  if (fooArchive) {
-     id fooCopy = [NSKeyedUnarchiver unarchiveObjectSafelyWithData:fooArchive] ;
+      Foo* fooCopy = [NSKeyedUnarchiver unarchiveObjectOfClass:[Foo class]
+                                                      fromData:fooArchive
+                                                         error:&error];
  }
  Source: http://www.cocoadev.com/index.pl?mutableCopyDeepAndUserDefaults
  */

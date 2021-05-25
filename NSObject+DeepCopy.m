@@ -58,73 +58,56 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
         }
     }
 
-    // It *may* be encodeable.
-    @try {
-        NSData* archive = nil;
-        if (@available(macOS 10.13, *)) {
-            // macOS 10.13 or later
-            NSError* error = nil;
-            if ([self isKindOfClass:[NSManagedObject class]]) {
-                /* Core Data managed objects are generally not encodeable,
-                 but, more importantly, accessing their properties to
-                 create an archive as in the next branch will cause a Core
-                 Data __Multithreading_Violation_AllThatIsLeftToUsIsHonor_
-                 if we are not on the correct thread for this object.
-                 So, we play it safe, simple and do no even try. */
-                archive = nil;
-            } else {
-                archive = [NSKeyedArchiver archivedDataWithRootObject:self
-                                                requiringSecureCoding:NO
-                                                                error:&error];
-                if (error) {
-                    archive = nil;
-                }
-            }
-        } else {
-            archive = [NSKeyedArchiver archivedDataWithRootObject:self] ;
+    NSData* archive = nil;
+    NSError* error = nil;
+    if ([self isKindOfClass:[NSManagedObject class]]) {
+        /* Core Data managed objects are generally not encodeable,
+         but, more importantly, accessing their properties to
+         create an archive as in the next branch will cause a Core
+         Data __Multithreading_Violation_AllThatIsLeftToUsIsHonor_
+         if we are not on the correct thread for this object.
+         So, we play it safe, simple and do no even try. */
+        archive = nil;
+    } else {
+        archive = [NSKeyedArchiver archivedDataWithRootObject:self
+                                        requiringSecureCoding:NO
+                                                        error:&error];
+        if (error) {
+            archive = nil;
         }
-
-        if (!archive) {
-            return NO;
-        }
-
-        /* The following condition was added when testing in
-         macOS 10.12 Sierra Beta 6.  This object was a Client
-         object.  Exception occurred below, when sending
-         -unarchiveObjectWithData: to it, due to
-         "-[Client initWithCoder:]: unrecognized selector".
-         Indeed, I checked and found that Client responds to
-         -encodeWithCoder: but not -initWithCoder. */
-        id unarchivedSelf = [NSKeyedUnarchiver unarchiveObjectWithData:archive] ;
-        if (!unarchivedSelf) {
-            /* This can occur in macOS 10.10 and later. */
-            return NO;
-        }
-        else {
-            /* I've never seen this happen, but let's check one
-             more thing, in case Apple does something else weird
-             in some future macOS.  Actually, this about covers
-             all possibilities, because if the unarchived object
-             is equal to the pre-archived object, it is good by
-             definition.  The only thing we haven't covered is if
-             Apple decides to make -[[NSKeyedArchiver
-             archivedDataWithRootObject:] crash when passed an
-             unencodeable object. */
-            if (![self isEqual:unarchivedSelf]) {
-                return NO;
-            }
-        }
-    } @catch (id anyException) {
-        /* This can occur in macOS 10.9 and earlier.  Unfortunately,
-         Cocoa will log an *** exception saying that something bad
-         happened.  So we try to nullify that by logging a friendly
-         follow-on message to explain that this is nothing to worry
-         about. */
-        NSLog(@"Howdy.  The above exception, and the one which follows, "
-              @"are expected behavior in testing for encodeability: %@.  "
-              @"It's not a bug.  Just ignore it.",
-              [self class]) ;
+    }
+    
+    if (!archive) {
         return NO;
+    }
+    
+    /* The following condition was added when testing in
+     macOS 10.12 Sierra Beta 6.  This object was a Client
+     object.  Exception occurred below, when sending
+     -unarchiveObjectWithData: to it, due to
+     "-[Client initWithCoder:]: unrecognized selector".
+     Indeed, I checked and found that Client responds to
+     -encodeWithCoder: but not -initWithCoder. */
+    id unarchivedSelf = [NSKeyedUnarchiver unarchivedObjectOfClass:[self class]
+                                                          fromData:archive
+                                                             error:&error] ;
+    if (!unarchivedSelf) {
+        /* This can occur in macOS 10.10 and later. */
+        return NO;
+    }
+    else {
+        /* I've never seen this happen, but let's check one
+         more thing, in case Apple does something else weird
+         in some future macOS.  Actually, this about covers
+         all possibilities, because if the unarchived object
+         is equal to the pre-archived object, it is good by
+         definition.  The only thing we haven't covered is if
+         Apple decides to make -[[NSKeyedArchiver
+         archivedDataWithRootObject:] crash when passed an
+         unencodeable object. */
+        if (![self isEqual:unarchivedSelf]) {
+            return NO;
+        }
     }
 
     return YES;
