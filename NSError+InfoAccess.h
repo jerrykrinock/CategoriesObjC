@@ -29,7 +29,12 @@ extern NSString* const SSYTimestampErrorKey ;
  */
 extern NSString* const SSYHttpStatusCodeErrorKey ;
 
-@interface NSError (InfoAccess) 
+/*!
+@brief    Key to a URL which the user may visit to get a recovery suggestion
+*/
+extern NSString* const SSYHelpUrlErrorKey ;
+
+@interface NSError (InfoAccess)
 
 /*!
  @brief    Adds object for key into the userInfo of a copy of the receiver and
@@ -140,8 +145,21 @@ extern NSString* const SSYHttpStatusCodeErrorKey ;
  unless you are using your own error presentation methods, or those provided
  by SSYAlert which supports either help anchor or URL, you should only pass
  a help anchor.
+ 
+ This is an alternative to errorByAddingHelpUrl.  You probably don't want
+ to add both.
  */
 - (NSError*)errorByAddingHelpAddress:(NSString*)helpAddress ;
+
+/*!
+ @brief    Adds a string which to the receiver's userInfo, which can be later
+ retrieved by -helpAnchor, and returns an autoreleased copy of the receiver,
+ unless the parameter is nil, then returns the receiver.
+
+ @details  This is an alternative to errorByAddingHelpAddress.  You probably
+ don't want to add both.
+ */
+- (NSError*)errorByAddingHelpUrl:(NSURL*)url;
 
 /*!
  @brief    Appends a new string to a given key in a copy of the receiver,

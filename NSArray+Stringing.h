@@ -69,6 +69,12 @@
 */
 - (NSString*)listNames ;
 
+/*!
+ @brief    Invokes -[self listValuesForKey:@"description" parameters
+ conjunction=nil and truncateTo=0]
+*/
+- (NSString*)listDescriptions ;
+
 - (NSString*)listValuesForKey:(NSString*)key;
 
 @end

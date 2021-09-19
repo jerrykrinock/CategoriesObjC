@@ -6,6 +6,7 @@ NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
 NSString* const SSYUnderlyingExceptionErrorKey = @"Underlying Exception" ;
 NSString* const SSYTimestampErrorKey = @"Timestamp" ;
 NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
+NSString* const SSYHelpUrlErrorKey = @"Help URL";
 
 @implementation NSError (InfoAccess)
 
@@ -243,6 +244,11 @@ NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 - (NSError*)errorByAddingHelpAddress:(NSString*)helpAddress {
 	return [self errorByAddingUserInfoObject:helpAddress
 									  forKey:NSHelpAnchorErrorKey] ;
+}
+
+- (NSError*)errorByAddingHelpUrl:(NSURL*)url {
+    return [self errorByAddingUserInfoObject:url
+                                      forKey:SSYHelpUrlErrorKey] ;
 }
 
 - (NSError*)underlyingError {
