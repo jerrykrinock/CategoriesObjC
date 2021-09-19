@@ -104,6 +104,12 @@
 					   truncateTo:0] ;
 }
 
+- (NSString*)listDescriptions {
+    return [self listValuesForKey:@"description"
+                     conjunction:nil
+                       truncateTo:0] ;
+}
+
 - (NSString*)listValuesForKey:(NSString*)key {
 	return [self listValuesForKey:key
                       conjunction:nil
