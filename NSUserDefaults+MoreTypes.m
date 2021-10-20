@@ -11,19 +11,17 @@
         NSLog(@"Internal error 382-5849 archiving color for key %@ in user defaults.", key);
     }
     [self setObject:data forKey:key] ;
-    /*SSYDBL*/ NSLog(@"For key %@, set new color data %@", key, data);
+    /*SSYDBL*/ NSLog(@"In user defaults, for key %@, set new color data %@", key, data);
 }
 
 - (NSColor*)colorForKey:(NSString *)key {
     NSColor* color = nil ;
     NSData* data = [self dataForKey:key] ;
-//    /*SSYDBL*/ NSLog(@"Read new data %@", data);
     if (data != nil) {
         NSError* error = nil;
         color = (NSColor*)[NSKeyedUnarchiver unarchivedObjectOfClass:[NSColor class]
                                                                fromData:data
                                                                   error:&error];
-//        /*SSYDBL*/ NSLog(@"unarchived new color %@", color);
         if (error) {
             NSLog(@"Internal error 382-5850 unarchiving color for key %@ in user defaults.", key);
         }
