@@ -11,7 +11,6 @@
         NSLog(@"Internal error 382-5849 archiving color for key %@ in user defaults.", key);
     }
     [self setObject:data forKey:key] ;
-    /*SSYDBL*/ NSLog(@"In user defaults, for key %@, set new color data %@", key, data);
 }
 
 - (NSColor*)colorForKey:(NSString *)key {
