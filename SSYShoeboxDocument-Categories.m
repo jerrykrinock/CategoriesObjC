@@ -75,8 +75,9 @@
         [self removeItemAtIndex:i] ;
         i = [indexesToRemove indexLessThanIndex:i] ;
     }
-    
-    [indexesToRemove release] ;
+#if !__has_feature(objc_arc)
+    [indexesToRemove release];
+#endif
 }
 
 @end
