@@ -177,10 +177,10 @@
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 /* Now, here's one done in a category */
 
-@interface NSManagedObjectContext (DebugByReplacingMethod)
+@interface NSKeyedUnarchiver (DebugByReplacingMethod)
 @end
 
-@implementation NSManagedObjectContext (DebugByReplacingMethod)
+@implementation NSKeyedUnarchiver (DebugByReplacingMethod)
 
 + (void)load {
 	// Swap the implementations of one method with another.
@@ -190,19 +190,25 @@
 	
 	// NOTE: Below, use class_getInstanceMethod or class_getClassMethod as appropriate!!
 	NSLog(@"Replacing methods in %@", [self class]) ;
-	Method originalMethod = class_getInstanceMethod(self, @selector(save:)) ;
-	Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_save:)) ;
+    Method originalMethod = class_getInstanceMethod(self, @selector(validateAllowedClass:forKey:)) ;
+    Method replacedMethod = class_getInstanceMethod(self, @selector(replacement_validateAllowedClass:forKey:)) ;
 	method_exchangeImplementations(originalMethod, replacedMethod) ;
 }
 
-- (id)replacement_save:(NSError**)error {
-	NSString* path = [self path1] ;
-	if ([[[path lastPathComponent] pathExtension] isEqualToString:@"bkmxDoc"]) {
-		NSLog(@"8573: Saving %@", [path lastPathComponent]) ;
-		NSLog(@"7467: callers:\n%@", SSYDebugBacktraceDepth(6)) ;
-	}
-	// Due to the swap, this calls the original method
-	return [self replacement_save:error] ;
+- (id)replacement_validateAllowedClass:(Class)class
+                                forKey:(NSString*)key {
+    NSLog(@"Willidate %@.%@", class, key);
+
+    id whatever = nil;
+    @try {
+        // Due to the swap, this calls the original method
+        whatever = [self replacement_validateAllowedClass:class
+                                                      forKey:key];
+    } @catch (NSException *exception) {
+        NSLog(@"Exceptidate with %@.%@: %@", class, key, exception);
+    }
+    NSLog(@"Diddidate %@.%@", class, key);
+    return YES;
 }
 
 @end
