@@ -1,6 +1,8 @@
 #import <objc/runtime.h> // Comment this out if you don't need it.
 #import "BkmxBasis.h"
+
 #if 0
+
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 
 /* 
@@ -177,6 +179,9 @@
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 /* Now, here's one done in a category */
 
+static NSInteger hitCount = 0;
+
+
 @interface NSKeyedUnarchiver (DebugByReplacingMethod)
 @end
 
@@ -195,20 +200,24 @@
 	method_exchangeImplementations(originalMethod, replacedMethod) ;
 }
 
-- (id)replacement_validateAllowedClass:(Class)class
+- (BOOL)replacement_validateAllowedClass:(Class)class
                                 forKey:(NSString*)key {
-    NSLog(@"Willidate %@.%@", class, key);
+    NSLog(@"Willidate HIT %04ld %@.%@", (long)(hitCount++), class, key);
 
-    id whatever = nil;
+    BOOL answer = NO;
     @try {
         // Due to the swap, this calls the original method
-        whatever = [self replacement_validateAllowedClass:class
+        answer = [self replacement_validateAllowedClass:class
                                                       forKey:key];
+        if (hitCount == 1635) {
+            NSLog(@"STOP!!")
+            ;
+        }
     } @catch (NSException *exception) {
         NSLog(@"Exceptidate with %@.%@: %@", class, key, exception);
     }
-    NSLog(@"Diddidate %@.%@", class, key);
-    return YES;
+    NSLog(@"Diddidate %@.%@ ans=%ld", class, key, (long)answer);
+    return answer;
 }
 
 @end
