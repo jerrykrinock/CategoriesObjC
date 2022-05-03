@@ -81,9 +81,21 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
     
     NSDictionary* responseInfo = nil;
     if (!error) {
-        responseInfo = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class]
-                                                         fromData:responseData
-                                                            error:&error];
+        /* Slthough we are unarchiving a dictionary here, per secure coding
+         rules, we must also include in the set of allowed classes anything
+         which might be in the dictionary. */
+        NSSet* classes = [[NSSet alloc] initWithObjects:
+                          [NSDictionary class],
+                          [NSString class],
+                          [NSNumber class],
+                          [NSError class],
+                          nil];
+        responseInfo = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
+                                                           fromData:responseData
+                                                              error:&error];
+#if !__has_feature(objc_arc)
+        [classes release];
+#endif
         
         if (!responseInfo) {
             error = [SSYMakeError(429170, @"Could not decode response from helper") errorByAddingUnderlyingError:error];
