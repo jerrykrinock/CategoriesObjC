@@ -179,8 +179,10 @@
 #warning * Doing Method Replacement for Debugging!!!!!!!!
 /* Now, here's one done in a category */
 
-static NSInteger hitCount = 0;
-
+NSInteger hitCount = 0;
+/* You can mutate this global variable in any other file by declaring
+ extern NSInteger hitCount;
+ */
 
 @interface NSKeyedUnarchiver (DebugByReplacingMethod)
 @end
@@ -202,17 +204,17 @@ static NSInteger hitCount = 0;
 
 - (BOOL)replacement_validateAllowedClass:(Class)class
                                 forKey:(NSString*)key {
-    NSLog(@"Willidate HIT %04ld %@.%@", (long)(hitCount++), class, key);
-
+    NSLog(@"Willidate HIT %04ld %@.%@", (long)(hitCount), class, key);
+    if (hitCount == 1000) {
+        NSLog(@"STOP!!");
+        ; /* You can put a breakpoint here. */
+    }
+    hitCount++;
     BOOL answer = NO;
     @try {
         // Due to the swap, this calls the original method
         answer = [self replacement_validateAllowedClass:class
                                                       forKey:key];
-        if (hitCount == 1635) {
-            NSLog(@"STOP!!")
-            ;
-        }
     } @catch (NSException *exception) {
         NSLog(@"Exceptidate with %@.%@: %@", class, key, exception);
     }
