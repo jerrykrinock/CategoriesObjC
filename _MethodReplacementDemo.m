@@ -203,23 +203,24 @@ NSInteger hitCount = 0;
 }
 
 - (BOOL)replacement_validateAllowedClass:(Class)class
-                                forKey:(NSString*)key {
-    NSLog(@"Willidate HIT %04ld %@.%@", (long)(hitCount), class, key);
-    if (hitCount == 1000) {
-        NSLog(@"STOP!!");
+                                  forKey:(NSString*)key {
+    NSInteger targetHitCount = 55;
+    NSLog(@"Will validate HIT %04ld %@.%@ classes: %@", (long)(hitCount), class, key, self.allowedClasses);
+    if (hitCount == targetHitCount) {
+        NSLog(@"Hit target!");
         ; /* You can put a breakpoint here. */
     }
-    hitCount++;
-    BOOL answer = NO;
+    BOOL result = NO;
     @try {
         // Due to the swap, this calls the original method
-        answer = [self replacement_validateAllowedClass:class
-                                                      forKey:key];
+        result = [self replacement_validateAllowedClass:class
+                                                 forKey:key];
     } @catch (NSException *exception) {
         NSLog(@"Exceptidate with %@.%@: %@", class, key, exception);
     }
-    NSLog(@"Diddidate %@.%@ ans=%ld", class, key, (long)answer);
-    return answer;
+    NSLog(@"Did validate %04ld %@.%@ result=%ld", (long)(hitCount), class, key, (long)result);\
+    hitCount++;
+    return result;
 }
 
 @end
