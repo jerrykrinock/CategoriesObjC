@@ -88,9 +88,23 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
      "-[Client initWithCoder:]: unrecognized selector".
      Indeed, I checked and found that Client responds to
      -encodeWithCoder: but not -initWithCoder. */
-    id unarchivedSelf = [NSKeyedUnarchiver unarchivedObjectOfClass:[self class]
-                                                          fromData:archive
-                                                             error:&error] ;
+    NSSet* classes = [NSSet setWithObjects:
+                          [self class],
+                      [NSArray class],
+                      [NSDictionary class],
+                      [NSSet class],
+                      [NSString class],
+                      [NSNumber class],
+                      [NSDate class],
+                      [NSData class],
+                      [NSURL class],
+                      [NSUUID class],
+                      [NSNull class],
+                      nil
+    ];
+    id unarchivedSelf = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
+                                                            fromData:archive
+                                                               error:&error] ;
     if (!unarchivedSelf) {
         /* This can occur in macOS 10.10 and later. */
         return NO;
