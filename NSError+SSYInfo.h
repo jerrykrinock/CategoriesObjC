@@ -1,6 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "NSError+SSYInfo.h"
 
+
+extern NSString* const SSYIsOnlyInformationalErrorKey;
+
 @interface NSError (SSYInfo)
 
 /*!
