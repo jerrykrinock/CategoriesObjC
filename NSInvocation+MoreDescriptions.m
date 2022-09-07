@@ -151,5 +151,14 @@
 			msg] ;
 }
 
+- (NSInteger)countOfArguments {
+    NSMutableString* selectorName = [NSStringFromSelector([self selector]) mutableCopy];
+    NSInteger count = [selectorName replaceOccurrencesOfString:@":"
+                                                    withString:@"X"
+                                                       options:0
+                                                         range:NSMakeRange(0, selectorName.length)];
+    [selectorName release];
+    return count;
+}
 
 @end

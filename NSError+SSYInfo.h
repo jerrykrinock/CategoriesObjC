@@ -75,4 +75,6 @@ extern NSString* const SSYIsOnlyInformationalErrorKey;
  */
 - (NSError*)errorByChangingCodeTo:(NSInteger)code ;
 
+- (NSError*)encodingFriendlyError;
+
 @end

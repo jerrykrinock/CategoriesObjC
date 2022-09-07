@@ -13,4 +13,6 @@
  */
 - (NSString*)longDescription ;
 
+- (NSInteger)countOfArguments;
+
 @end
