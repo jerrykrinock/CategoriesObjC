@@ -20,36 +20,36 @@
  Replaced -beginUndoGrouping and -endUndoGrouping in GCUndoManager for debugging.
  
  EDIT SOMETHING UNDOABLE:
- began undo grp:  grpLvl: 0:1  state: Collecting:Collecting  chgCnt: 0:0
- Did change type Do.  changeCount: 0:1
- ended undo grp:  grpLvl: 1:0  state: Collecting:Collecting  chgCnt: 0:1
+ began undo grp:  grpLvl: 0:1  state: Collecting:Collecting
+ Did change type Do.
+ ended undo grp:  grpLvl: 1:0  state: Collecting:Collecting
  
  CLICK "Undo"
- ended undo grp:  grpLvl: 0:0  state: Collecting:Collecting  chgCnt: 1:1
+ ended undo grp:  grpLvl: 0:0  state: Collecting:Collecting
  22388: Set state to Undoing
- began undo grp:  grpLvl: 0:1  state: Undoing:Undoing  chgCnt: 1:1
- ended undo grp:  grpLvl: 1:0  state: Undoing:Undoing  chgCnt: 1:1
+ began undo grp:  grpLvl: 0:1  state: Undoing:Undoing
+ ended undo grp:  grpLvl: 1:0  state: Undoing:Undoing
  23172: Set state back to Collecting
- Did change type Undo.  changeCount: 1:0
+ Did change type Undo.
  // Note: The above is caused by NSUndoManagerDidUndoChangeNotification
  // being observed by -[NSDocument updateChangeCount:]
  
  CLICK "Redo"
  23741: Set state to Redoing
- began undo grp:  grpLvl: 0:1  state: Redoing:Redoing  chgCnt: 0:0
- ended undo grp:  grpLvl: 1:0  state: Redoing:Redoing  chgCnt: 0:0
+ began undo grp:  grpLvl: 0:1  state: Redoing:Redoing
+ ended undo grp:  grpLvl: 1:0  state: Redoing:Redoing
  24166: Set State back to Collecting
- Did change type Redo.  changeCount: 0:1
+ Did change type Redo.
  // Note: The above is caused by NSUndoManagerDidRedoChangeNotification
  // being observed by -[NSDocument updateChangeCount:]
  
  CLICK "Undo"
- ended undo grp:  grpLvl: 0:0  state: Collecting:Collecting  chgCnt: 1:1
+ ended undo grp:  grpLvl: 0:0  state: Collecting:Collecting
  22388: Set state to Undoing
- began undo grp:  grpLvl: 0:1  state: Undoing:Undoing  chgCnt: 1:1
- ended undo grp:  grpLvl: 1:0  state: Undoing:Undoing  chgCnt: 1:1
+ began undo grp:  grpLvl: 0:1  state: Undoing:Undoing
+ ended undo grp:  grpLvl: 1:0  state: Undoing:Undoing
  23172: Set state back to Collecting
- Did change type Undo.  changeCount: 1:0
+ Did change type Undo.
  
 */
 

@@ -1,27 +1,9 @@
 #import "GCUndoManager+Debug.h"
+#import <objc/runtime.h>
 
 #if GCUNDOMANAGER_DEBUG
 
-// Note: You get the ivar offset from running
-//    otool -ov  "/System/Library/Frameworks/AppKit.framework/AppKit" > ~/Desktop/AppKitClassDump.txt
-// and searching the result for _changeCount in the NSDocument section.  It gives and "offset".
-#define _CHANGE_COUNT_IVAR_OFFSET 0x00000018
-// Unfortunately, the above only works ok macOS 10.6.
-// In 10.7 and and 10.8, NSDocument no longer has a _changeCount.  Kyle Sluder
-// says it was replaced by the "change token infrastructure".  Probably, he
-// means this stuff…
-//    -[NSDocument updateChangeCountWithToken:forSaveOperation:]
-//    -[NSDocument changeCountTokenForSaveOperation:]
-@interface NSDocument (SSYDebugChangeAndUndo)
-@end
-
 @implementation NSDocument (SSYDebugChangeAndUndo)
-
-- (NSInteger)changeCount {
-	// Must cast pointers to integers before adding or they
-	// get multiplied by sizeof() their type.
-	return *(NSInteger*)((NSInteger)self + (NSInteger)_CHANGE_COUNT_IVAR_OFFSET) ;
-}
 
 + (void)load {
 	// Swap the implementations of one method with another.
@@ -37,10 +19,8 @@
 }
 
 - (void)replacement_updateChangeCount:(NSDocumentChangeType)changeType {
-	NSInteger oldChangeCount = [self changeCount] ;
 	// Due to the swap, this calls the original method
 	[self replacement_updateChangeCount:changeType] ;
-	NSInteger newChangeCount = [self changeCount] ;
 	NSString* changeDesc ;
 	switch (changeType) {
 		case NSChangeDone:
@@ -65,10 +45,8 @@
 			changeDesc = @"Undef" ;
 			break;
 	}
-	NSLog(@"Did change type %@.  changeCount: %ld:%ld",
-		  changeDesc,
-		  (long)oldChangeCount,
-		  (long)newChangeCount) ;
+	NSLog(@"Did change type %@",
+		  changeDesc) ;
 }
 
 @end
@@ -242,32 +220,26 @@
 - (void)replacement_beginUndoGrouping {
 	NSInteger oldGroupingLevel =  [self groupingLevel] ;
 	NSString* oldStateDescription = [self stateDescription] ;
-	NSInteger oldChangeCount = [[self myDocument] changeCount] ;
 	// Due to the swap, this calls the original method
 	[self replacement_beginUndoGrouping] ;
-	NSLog(@"began undo grp:  grpLvl: %ld:%ld  state: %@:%@  chgCnt: %ld:%ld",
+	NSLog(@"began undo grp:  grpLvl: %ld:%ld  state: %@:%@",
 		  (long)oldGroupingLevel,
 		  (long)[self groupingLevel],
 		  oldStateDescription,
-		  [self stateDescription],
-		  (long)oldChangeCount,
-		  (long)[[self myDocument] changeCount]
+		  [self stateDescription]
 		  ) ;
 }
 
 - (void)replacement_endUndoGrouping {
 	NSInteger oldGroupingLevel =  [self groupingLevel] ;
 	NSString* oldStateDescription = [self stateDescription] ;
-	NSInteger oldChangeCount = [[self myDocument] changeCount] ;
 	// Due to the swap, this calls the original method
 	[self replacement_endUndoGrouping] ;
-	NSLog(@"ended undo grp:  grpLvl: %ld:%ld  state: %@:%@  chgCnt: %ld:%ld",
+	NSLog(@"ended undo grp:  grpLvl: %ld:%ld  state: %@:%@",
 		  (long)oldGroupingLevel,
 		  (long)[self groupingLevel],
 		  oldStateDescription,
-		  [self stateDescription],
-		  (long)oldChangeCount,
-		  (long)[[self myDocument] changeCount]
+		  [self stateDescription]
 		  ) ;
 }
 
