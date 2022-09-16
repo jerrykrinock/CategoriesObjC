@@ -50,8 +50,8 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
         // an NSString key and an NSData value.
         // Thus, we should be OK to do the following:
         requestData = [NSKeyedArchiver archivedDataWithRootObject:requestInfo
-                                                    requiringSecureCoding:YES
-                                                                    error:&error];
+                                            requiringSecureCoding:YES
+                                                            error:&error];
         if (error) {
             error = [SSYMakeError(426190, @"Could not encode request") errorByAddingUnderlyingError:error];
         }
