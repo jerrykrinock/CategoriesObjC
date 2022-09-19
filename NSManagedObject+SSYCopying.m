@@ -70,6 +70,9 @@
                 NSObject <NSFastEnumeration> __block * oldCollection = nil ;
                 [[self managedObjectContext] performBlockAndWait:^(void) {
                     oldCollection = [self valueForKey:key] ;
+#if !__has_feature(objc_arc)
+                    [oldCollection retain];
+#endif
                 }] ;
 
                 /* The following assumes that you have used mogenerator
@@ -102,6 +105,9 @@
                         }] ;
                     }
                 }] ;
+#if !__has_feature(objc_arc)
+                [oldCollection release];
+#endif
             }
             else {
                 // To-One Relationship
