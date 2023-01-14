@@ -233,6 +233,17 @@ SSYDeepCopyStyleBitmask const SSYDeepCopyStyleBitmaskSerializable = 8 ;
     for (id key in self) {
 		id object = [self objectForKey:key] ;
         id copy = [object mutableCopyDeepStyle:style] ;
+        
+        /* Testing in macOS 13, I found that if a NSError is archived with
+         +[NSKeyedArchiver archivedDataWithRootObject:requiringSecureCoding:error:],
+         passing YES to requiringSecureCoding:, if the value for NSUnderlyingErrorKey
+         is an NSString instead of NSError, the error archives OK but unarchiving with
+         +[NSKeyedUnarchiver unarchivedObjectOfClasses:fromData:error:] returns
+         nil, even if the the passed-in ofClasses includes both NSError and
+         NSString.  Seems weird, but the following section fixes it. */
+        if (![copy isKindOfClass:[object class]]) {
+            key = [key stringByAppendingFormat:@" (Enodeable Description)"];
+        }
         [newDictionary setObject:copy
 						  forKey:key] ;
         [copy release] ;
