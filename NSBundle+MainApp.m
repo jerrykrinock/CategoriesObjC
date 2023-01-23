@@ -1,5 +1,4 @@
 #import "NSBundle+MainApp.h"
-#import <objc/runtime.h>
 
 static NSBundle* mainAppBundle = nil ;
 
