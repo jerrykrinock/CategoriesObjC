@@ -5,6 +5,31 @@
 #import "NSString+LocalizeSSY.h"
 #import "NSError+InfoAccess.h"
 
+@interface NSString (SSYPrefixLines)
+
+- (NSString*)prefixLinesWith:(NSString*)prefix;
+
+@end
+
+@implementation NSString (SSYPrefixLines)
+
+- (NSString*)prefixLinesWith:(NSString*)prefix {
+    NSMutableString* mutant = [prefix mutableCopy];
+    // Prefix the first line
+    [mutant appendString:self];
+    // Prefix all other lines
+    NSString* replacement = [@"\n" stringByAppendingString:prefix];
+    [mutant replaceOccurrencesOfString:@"\n"
+                            withString:replacement
+                               options:0
+                                 range:NSMakeRange(0, mutant.length)];
+    NSString* answer = [mutant copy];
+    [mutant release];
+    [answer autorelease];
+    return answer;
+}
+
+@end
 
 NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That error description was truncated! ***" ;
 
@@ -16,6 +41,10 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 @end
 
 @implementation NSError (MoreDescriptions)
+
+- (NSString*)indentation {
+    return @"   ";
+}
 
 - (NSString*)longDescriptionWithIndentationLevel:(NSInteger)indentationLevel
 								truncateForEmail:(BOOL)truncateForEmail {
@@ -37,7 +66,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	NSMutableString* indentation = [NSMutableString string] ;
 	NSInteger ii ;
 	for (ii=0; ii<indentationLevel; ii++) {
-		[indentation appendString:@"   "] ;
+		[indentation appendString:[self indentation]];
 	}
     
 	// Set truncation limits
@@ -94,6 +123,14 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			}
 			else {
 				valueDescription = [value longDescription] ;
+                /* The following condition occurs if self passed through an
+                 archiving process which replaced an un-codeable key/value of
+                 NSUnderlyingError with a codeable key/value with key
+                 NSUnderlyingErrorKeyDescription wose value is a string. */
+                if ([key hasPrefix:NSUnderlyingErrorKey]) {
+                    NSString* nextIndentation = [indentation stringByAppendingString:[self indentation]];
+                    valueDescription = [valueDescription prefixLinesWith:nextIndentation];
+                }
 			}
 		}
 		NSString* truncatedKey = [keyDescription stringByTruncatingMiddleToLength:userInfoMaxKeyLength
@@ -106,6 +143,8 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 		if ([truncatedValue length] < [valueDescription length]) {
 			didTruncate = YES ;
 		}
+        
+        truncatedValue = [truncatedValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		[truncatedUserInfo appendFormat:
 		 @"%@   **Key: %@\n"
 		 @"%@   Value: %@\n",
