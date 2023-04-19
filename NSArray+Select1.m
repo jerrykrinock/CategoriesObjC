@@ -6,10 +6,10 @@
 		answer = [self objectAtIndex:0] ;
 	}
 	else if ([self count] == 0) {
-		answer = NSNoSelectionMarker ;
+		answer = NSBindingSelectionMarker.noSelectionMarker ;
 	}
 	else {
-		answer = NSMultipleValuesMarker ;
+        answer = NSBindingSelectionMarker.multipleValuesSelectionMarker ;
 	}
 	
 	return answer ;

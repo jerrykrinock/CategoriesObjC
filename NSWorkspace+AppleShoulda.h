@@ -8,8 +8,6 @@
 
 + (NSString*)appNameForBundleIdentifier:(NSString*)bundleIdentifier ;
 
-+ (NSString*)bundleIdentifierForAppName:(NSString*)appName ;
-
 - (NSArray*)mountedLocalVolumeNames ;
 
 @end

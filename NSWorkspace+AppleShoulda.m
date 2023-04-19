@@ -5,7 +5,7 @@
 
 + (NSString*)appNameForBundleIdentifier:(NSString*)bundleIdentifier {
 	NSWorkspace* workspace = [self sharedWorkspace] ;
-	NSString* path = [workspace absolutePathForAppBundleWithIdentifier:bundleIdentifier] ;
+	NSString* path = [[workspace URLForApplicationWithBundleIdentifier:bundleIdentifier] absoluteString];
 	NSBundle* bundle = [NSBundle bundleWithPath:path] ;
 	NSString* appName = [bundle objectForInfoDictionaryKey:@"CFBundleName"] ;
 	
@@ -22,14 +22,6 @@
 	}
 	
 	return appName ;
-}
-
-+ (NSString*)bundleIdentifierForAppName:(NSString*)appName  {
-	NSWorkspace* workspace = [self sharedWorkspace] ;
-	NSString* path = [workspace fullPathForApplication:appName] ;
-	NSBundle* bundle = [NSBundle bundleWithPath:path] ;
-	NSString* bundleIdentifier = [bundle bundleIdentifier] ;
-	return bundleIdentifier ;
 }
 
 - (NSArray*)mountedLocalVolumeNames {

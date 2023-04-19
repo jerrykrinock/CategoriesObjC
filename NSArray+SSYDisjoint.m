@@ -8,7 +8,7 @@
 @implementation NSMutableArray (SSYDisjoint)
 
 - (void)putObject:(id)object
-          atIndex:(NSUInteger)index {
+          atIndex:(NSInteger)index {
     NSInteger count = [self count] ;
     if (index < count) {
         [self replaceObjectAtIndex:index

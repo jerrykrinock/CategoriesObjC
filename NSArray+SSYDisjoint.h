@@ -16,7 +16,7 @@
  are filled in with a special SSYDisjoiningPlaceholder object.
  */
 - (void)putObject:(id)object
-          atIndex:(NSUInteger)index ;
+          atIndex:(NSInteger)index ;
 
 /*!
  @brief    Replaces the object at a given index with a SSYDisjoiningPlaceholder
