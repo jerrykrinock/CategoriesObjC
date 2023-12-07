@@ -25,7 +25,7 @@ NSInteger gNSStringGeometricsTypesetterBehavior = NSTypesetterLatestBehavior ;
         NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init] ;
         [layoutManager addTextContainer:textContainer] ;
         [textStorage addLayoutManager:layoutManager] ;
-        /* The following line was removed in BkmkMgrs 3.0.13 because its call
+        /* The following line was removed in BkmkMgrs 3.1 because its call
          is deprecated.  I don't think it did anything anyhow, because the
          I think the default hypenation factor for a NSParagraphStyle (the
          recommended replacement) is 0.0 anyhow. */
