@@ -38,7 +38,9 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
 /*!
  @brief    Returns a readable multiline description which contains
  the -descriptionForDialog of the receiver and all of its
- antecedent underlying errors.
+ antecedent underlying errors.  If the receiver and/or any of its antecedent
+ underlying errors contains an error reason or recovery suggestion, the result
+ will contain a paragraphs for each, containing their text.
  */
 - (NSString*)localizedDeepDescription ;
 

@@ -175,9 +175,24 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 
 - (void)appendIfExistsUserInfoValueForKey:(NSString*)key
 								withLabel:(NSString*)label
+                                   deeply:(BOOL)deeply
 							toDescription:(NSMutableString*)string {
-	id value = [[self userInfo] objectForKey:key] ;
-	if (value) {
+    NSError* underlyingError = self;
+    id value = nil;
+    do {
+        id thisValue = [[underlyingError userInfo] objectForKey:key];
+        if (thisValue) {
+            if (!value) {
+                value = thisValue;
+            } else if ([value respondsToSelector:@selector(stringByAppendingString:)] && [thisValue isKindOfClass:[NSString class]]) {
+                value = [value stringByAppendingString:@"\nOR\n"];
+                value = [value stringByAppendingString:thisValue];
+            }
+        }
+        underlyingError = [underlyingError underlyingError];
+    } while (deeply && (underlyingError != nil));
+
+    if (value) {
 		if ([value respondsToSelector:@selector(geekDateTimeString)]) {
 			// It's a date
 			value = [value geekDateTimeString] ;
@@ -191,10 +206,12 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	
 	[self appendIfExistsUserInfoValueForKey:NSLocalizedFailureReasonErrorKey
 								  withLabel:[NSString localize:@"errorReasonLabel"]
+                                     deeply:YES
 							  toDescription:dialogDescription] ;
 	
 	[self appendIfExistsUserInfoValueForKey:NSLocalizedRecoverySuggestionErrorKey
 								  withLabel:[NSString localize:@"errorRecoveryLabel"]
+                                     deeply:YES
 							  toDescription:dialogDescription] ;
 	
 	NSDate* timestamp = [[self userInfo] objectForKey:SSYTimestampErrorKey] ;
@@ -202,6 +219,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
         if ([timestamp timeIntervalSinceNow] < -10.0) {
             [self appendIfExistsUserInfoValueForKey:SSYTimestampErrorKey
                                           withLabel:@"When this error occurred:"
+                                             deeply:NO
                                       toDescription:dialogDescription] ;
         }
     }
@@ -213,6 +231,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 		while ((key = [e nextObject])) {
 			[self appendIfExistsUserInfoValueForKey:key
 										  withLabel:[NSString localizeWeakly:key]
+                                             deeply:NO
 									  toDescription:dialogDescription] ;
 		}
 	}
