@@ -3,10 +3,11 @@
 
 NSString* const SSYMethodNameErrorKey = @"Method Name" ;
 NSString* const SSYLocalizedTitleErrorKey = @"Localized Title" ;
-NSString* const SSYUnderlyingExceptionErrorKey = @"Underlying Exception" ;
 NSString* const SSYTimestampErrorKey = @"Timestamp" ;
 NSString* const SSYHttpStatusCodeErrorKey = @"HTTP Status Code" ;
 NSString* const SSYHelpUrlErrorKey = @"Help URL";
+NSString* const SSYConvertedFromExceptionErrorDomain = @"SSYConvertedFromExceptionErrorDomain";
+NSInteger const SSYErrorConvertedFromException = 928045;
 
 @implementation NSError (InfoAccess)
 
@@ -267,38 +268,36 @@ NSString* const SSYHelpUrlErrorKey = @"Help URL";
 }
 
 - (NSError*)errorByAddingUnderlyingError:(NSError*)underlyingError {
-	return [[self bottomError] errorByAddingUserInfoObject:underlyingError
-															forKey:NSUnderlyingErrorKey] ;
+    return [[self bottomError] errorByAddingUserInfoObject:underlyingError
+                                                    forKey:NSUnderlyingErrorKey] ;
 }
 
 - (NSError*)errorByAddingUnderlyingException:(NSException*)exception {
-	NSMutableDictionary* exceptionInfo = [[NSMutableDictionary alloc] init] ;
-	id value ;
-	
-	value = [exception name] ;
-	if (value) {
-		[exceptionInfo setObject:value
-						  forKey:@"Name"] ;
-	}
-	
-	value = [exception reason] ;
-	if (value) {
-		[exceptionInfo setObject:value
-						  forKey:@"Reason"] ;
-	}
-	
-	value = [exception userInfo] ;
-	if (value) {
-		[exceptionInfo setObject:value
-						  forKey:@"User Info"] ;
-	}
-	
-	NSDictionary* info = [NSDictionary dictionaryWithDictionary:exceptionInfo] ;
+    NSMutableDictionary* userInfo = [[exception userInfo] mutableCopy];
+    if (!userInfo) {
+        userInfo = [NSMutableDictionary new];
+    }
+    
+    NSString* name = [exception name];
+    if (!name) {
+        name = @"A nameless exception";
+    }
+    [userInfo setObject:[@"Exception was raised: " stringByAppendingString:name]
+                 forKey:NSLocalizedDescriptionKey] ;
+    
+    NSString* reason = [exception reason];
+    [userInfo setValue:reason
+                forKey:NSLocalizedFailureReasonErrorKey];
+    
+    NSError* underlyingError = [NSError errorWithDomain:SSYConvertedFromExceptionErrorDomain
+                                                   code:SSYErrorConvertedFromException
+                                               userInfo:userInfo];
+    
 #if !__has_feature(objc_arc)
-	[exceptionInfo release] ;
+    [userInfo release] ;
 #endif
-	return [self errorByAddingUserInfoObject:info
-									  forKey:SSYUnderlyingExceptionErrorKey] ;
+    NSError* answer = [self errorByAddingUnderlyingError:underlyingError];
+    return answer;
 }
 
 - (NSError*)errorByAddingLocalizedTitle:(NSString*)title {

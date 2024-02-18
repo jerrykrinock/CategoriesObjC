@@ -2,6 +2,16 @@
 #import "NSError+InfoAccess.h"
 
 /*!
+ @brief    An domain for underlying exceptions which we convert to errors
+*/
+extern NSString* const SSYConvertedFromExceptionErrorDomain;
+
+/*!
+ @brief    The code for underlying exceptions which we convert to errors
+*/
+extern NSInteger const SSYErrorConvertedFromException;
+
+/*!
  @brief    Key to a string used in the userInfo dictionary of an NSError
  which gives the name of the method in which the error occurred.
  */
@@ -12,12 +22,6 @@ extern NSString* const SSYMethodNameErrorKey ;
  suitable for use as a "title" when displaying the error to a user.
 */
 extern NSString* const SSYLocalizedTitleErrorKey ;
-
-/*!
- @brief    Key to an NSException in the userInfo dictionary of an NSError
- which was the cause of the error.
-*/
-extern NSString* const SSYUnderlyingExceptionErrorKey ;
 
 /*!
  @brief    Key to an NSDate which may be used to timestamp when the error occurred.
