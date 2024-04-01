@@ -51,4 +51,10 @@
 */
 - (NSString*)pathForHelper:(NSString*)helperName ;
 
+/*
+ @brief    Returns a path for a given executable name in the receiving bundle
+ in directory Contents/MacOS/
+*/
+- (NSString*)pathForMacOS:(NSString*)helperName ;
+
 @end

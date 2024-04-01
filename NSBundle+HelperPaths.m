@@ -10,5 +10,12 @@
 	return path ;
 }
 
+- (NSString*)pathForMacOS:(NSString*)helperName {
+    NSString* bundlePath = [self bundlePath] ;
+    NSString* path = [[[bundlePath stringByAppendingPathComponent:@"Contents"] stringByAppendingPathComponent:@"MacOS"] stringByAppendingPathComponent:helperName] ;
+    
+    return path ;
+}
+
 
 @end
