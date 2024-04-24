@@ -67,7 +67,7 @@ extern NSString* const SSYDidTruncateErrorDescriptionTrailer ;
  appends two line feeds, and a localized label for the key followed by its value
  from userInfo.
  */
-- (NSString*)descriptionForDialog ;
+- (NSString*)descriptionForDialogSkipping:(NSMutableSet<NSString*>*)skipSet ;
 
 /*!
  @brief    Returns a keyed archive of the receiver, after replacing any unserializable

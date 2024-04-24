@@ -176,6 +176,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 - (void)appendIfExistsUserInfoValueForKey:(NSString*)key
 								withLabel:(NSString*)label
                                    deeply:(BOOL)deeply
+                                 skipping:(NSMutableSet<NSString*>*)pairsAlreadyAdded
 							toDescription:(NSMutableString*)string {
     NSError* underlyingError = self;
     id value = nil;
@@ -197,21 +198,31 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			// It's a date
 			value = [value geekDateTimeString] ;
 		}
-		[string appendFormat:@"\n\n%@\n\n%@", label, value] ;
+        NSString* appendage = [NSString stringWithFormat:@"\n\n%@\n\n%@", label, value];
+        /* Before appending, look to see if the proposed appendage is already
+         in the description, which would be the case if we are now processing
+         an underlying error, and the current appendage was "promoted" to the
+         top level error using the `deeply` parameter. */
+        if ([pairsAlreadyAdded member:appendage] == nil) {
+            [string appendString:appendage];
+            [pairsAlreadyAdded addObject:appendage];
+        }
 	}
 }
 
-- (NSString*)descriptionForDialog {
+- (NSString*)descriptionForDialogSkipping:(NSMutableSet<NSString*>*)skipSet {
 	NSMutableString* dialogDescription = [[self localizedDescription] mutableCopy] ;
 	
 	[self appendIfExistsUserInfoValueForKey:NSLocalizedFailureReasonErrorKey
 								  withLabel:[NSString localize:@"errorReasonLabel"]
                                      deeply:YES
+                                   skipping:skipSet
 							  toDescription:dialogDescription] ;
 	
 	[self appendIfExistsUserInfoValueForKey:NSLocalizedRecoverySuggestionErrorKey
 								  withLabel:[NSString localize:@"errorRecoveryLabel"]
                                      deeply:YES
+                                   skipping:skipSet
 							  toDescription:dialogDescription] ;
 	
 	NSDate* timestamp = [[self userInfo] objectForKey:SSYTimestampErrorKey] ;
@@ -220,6 +231,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
             [self appendIfExistsUserInfoValueForKey:SSYTimestampErrorKey
                                           withLabel:@"When this error occurred:"
                                              deeply:NO
+                                           skipping:skipSet
                                       toDescription:dialogDescription] ;
         }
     }
@@ -232,6 +244,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			[self appendIfExistsUserInfoValueForKey:key
 										  withLabel:[NSString localizeWeakly:key]
                                              deeply:NO
+                                           skipping:skipSet
 									  toDescription:dialogDescription] ;
 		}
 	}
@@ -245,6 +258,7 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 	BOOL moreThanOne = NO ;
 	NSMutableString* deepDescription = [[NSMutableString alloc] init] ;
 	NSError* underlyingError = self ;
+    NSMutableSet<NSString*>* pairsAlreadyAdded = [NSMutableSet new];
 	while (underlyingError) {
 		if (moreThanOne) {
 			[deepDescription appendFormat:@"\n\n\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80 %@ \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\n\n",
@@ -255,8 +269,8 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 		}
 		
 		NSString* nextPart ;
-		if ([underlyingError respondsToSelector:@selector(descriptionForDialog)]) {
-			nextPart = [underlyingError descriptionForDialog] ;
+        if ([underlyingError respondsToSelector:@selector(descriptionForDialogSkipping:)]) {
+			nextPart = [underlyingError descriptionForDialogSkipping:pairsAlreadyAdded] ;
 		}
 		else {
 			nextPart = [underlyingError description] ;
@@ -274,7 +288,8 @@ NSString* const SSYDidTruncateErrorDescriptionTrailer = @"\n\n*** Note: That err
 			underlyingError = nil ;
 		}
 	}
-	
+    [pairsAlreadyAdded release];
+     
 	NSString* answer = [deepDescription copy] ;
 	[deepDescription release] ;
 	
