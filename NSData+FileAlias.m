@@ -1,8 +1,8 @@
 #import "NSData+FileAlias.h"
+#import "SSYSwift-Swift.h"
 #import "NSError+InfoAccess.h"
 #import "NSError+MyDomain.h"
 #import "NSError+LowLevel.h"
-#import "SSYShellTasker.h"
 #import "NSBundle+HelperPaths.h"
 #import "NSBundle+MainApp.h"
 
@@ -60,19 +60,19 @@ NSString* const NSDataFileAliasWorkerName = @"FileAliasWorker" ;
     NSData* responseData = nil;
     if (!error) {
         NSString* workerPath = [[NSBundle mainAppBundle] pathForHelper:NSDataFileAliasWorkerName] ;
-        NSData* stderrData = nil ;
-        NSInteger taskResult = [SSYShellTasker doShellTaskCommand:workerPath
-                                                        arguments:nil
-                                                      inDirectory:nil
-                                                        stdinData:requestData
-                                                     stdoutData_p:&responseData
-                                                     stderrData_p:&stderrData
-                                                          timeout:timeout
-                                                          error_p:&error] ;
         
+        NSDictionary* programResults = [SSYTask run:[NSURL fileURLWithPath:workerPath]
+                                          arguments:nil
+                                        inDirectory:nil
+                                           stdinput:requestData
+                                            timeout:timeout];
+        NSNumber* exitStatus = [programResults objectForKey:SSYTask.exitStatusKey];
+        responseData = [programResults objectForKey:SSYTask.stdoutKey];
+        NSData* stderrData = [programResults objectForKey:SSYTask.stderrKey];
+
         if (!responseData) {
             error = [SSYMakeError(459751, @"No stdout from helper") errorByAddingUnderlyingError:error];
-            error = [error errorByAddingUserInfoObject:[NSNumber numberWithInteger:taskResult]
+            error = [error errorByAddingUserInfoObject:exitStatus
                                                 forKey:@"task result"] ;
             error = [error errorByAddingUserInfoObject:stderrData
                                                 forKey:@"stderr"] ;

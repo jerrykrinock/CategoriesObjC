@@ -1,5 +1,5 @@
 #import "NSFileManager+SSYFileDescriptor.h"
-#import "SSYShellTasker.h"
+#import "SSYSwift-Swift.h"
 
 
 NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDescriptorErrorDomain" ;
@@ -13,29 +13,29 @@ NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDe
 		pid = [[NSProcessInfo processInfo] processIdentifier] ;
 	}
 	
+    NSArray* args = [NSArray arrayWithObjects:
+                     @"-Fn",  // output only the process 'name' (n)
+                     @"-w",   // suppress warnings
+                     @"-a",   // logical-AND the next two arguments
+                     [NSString stringWithFormat:@"-p%ld", (long)pid],
+                     [NSString stringWithFormat:@"-d%ld", (long)fileDescriptor],
+                     nil];
 	NSData* stdoutData = nil ;
 	NSData* stderrData = nil ;
 	NSError* error = nil ;
-	NSInteger result = [SSYShellTasker doShellTaskCommand:@"/usr/sbin/lsof"
-												arguments:[NSArray arrayWithObjects:
-														   @"-Fn",  // output only the process 'name' (n)
-														   @"-w",   // suppress warnings
-														   @"-a",   // logical-AND the next two arguments
-														   [NSString stringWithFormat:@"-p%ld", (long)pid],
-														   [NSString stringWithFormat:@"-d%ld", (long)fileDescriptor],
-														   nil]
-											  inDirectory:nil
-										  stdinData:nil
-									   stdoutData_p:&stdoutData
-									   stderrData_p:&stderrData
-											timeout:5.0
-											error_p:&error] ;
-	
+    NSDictionary* programResults = [SSYTask run:[NSURL fileURLWithPath:@"/usr/sbin/lsof"]
+                                      arguments:args
+                                    inDirectory:nil
+                                       stdinput:nil
+                                        timeout:5.0];
+    NSInteger programExitStatus = [[programResults objectForKey:SSYTask.exitStatusKey] integerValue];
+    stdoutData = [programResults objectForKey:SSYTask.stdoutKey];
+
 	NSMutableDictionary* errorInfo = [[NSMutableDictionary alloc] init] ;
 	
 	NSInteger errorCode = 0 ;
 	NSString* path = nil ;
-	if (result == 0) {
+	if (programExitStatus == EXIT_SUCCESS) {
 		if (stdoutData) {
 			NSString* lsofOutput = [[NSString alloc] initWithData:stdoutData
 														 encoding:NSUTF8StringEncoding] ;
@@ -71,8 +71,8 @@ NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDe
 	}
 	else {
 		errorCode = 644704 ;			
-		[errorInfo setObject:[NSNumber numberWithInteger:result]
-					  forKey:@"Cmd Result"] ;
+		[errorInfo setObject:[NSNumber numberWithInteger:programExitStatus]
+					  forKey:@"Cmd Exit Status"] ;
 		[errorInfo setValue:error
 					 forKey:NSUnderlyingErrorKey] ;
 	}

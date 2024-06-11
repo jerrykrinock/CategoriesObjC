@@ -1,5 +1,6 @@
 #import "NSProcessInfo+SSYMoreInfo.h"
-#import "SSYShellTasker.h"
+#import "SSYSwift-Swift.h"
+#import "SSYOtherApper.h"
 #import "NSString+SSYExtraUtils.h"
 #import <mach/mach.h>
 #import <mach/message.h>  // for mach_msg_type_number_t
@@ -18,14 +19,12 @@
 	
 	args = [NSArray arrayWithObjects:@"-xc", @"-p", myPidString, @"-o", @"ppid=", nil] ;
 	// The = after ppid says to print this without a column heading
-	[SSYShellTasker doShellTaskCommand:@"/bin/ps"
-							 arguments:args
-						   inDirectory:nil
-							 stdinData:nil
-						  stdoutData_p:&stdoutData
-						  stderrData_p:NULL
-							   timeout:5.0
-							   error_p:NULL] ;
+    NSDictionary* programResults = [SSYTask run:[NSURL fileURLWithPath:@"/bin/ps"]
+                                      arguments:args
+                                    inDirectory:nil
+                                       stdinput:nil
+                                        timeout:[SSYOtherApper psTimeout]];
+    stdoutData = [programResults objectForKey:SSYTask.stdoutKey];
 	
 	NSString* parentInfo = @"No ppid" ;
 	if (stdoutData) {
@@ -36,14 +35,12 @@
         [rawParentInfo release] ;
 		
 		args = [NSArray arrayWithObjects:@"-lxww", @"-p", parentInfo, nil] ;
-		[SSYShellTasker doShellTaskCommand:@"/bin/ps"
-								 arguments:args
-							   inDirectory:nil
-								 stdinData:nil
-							  stdoutData_p:&stdoutData
-							  stderrData_p:NULL
-								   timeout:5.0
-								   error_p:NULL] ;
+        programResults = [SSYTask run:[NSURL fileURLWithPath:@"/bin/ps"]
+                            arguments:args
+                          inDirectory:nil
+                             stdinput:nil
+                              timeout:[SSYOtherApper psTimeout]];
+        stdoutData = [programResults objectForKey:SSYTask.stdoutKey];
 		if (stdoutData) {
 			parentInfo = [[[NSString alloc] initWithData:stdoutData
 										   encoding:[NSString defaultCStringEncoding]] autorelease] ;
