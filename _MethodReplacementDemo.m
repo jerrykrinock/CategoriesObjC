@@ -114,6 +114,100 @@
 
 #endif
 
+#if 0
+
+DO NOT TRY THIS.  Swizzling a class cluster like NSDictionary will lead to many runtime crashes because, for example, your methods will be sent objects that are not really dictionaries like the "placeholder" dictionary for example.
+
+NSString* targetClassName = @"_NSPredicateEditorRowNode";
+
+@interface My__NSDictionaryI : NSObject {
+}
+
+- (void)my_initWithObjects:(NSArray*)objects
+                   forKeys:(NSArray*)keys;
+
+@end
+
+@implementation My__NSDictionaryI
+
++ (void)load {
+    NSLog(@"Gotcha I %s", __PRETTY_FUNCTION__) ;
+    Method originalMethod = class_getInstanceMethod(NSClassFromString(@"__NSDictionaryI"), @selector(initWithObjectsAndKeys:));
+    Method replacedMethod = class_getInstanceMethod(self, @selector(my_initWithObjects:forKeys:));
+    IMP imp1 = method_getImplementation(originalMethod);
+    IMP imp2 = method_getImplementation(replacedMethod);
+    // Set the implementation to my implementation
+    method_setImplementation(originalMethod, imp2);
+    // Add a my_initWithObjects:forKeys: method with the original implementation
+    class_addMethod(NSClassFromString(@"__NSDictionaryI"), @selector(my_initWithObjects:forKeys:), imp1, NULL);
+}
+
+- (void)my_initWithObjects:(NSArray*)objects
+                   forKeys:(NSArray*)keys {
+    if ([self isKindOfClass:NSClassFromString(@"__NSPlaceholderDictionary")]) {
+        return;
+    }
+    Class targetClass = NSClassFromString(targetClassName);
+    /*SSYDBL*/ NSLog(@"Gotch OBJECTS: %@", objects);
+
+    if ([objects respondsToSelector:@selector(firstObject)]) {
+        for (NSObject* object in objects) {
+            if ([object isKindOfClass:targetClass]) {
+                NSLog(@"Gotcha 2");
+            }
+        }
+    }
+    
+    // Call the original method, whose implementation was exchanged with our own.
+    // Note:  this ISN'T a recursive call.
+    [self my_initWithObjects:objects
+                     forKeys:keys];
+}
+
+@end
+
+
+@interface My__NSDictionaryM : NSObject {
+}
+
+- (void)my_setObject:(id)object
+              forKey:(NSString*)key;
+
+@end
+
+
+
+@implementation My__NSDictionaryM
+
++ (void)load {
+    NSLog(@"Gotcha M %s", __PRETTY_FUNCTION__) ;
+    Method originalMethod = class_getInstanceMethod(NSClassFromString(@"__NSDictionaryM"), @selector(setObject:forKey:));
+    Method replacedMethod = class_getInstanceMethod(self, @selector(my_setObject:forKey:));
+    IMP imp1 = method_getImplementation(originalMethod);
+    IMP imp2 = method_getImplementation(replacedMethod);
+    // Set the implementation of dealloc to mydealloc
+    method_setImplementation(originalMethod, imp2);
+    // Add a my_initWithObjects:count: method with the original implementation
+    class_addMethod(NSClassFromString(@"__NSDictionaryM"), @selector(my_setObject:forKey:), imp1, NULL);
+}
+
+- (void)my_setObject:(id)object
+              forKey:(NSString*)key {
+    Class targetClass = NSClassFromString(targetClassName);
+    if ([object isKindOfClass:targetClass]) {
+        NSLog(@"Gotcha");
+    }
+    
+    // Call the original method, whose implementation was exchanged with our own.
+    // Note:  this ISN'T a recursive call.
+    [self my_setObject:object
+                forKey:key];
+}
+
+@end
+
+#endif
+
 
 
 #if	0
@@ -446,9 +540,12 @@ NSInteger hitCount = 0;
 
 #if 0
 #warning * Doing Method Replacement for Debugging!!!!!!!!
-#warning This does not work.  Maybe should be __NSDictionaryM, but that won't compile
+#warning Overriding in NSMutableDictionary does not work.  Maybe should be __NSDictionaryM, but that won't compile
 
-@interface NSMutableDictionary (DebugByReplacingMethod)
+
+@class __NSDictionaryM;
+
+@interface __NSDictionaryM (DebugByReplacingMethod)
 @end
 
 @implementation NSMutableDictionary (DebugByReplacingMethod)
@@ -468,10 +565,9 @@ NSInteger hitCount = 0;
 
 - (id)replacement_setObject:(id)object
                      forKey:key {
-    if (object) {
-        NSLog(@"SOFK: %@ : %@",
-              key,
-              object) ;
+    Class theClass = NSClassFromString(@"_NSPredicateEditorRowNode");
+    if ([object isKindOfClass:theClass]) {
+        NSLog(@"GOTCHA") ;
     }
     
 	// Due to the swap, this calls the original method
