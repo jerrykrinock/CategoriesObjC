@@ -148,7 +148,6 @@ NSString* targetClassName = @"_NSPredicateEditorRowNode";
         return;
     }
     Class targetClass = NSClassFromString(targetClassName);
-    /*SSYDBL*/ NSLog(@"Gotch OBJECTS: %@", objects);
 
     if ([objects respondsToSelector:@selector(firstObject)]) {
         for (NSObject* object in objects) {
