@@ -1,5 +1,5 @@
 #import "NSFileManager+SSYFileDescriptor.h"
-#import "SSYSwift-Swift.h"
+@import SSYSwift;
 
 
 NSString* const SSYFileManagerFileDescriptorErrorDomain = @"SSYFileManagerFileDescriptorErrorDomain" ;

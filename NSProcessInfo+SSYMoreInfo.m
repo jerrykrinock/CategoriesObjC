@@ -1,5 +1,5 @@
 #import "NSProcessInfo+SSYMoreInfo.h"
-#import "SSYSwift-Swift.h"
+@import SSYSwift;
 #import "SSYOtherApper.h"
 #import "NSString+SSYExtraUtils.h"
 #import <mach/mach.h>

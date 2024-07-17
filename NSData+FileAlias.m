@@ -1,5 +1,5 @@
 #import "NSData+FileAlias.h"
-#import "SSYSwift-Swift.h"
+@import SSYSwift;
 #import "NSError+InfoAccess.h"
 #import "NSError+MyDomain.h"
 #import "NSError+LowLevel.h"
