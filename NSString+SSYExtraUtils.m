@@ -271,15 +271,29 @@ CFStringRef PatchedCFXMLCreateStringByUnescapingEntities(CFAllocatorRef allocato
 }
 
 
-// The following two methods use functions recommended in Universal Binary Programming Guide > Swapping Bytes > Byte-Swapping Strategies > OSType
-// http://developer.apple.com/legacy/mac/library/documentation/MacOSX/Conceptual/universal_binary/universal_binary_byte_swap/universal_binary_swap.html#//apple_ref/doc/uid/TP40002217-CH243-CJBBDIIG
-// But I'm still not sure they work
+// A FourCharCode/OSType is simply four bytes packed big-endian.  These two methods
+// formerly used UTGetOSTypeFromString()/UTCreateStringForOSType(), which were
+// deprecated in macOS 12.0, so we now do the packing/unpacking directly.
 - (FourCharCode)fourCharCodeValue {
-	return UTGetOSTypeFromString((CFStringRef)self) ;
+	FourCharCode code = 0 ;
+	NSData* data = [self dataUsingEncoding:NSMacOSRomanStringEncoding] ;
+	NSUInteger length = MIN([data length], (NSUInteger)4) ;
+	const unsigned char* bytes = (const unsigned char*)[data bytes] ;
+	for (NSUInteger i = 0 ; i < length ; i++) {
+		code = (code << 8) | bytes[i] ;
+	}
+	return code ;
 }
 
 + (NSString*)stringWithFourCharCode:(OSType)osType {
-	return [(NSString*)UTCreateStringForOSType(osType) autorelease] ;
+	unsigned char bytes[4] ;
+	bytes[0] = (osType >> 24) & 0xFF ;
+	bytes[1] = (osType >> 16) & 0xFF ;
+	bytes[2] = (osType >>  8) & 0xFF ;
+	bytes[3] =  osType        & 0xFF ;
+	return [[[NSString alloc] initWithBytes:bytes
+									 length:4
+								   encoding:NSMacOSRomanStringEncoding] autorelease] ;
 }
 
 /* Old methods which give backwards results on Intel Macs due to endianness
